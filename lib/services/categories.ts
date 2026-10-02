@@ -22,6 +22,22 @@ export type ServiceCategory = {
   updated_at: string;
 };
 
+export type PublicService = {
+  id: string;
+  category_id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  icon: string | null;
+  image_url: string | null;
+  sort_order: number;
+  is_active: boolean;
+  requires_verification: boolean;
+  requires_certificate: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ServiceCategoryWithChildren = ServiceCategory & {
   children: ServiceCategoryWithChildren[];
 };
@@ -164,4 +180,26 @@ export async function getChildCategories(parentId: string) {
   }
 
   return data as ServiceCategory[];
+}
+
+/**
+ * Get all active services belonging to a subcategory.
+ */
+export async function getServicesByCategoryId(categoryId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("services")
+    .select("*")
+    .eq("category_id", categoryId)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching services:", error);
+    return [];
+  }
+
+  return data as PublicService[];
 }
