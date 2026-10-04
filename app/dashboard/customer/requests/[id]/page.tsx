@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { QuoteActions } from "@/components/dashboard/customer/quotes/quote-actions";
+import { JobStatusCard } from "@/components/dashboard/customer/requests/job-status-card";
+import { AssignedWorkerCard } from "@/components/dashboard/customer/requests/assigned-worker-card";
 
 type RequestDetailsPageProps = {
   params: Promise<{
@@ -215,6 +217,72 @@ export default async function CustomerRequestDetailsPage({
 
   if (quotesError) {
     console.error("Load customer quotes error:", quotesError);
+  }
+
+  const { data: job, error: jobError } = await supabase
+    .from("jobs")
+    .select(
+      `
+    id,
+    quote_id,
+    worker_id,
+    agreed_amount,
+    currency,
+    status,
+    scheduled_at,
+    started_at,
+    completed_at,
+    created_at,
+    updated_at,
+    worker_profiles (
+      id,
+      user_id,
+      bio,
+      years_of_experience,
+      starting_price,
+      currency,
+      verification_status,
+      is_available
+    )
+  `,
+    )
+    .eq("request_id", request.id)
+    .maybeSingle();
+
+  if (jobError) {
+    console.error("Customer job lookup error:", jobError);
+  }
+
+  let assignedWorkerProfile = null;
+  let assignedWorker = null;
+
+  if (job?.worker_profiles) {
+    const workerProfile = Array.isArray(job.worker_profiles)
+      ? job.worker_profiles[0]
+      : job.worker_profiles;
+
+    assignedWorkerProfile = workerProfile;
+
+    if (workerProfile?.user_id) {
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select(
+          `
+        id,
+        first_name,
+        last_name,
+        avatar_url
+      `,
+        )
+        .eq("id", workerProfile.user_id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("Assigned worker profile error:", profileError);
+      }
+
+      assignedWorker = profile;
+    }
   }
 
   return (
@@ -449,6 +517,32 @@ export default async function CustomerRequestDetailsPage({
               )}
             </CardContent>
           </Card>
+
+          {job && (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Job Tracking</CardTitle>
+                </CardHeader>
+
+                <CardContent>
+                  <JobStatusCard
+                    status={job.status}
+                    agreedAmount={job.agreed_amount}
+                    currency={job.currency}
+                    scheduledAt={job.scheduled_at}
+                    startedAt={job.started_at}
+                    completedAt={job.completed_at}
+                  />
+                </CardContent>
+              </Card>
+
+              <AssignedWorkerCard
+                worker={assignedWorker}
+                workerProfile={assignedWorkerProfile}
+              />
+            </>
+          )}
 
           <Card>
             <CardHeader>
