@@ -16,6 +16,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { QuoteActions } from "@/components/dashboard/customer/quotes/quote-actions";
 
 type RequestDetailsPageProps = {
   params: Promise<{
@@ -195,6 +196,27 @@ export default async function CustomerRequestDetailsPage({
     ? request.services[0]
     : request.services;
 
+  const { data: quotes, error: quotesError } = await supabase
+    .from("quotes")
+    .select(
+      `
+    id,
+    amount,
+    currency,
+    message,
+    estimated_duration_minutes,
+    status,
+    created_at,
+    worker_id
+  `,
+    )
+    .eq("request_id", request.id)
+    .order("created_at", { ascending: true });
+
+  if (quotesError) {
+    console.error("Load customer quotes error:", quotesError);
+  }
+
   return (
     <div className="mx-auto w-full max-w-5xl space-y-6">
       {/* Back */}
@@ -245,6 +267,137 @@ export default async function CustomerRequestDetailsPage({
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main */}
         <div className="space-y-6 lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Quotations
+                {quotes && quotes.length > 0 && (
+                  <span className="ml-2 text-sm font-normal text-muted-foreground">
+                    ({quotes.length})
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              {quotesError ? (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
+                  <p className="text-sm text-destructive">
+                    Unable to load quotations for this request.
+                  </p>
+                </div>
+              ) : !quotes || quotes.length === 0 ? (
+                <div className="rounded-lg border border-dashed p-8 text-center">
+                  <h3 className="font-medium">No quotations yet</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Service providers have not submitted any quotations for this
+                    request yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {quotes.map((quote) => (
+                    <div key={quote.id} className="rounded-xl border p-5">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <p className="text-sm font-medium">
+                            Service Provider
+                          </p>
+
+                          <p className="mt-1 font-mono text-xs text-muted-foreground">
+                            {quote.worker_id}
+                          </p>
+                        </div>
+
+                        <Badge
+                          className={
+                            quote.status === "pending"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : quote.status === "accepted"
+                                ? "bg-green-100 text-green-800"
+                                : quote.status === "rejected"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-muted text-muted-foreground"
+                          }
+                        >
+                          {getStatusLabel(quote.status)}
+                        </Badge>
+                      </div>
+
+                      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                        <div>
+                          <p className="text-xs text-muted-foreground">
+                            Quotation amount
+                          </p>
+
+                          <p className="mt-1 text-xl font-semibold">
+                            {formatCurrency(quote.amount, quote.currency)}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs text-muted-foreground">
+                            Estimated duration
+                          </p>
+
+                          <p className="mt-1 text-sm font-medium">
+                            {quote.estimated_duration_minutes === null
+                              ? "Not specified"
+                              : quote.estimated_duration_minutes >= 60
+                                ? `${Math.floor(
+                                    quote.estimated_duration_minutes / 60,
+                                  )} hour${
+                                    Math.floor(
+                                      quote.estimated_duration_minutes / 60,
+                                    ) === 1
+                                      ? ""
+                                      : "s"
+                                  }${
+                                    quote.estimated_duration_minutes % 60
+                                      ? ` ${
+                                          quote.estimated_duration_minutes % 60
+                                        } minutes`
+                                      : ""
+                                  }`
+                                : `${quote.estimated_duration_minutes} minute${
+                                    quote.estimated_duration_minutes === 1
+                                      ? ""
+                                      : "s"
+                                  }`}
+                          </p>
+                        </div>
+                      </div>
+
+                      {quote.message && (
+                        <div className="mt-5">
+                          <p className="text-xs text-muted-foreground">
+                            Provider message
+                          </p>
+
+                          <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
+                            {quote.message}
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="mt-5 text-xs text-muted-foreground">
+                        Submitted{" "}
+                        {new Intl.DateTimeFormat("en-NG", {
+                          dateStyle: "medium",
+                        }).format(new Date(quote.created_at))}
+                      </div>
+
+                      {quote.status === "pending" && (
+                        <div className="mt-5">
+                          <QuoteActions quoteId={quote.id} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader>
               <CardTitle>Request Details</CardTitle>
@@ -401,7 +554,7 @@ export default async function CustomerRequestDetailsPage({
               <div className="flex justify-between gap-4">
                 <span className="text-muted-foreground">Request ID</span>
 
-                <span className="max-w-[180px] truncate font-mono text-xs">
+                <span className="max-w-45 truncate font-mono text-xs">
                   {request.id}
                 </span>
               </div>

@@ -11,7 +11,7 @@ export async function requireRole(
   }
 
   if (!allowedRoles.includes(result.profile.role)) {
-    redirect("/dashboard");
+    redirect(`/dashboard/${result.profile.role}`);
   }
 
   return result;

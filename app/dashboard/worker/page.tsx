@@ -1,82 +1,81 @@
 import Link from "next/link";
 import {
-  ArrowRight,
+  BriefcaseBusiness,
   ClipboardList,
-  Heart,
-  Search,
+  Clock3,
   UserRound,
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
 
-export default async function CustomerDashboardPage() {
-  const { profile } = await requireRole(["customer"]);
+export default async function WorkerDashboardPage() {
+  const { profile } = await requireRole(["worker"]);
 
   const firstName = profile.first_name || "there";
 
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="mb-8">
-          <p className="text-sm font-medium text-slate-500">
-            Customer Dashboard
-          </p>
+          <p className="text-sm font-medium text-slate-500">Worker Dashboard</p>
 
           <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
             Welcome, {firstName}
           </h1>
 
           <p className="mt-2 text-slate-600">
-            Find trusted professionals and get help with your everyday tasks.
+            Find service requests, submit quotations, and manage your jobs.
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {/* Dashboard cards */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <DashboardCard
-            href="/services"
-            icon={<Search className="h-5 w-5" />}
-            title="Find a service"
-            description="Browse available services and professionals."
-          />
-
-          <DashboardCard
-            href="/dashboard/customer/requests"
+            href="/dashboard/worker/requests"
             icon={<ClipboardList className="h-5 w-5" />}
-            title="My requests"
-            description="View and manage your service requests."
+            title="Service requests"
+            description="Browse customer requests and find jobs you can handle."
           />
 
           <DashboardCard
-            href="/dashboard/customer/favorites"
-            icon={<Heart className="h-5 w-5" />}
-            title="Favorites"
-            description="View your saved service providers."
+            href="/dashboard/worker/quotations"
+            icon={<BriefcaseBusiness className="h-5 w-5" />}
+            title="My quotations"
+            description="View quotations you have submitted and their statuses."
           />
 
           <DashboardCard
-            href="/dashboard/customer/profile"
+            href="/dashboard/worker/jobs"
+            icon={<Clock3 className="h-5 w-5" />}
+            title="My jobs"
+            description="Manage jobs that have been assigned to you."
+          />
+
+          <DashboardCard
+            href="/dashboard/worker/profile"
             icon={<UserRound className="h-5 w-5" />}
             title="My profile"
-            description="Manage your account and personal details."
+            description="Manage your worker profile and service information."
           />
         </div>
 
+        {/* Main action */}
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">
-            Need something done?
+            Find your next job
           </h2>
 
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            Tell us what you need help with, choose your preferred schedule and
-            location, and receive quotations from available professionals.
+            Browse customer service requests, review the task details, and
+            submit a quotation for jobs you are qualified to handle.
           </p>
 
           <Link
-            href="/dashboard/customer/requests/new"
-            className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-slate-900 px-5 text-sm font-medium text-white transition hover:bg-slate-800"
+            href="/dashboard/worker/requests"
+            className="mt-5 inline-flex h-11 items-center rounded-lg bg-slate-900 px-5 text-sm font-medium text-white transition hover:bg-slate-800"
           >
-            Request a service
-            <ArrowRight className="h-4 w-4" />
+            Browse service requests
           </Link>
         </section>
       </div>

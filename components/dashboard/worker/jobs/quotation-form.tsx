@@ -118,23 +118,6 @@ export function QuotationForm({ serviceRequestId }: QuotationFormProps) {
         </p>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="estimated_start_time">
-          Estimated start time
-          <span className="text-muted-foreground"> (optional)</span>
-        </Label>
-
-        <Input
-          id="estimated_start_time"
-          name="estimated_start_time"
-          type="datetime-local"
-        />
-
-        <p className="text-xs text-muted-foreground">
-          Let the customer know when you expect to start the job.
-        </p>
-      </div>
-
       <div className="flex justify-end">
         <SubmitButton />
       </div>
