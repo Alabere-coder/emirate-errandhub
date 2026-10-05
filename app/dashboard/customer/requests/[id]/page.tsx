@@ -19,11 +19,20 @@ import { Badge } from "@/components/ui/badge";
 import { QuoteActions } from "@/components/dashboard/customer/quotes/quote-actions";
 import { JobStatusCard } from "@/components/dashboard/customer/requests/job-status-card";
 import { AssignedWorkerCard } from "@/components/dashboard/customer/requests/assigned-worker-card";
+import { ChatBox } from "@/components/dashboard/shared/chat-box";
 
 type RequestDetailsPageProps = {
   params: Promise<{
     id: string;
   }>;
+};
+
+type RequestMedia = {
+  id: string;
+  file_url: string;
+  file_type: string;
+  created_at: string;
+  signed_url: string;
 };
 
 function formatDate(value: string | null) {
@@ -190,6 +199,40 @@ export default async function CustomerRequestDetailsPage({
     notFound();
   }
 
+  const { data: requestMedia, error: mediaError } = await supabase
+    .from("service_request_media")
+    .select("id, file_url, file_type, created_at")
+    .eq("request_id", request.id)
+    .order("created_at", { ascending: true });
+
+  if (mediaError) {
+    console.error("Load request media error:", mediaError);
+  }
+
+  const mediaWithSignedUrls: RequestMedia[] = [];
+
+  for (const media of requestMedia ?? []) {
+    const { data: signedUrlData, error: signedUrlError } =
+      await supabase.storage
+        .from("request-media")
+        .createSignedUrl(media.file_url, 60 * 60);
+
+    if (signedUrlError || !signedUrlData?.signedUrl) {
+      console.error("Create request media signed URL error:", {
+        mediaId: media.id,
+        path: media.file_url,
+        error: signedUrlError,
+      });
+
+      continue;
+    }
+
+    mediaWithSignedUrls.push({
+      ...media,
+      signed_url: signedUrlData.signedUrl,
+    });
+  }
+
   const category = Array.isArray(request.service_categories)
     ? request.service_categories[0]
     : request.service_categories;
@@ -282,6 +325,51 @@ export default async function CustomerRequestDetailsPage({
       }
 
       assignedWorker = profile;
+    }
+  }
+
+  let conversation = null;
+  let conversationMessages: Array<{
+    id: string;
+    message: string | null;
+    sender_id: string;
+    created_at: string;
+  }> = [];
+
+  if (job?.id) {
+    const { data: conversationData, error: conversationError } = await supabase
+      .from("conversations")
+      .select("id")
+      .eq("job_id", job.id)
+      .maybeSingle();
+
+    if (conversationError) {
+      console.error("Conversation lookup error:", conversationError);
+    }
+
+    conversation = conversationData;
+
+    if (conversation?.id) {
+      const { data: messages, error: messagesError } = await supabase
+        .from("messages")
+        .select(
+          `
+          id,
+          message,
+          sender_id,
+          created_at
+        `,
+        )
+        .eq("conversation_id", conversation.id)
+        .order("created_at", {
+          ascending: true,
+        });
+
+      if (messagesError) {
+        console.error("Messages lookup error:", messagesError);
+      } else {
+        conversationMessages = messages ?? [];
+      }
     }
   }
 
@@ -480,6 +568,70 @@ export default async function CustomerRequestDetailsPage({
 
           <Card>
             <CardHeader>
+              <CardTitle>
+                Attached Media
+                {mediaWithSignedUrls.length > 0 && (
+                  <span className="ml-2 text-sm font-normal text-muted-foreground">
+                    ({mediaWithSignedUrls.length})
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              {mediaError ? (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
+                  <p className="text-sm text-destructive">
+                    Unable to load the attached media.
+                  </p>
+                </div>
+              ) : mediaWithSignedUrls.length === 0 ? (
+                <div className="rounded-lg border border-dashed p-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    No images or videos were attached to this request.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {mediaWithSignedUrls.map((media) => {
+                    const isVideo = media.file_type.startsWith("video/");
+
+                    return (
+                      <div
+                        key={media.id}
+                        className="overflow-hidden rounded-xl border bg-muted/20"
+                      >
+                        {isVideo ? (
+                          <video
+                            src={media.signed_url}
+                            controls
+                            preload="metadata"
+                            className="aspect-video w-full object-cover"
+                          />
+                        ) : (
+                          <a
+                            href={media.signed_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <img
+                              src={media.signed_url}
+                              alt="Attached request media"
+                              className="aspect-video w-full object-cover transition-opacity hover:opacity-90"
+                            />
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>Service Information</CardTitle>
             </CardHeader>
 
@@ -542,6 +694,14 @@ export default async function CustomerRequestDetailsPage({
                 workerProfile={assignedWorkerProfile}
               />
             </>
+          )}
+
+          {conversation && (
+            <ChatBox
+              conversationId={conversation.id}
+              currentUserId={user.id}
+              initialMessages={conversationMessages}
+            />
           )}
 
           <Card>

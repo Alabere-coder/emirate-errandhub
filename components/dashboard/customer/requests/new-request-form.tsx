@@ -1,17 +1,17 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
-
 import { createServiceRequest } from "@/lib/actions/service-requests";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FileVideo, ImagePlus, X } from "lucide-react";
+import { MediaPreview } from "./media-preview";
 
 type Category = {
   id: string;
@@ -68,6 +68,14 @@ export default function NewRequestForm({
     initialServiceId ?? "",
   );
 
+  const MAX_MEDIA_FILES = 10;
+  const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [mediaError, setMediaError] = useState("");
+
   const filteredServices = useMemo(() => {
     if (!selectedCategoryId) {
       return [];
@@ -91,8 +99,89 @@ export default function NewRequestForm({
     setSelectedServiceId(currentService?.id ?? "");
   }
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+
+    if (files.length === 0) {
+      return;
+    }
+
+    setMediaError("");
+
+    const invalidType = files.find(
+      (file) =>
+        !file.type.startsWith("image/") && !file.type.startsWith("video/"),
+    );
+
+    if (invalidType) {
+      setMediaError(`"${invalidType.name}" is not a supported image or video.`);
+      event.target.value = "";
+      return;
+    }
+
+    const oversizedFile = files.find((file) => file.size > MAX_FILE_SIZE);
+
+    if (oversizedFile) {
+      setMediaError(
+        `"${oversizedFile.name}" is too large. Maximum size is 50MB.`,
+      );
+      event.target.value = "";
+      return;
+    }
+
+    const combinedFiles = [...selectedFiles, ...files];
+
+    if (combinedFiles.length > MAX_MEDIA_FILES) {
+      setMediaError(`You can upload a maximum of ${MAX_MEDIA_FILES} files.`);
+      event.target.value = "";
+      return;
+    }
+
+    setSelectedFiles(combinedFiles);
+
+    // Keep all selected files in the actual input
+    const dataTransfer = new DataTransfer();
+
+    combinedFiles.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+
+    event.target.files = dataTransfer.files;
+  };
+
+  const removeSelectedFile = (index: number) => {
+    const updatedFiles = selectedFiles.filter(
+      (_, fileIndex) => fileIndex !== index,
+    );
+
+    setSelectedFiles(updatedFiles);
+
+    if (fileInputRef.current) {
+      const dataTransfer = new DataTransfer();
+
+      updatedFiles.forEach((file) => {
+        dataTransfer.items.add(file);
+      });
+
+      fileInputRef.current.files = dataTransfer.files;
+    }
+  };
+
+  const clearSelectedFiles = () => {
+    setSelectedFiles([]);
+    setMediaError("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   return (
-    <form action={formAction} className="space-y-6">
+    <form
+      action={formAction}
+      // encType="multipart/form-data"
+      className="space-y-6"
+    >
       {state.error && (
         <div
           role="alert"
@@ -211,6 +300,77 @@ export default function NewRequestForm({
         </CardContent>
       </Card>
 
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="media" className="text-sm font-medium">
+            Photos or videos
+          </label>
+
+          <p className="mt-1 text-sm text-muted-foreground">
+            Add photos or videos that help explain the work you need. You can
+            upload up to {MAX_MEDIA_FILES} files.
+          </p>
+        </div>
+
+        <input
+          ref={fileInputRef}
+          id="media"
+          name="media"
+          type="file"
+          multiple
+          accept="image/*,video/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+
+        <label
+          htmlFor="media"
+          className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center transition hover:bg-muted/50"
+        >
+          <ImagePlus className="mb-3 h-8 w-8 text-muted-foreground" />
+
+          <span className="font-medium">
+            {selectedFiles.length > 0
+              ? "Add more photos or videos"
+              : "Upload photos or videos"}
+          </span>
+
+          <span className="mt-1 text-sm text-muted-foreground">
+            Click to select multiple files
+          </span>
+        </label>
+
+        {mediaError && <p className="text-sm text-destructive">{mediaError}</p>}
+
+        {selectedFiles.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium">
+                Selected files ({selectedFiles.length}/{MAX_MEDIA_FILES})
+              </p>
+
+              <button
+                type="button"
+                onClick={clearSelectedFiles}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Clear all
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {selectedFiles.map((file, index) => (
+                <MediaPreview
+                  key={`${file.name}-${file.lastModified}-${index}`}
+                  file={file}
+                  onRemove={() => removeSelectedFile(index)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Budget and schedule</CardTitle>
@@ -241,8 +401,11 @@ export default function NewRequestForm({
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 <option value="NGN">NGN — Nigerian Naira</option>
+
                 <option value="USD">USD — US Dollar</option>
+
                 <option value="GBP">GBP — British Pound</option>
+
                 <option value="EUR">EUR — Euro</option>
               </select>
             </div>
@@ -308,10 +471,6 @@ export default function NewRequestForm({
             </div>
           </div>
 
-          {/*
-           * These will be populated later when we add proper
-           * map/location selection.
-           */}
           <input type="hidden" name="latitude" />
           <input type="hidden" name="longitude" />
         </CardContent>

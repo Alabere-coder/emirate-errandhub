@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import {
+  deleteRequestMedia,
+  uploadRequestMedia,
+} from "@/lib/storage/request-media";
 
 export type ServiceRequestActionState = {
   error?: string;
@@ -43,33 +47,33 @@ export async function createServiceRequest(
   formData: FormData,
 ): Promise<ServiceRequestActionState> {
   const { user } = await requireRole(["customer"]);
-
   const supabase = await createClient();
 
   const categoryId = getString(formData, "category_id");
   const serviceId = getOptionalString(formData, "service_id");
   const title = getString(formData, "title");
   const description = getString(formData, "description");
-
   const budget = getOptionalNumber(formData, "budget");
   const currency = getString(formData, "currency") || "NGN";
-
   const preferredDate = getOptionalString(formData, "preferred_date");
   const preferredTime = getOptionalString(formData, "preferred_time");
-
   const isUrgent = getBoolean(formData, "is_urgent");
-
   const address = getOptionalString(formData, "address");
   const city = getOptionalString(formData, "city");
   const state = getOptionalString(formData, "state");
-
   const latitude = getOptionalNumber(formData, "latitude");
   const longitude = getOptionalNumber(formData, "longitude");
 
   /*
-   * Basic validation
+   * Get uploaded media files.
    */
+  const mediaFiles = formData
+    .getAll("media")
+    .filter((value): value is File => value instanceof File && value.size > 0);
 
+  /*
+   * Basic validation.
+   */
   if (!categoryId) {
     return {
       error: "Please select a service category.",
@@ -107,9 +111,8 @@ export async function createServiceRequest(
   }
 
   /*
-   * Verify that the selected category exists and is active.
+   * Verify category.
    */
-
   const { data: category, error: categoryError } = await supabase
     .from("service_categories")
     .select("id, is_active")
@@ -137,12 +140,8 @@ export async function createServiceRequest(
   }
 
   /*
-   * If a specific service was selected, verify that it:
-   * 1. exists
-   * 2. is active
-   * 3. belongs to the selected category
+   * Verify service if supplied.
    */
-
   if (serviceId) {
     const { data: service, error: serviceError } = await supabase
       .from("services")
@@ -178,13 +177,9 @@ export async function createServiceRequest(
   }
 
   /*
-   * Create the request.
-   *
-   * customer_id comes from the authenticated user.
-   * It is never trusted from FormData.
+   * Create the service request.
    */
-
-  const { data: request, error } = await supabase
+  const { data: request, error: requestError } = await supabase
     .from("service_requests")
     .insert({
       customer_id: user.id,
@@ -206,14 +201,85 @@ export async function createServiceRequest(
     .select("id")
     .single();
 
-  if (error) {
-    console.error("Create service request error:", error);
+  if (requestError || !request) {
+    console.error("Create service request error:", requestError);
 
     return {
       error: "Unable to create your service request. Please try again.",
     };
   }
 
+  /*
+   * Upload request media.
+   */
+  const uploadedPaths: string[] = [];
+
+  for (const file of mediaFiles) {
+    try {
+      const { path } = await uploadRequestMedia({
+        supabase,
+        file,
+        userId: user.id,
+        requestId: request.id,
+      });
+
+      uploadedPaths.push(path);
+
+      /*
+       * Save the storage path in the database.
+       */
+      const { error: mediaError } = await supabase
+        .from("service_request_media")
+        .insert({
+          request_id: request.id,
+          file_url: path,
+          file_type: file.type,
+        });
+
+      if (mediaError) {
+        console.error("Request media database error:", mediaError);
+
+        await deleteRequestMedia(supabase, uploadedPaths);
+
+        await supabase
+          .from("service_requests")
+          .delete()
+          .eq("id", request.id)
+          .eq("customer_id", user.id);
+
+        return {
+          error: `Unable to save "${file.name}". Please try again.`,
+        };
+      }
+    } catch (error) {
+      console.error("Request media processing error:", error);
+
+      await deleteRequestMedia(supabase, uploadedPaths);
+
+      await supabase
+        .from("service_requests")
+        .delete()
+        .eq("id", request.id)
+        .eq("customer_id", user.id);
+
+      return {
+        error:
+          error instanceof Error
+            ? error.message
+            : `Unable to upload "${file.name}". Please try again.`,
+      };
+    }
+  }
+
+  console.log("SERVICE REQUEST CREATED SUCCESSFULLY:", {
+    requestId: request.id,
+    customerId: user.id,
+    mediaCount: mediaFiles.length,
+  });
+
+  /*
+   * Everything succeeded.
+   */
   revalidatePath("/dashboard/customer/requests");
 
   redirect(`/dashboard/customer/requests/${request.id}`);

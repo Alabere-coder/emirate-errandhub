@@ -41,11 +41,16 @@ export async function rejectQuote(
 
   if (quoteError) {
     console.error("Reject quote lookup error:", quoteError);
-    return { error: "Unable to verify the quotation." };
+
+    return {
+      error: "Unable to verify the quotation.",
+    };
   }
 
   if (!quote) {
-    return { error: "Quotation not found." };
+    return {
+      error: "Quotation not found.",
+    };
   }
 
   const request = Array.isArray(quote.service_requests)
@@ -95,11 +100,15 @@ export async function acceptQuote(
   const quoteId = formData.get("quote_id");
 
   if (typeof quoteId !== "string" || !quoteId) {
-    return { error: "Quotation is required." };
+    return {
+      error: "Quotation is required.",
+    };
   }
 
-  // Get the quotation and verify that the request
-  // belongs to the currently authenticated customer.
+  /*
+   * Get the quotation and verify that the request
+   * belongs to the currently authenticated customer.
+   */
   const { data: quote, error: quoteError } = await supabase
     .from("quotes")
     .select(
@@ -156,8 +165,10 @@ export async function acceptQuote(
     };
   }
 
-  // Make sure another job has not already been created
-  // for this request.
+  /*
+   * Make sure another job has not already been created
+   * for this request.
+   */
   const { data: existingJob, error: existingJobError } = await supabase
     .from("jobs")
     .select("id")
@@ -178,7 +189,35 @@ export async function acceptQuote(
     };
   }
 
-  // Accept the selected quotation.
+  /*
+   * Make sure the worker profile still exists.
+   *
+   * quotes.worker_id points to worker_profiles.id,
+   * not profiles.id.
+   */
+  const { data: workerProfile, error: workerProfileError } = await supabase
+    .from("worker_profiles")
+    .select("id, user_id")
+    .eq("id", quote.worker_id)
+    .maybeSingle();
+
+  if (workerProfileError) {
+    console.error("Worker profile lookup error:", workerProfileError);
+
+    return {
+      error: "Unable to verify the assigned service provider.",
+    };
+  }
+
+  if (!workerProfile) {
+    return {
+      error: "The assigned service provider could not be found.",
+    };
+  }
+
+  /*
+   * Accept the selected quotation.
+   */
   const { error: acceptError } = await supabase
     .from("quotes")
     .update({
@@ -195,8 +234,10 @@ export async function acceptQuote(
     };
   }
 
-  // Reject all other pending quotations
-  // for the same request.
+  /*
+   * Reject all other pending quotations
+   * for the same request.
+   */
   const { error: rejectOthersError } = await supabase
     .from("quotes")
     .update({
@@ -215,18 +256,24 @@ export async function acceptQuote(
     };
   }
 
-  // Create the actual job.
-  const { error: jobError } = await supabase.from("jobs").insert({
-    quote_id: quote.id,
-    request_id: request.id,
-    customer_id: user.id,
-    worker_id: quote.worker_id,
-    agreed_amount: quote.amount,
-    currency: quote.currency,
-    status: "assigned",
-  });
+  /*
+   * Create the actual job.
+   */
+  const { data: job, error: jobError } = await supabase
+    .from("jobs")
+    .insert({
+      quote_id: quote.id,
+      request_id: request.id,
+      customer_id: user.id,
+      worker_id: quote.worker_id,
+      agreed_amount: quote.amount,
+      currency: quote.currency,
+      status: "assigned",
+    })
+    .select("id, customer_id, worker_id")
+    .single();
 
-  if (jobError) {
+  if (jobError || !job) {
     console.error("Create job error:", jobError);
 
     return {
@@ -234,7 +281,67 @@ export async function acceptQuote(
     };
   }
 
-  // Update the request status.
+  /*
+   * Create the conversation for this job.
+   *
+   * conversations.job_id points to the newly created job.
+   * conversations.request_id also keeps the request relationship.
+   */
+  const { data: conversation, error: conversationError } = await supabase
+    .from("conversations")
+    .insert({
+      job_id: job.id,
+      request_id: request.id,
+    })
+    .select("id")
+    .single();
+
+  if (conversationError || !conversation) {
+    console.error("Create conversation error:", conversationError);
+
+    return {
+      error:
+        "The job was created, but the job conversation could not be created.",
+    };
+  }
+
+  /*
+   * Add the customer and worker to the conversation.
+   *
+   * IMPORTANT:
+   *
+   * customer_id = profiles.id
+   *
+   * workerProfile.user_id = profiles.id
+   *
+   * quote.worker_id is worker_profiles.id,
+   * so it must NOT be inserted directly as user_id.
+   */
+  const { error: participantsError } = await supabase
+    .from("conversation_participants")
+    .insert([
+      {
+        conversation_id: conversation.id,
+        user_id: job.customer_id,
+      },
+      {
+        conversation_id: conversation.id,
+        user_id: workerProfile.user_id,
+      },
+    ]);
+
+  if (participantsError) {
+    console.error("Create conversation participants error:", participantsError);
+
+    return {
+      error:
+        "The job was created, but the conversation participants could not be added.",
+    };
+  }
+
+  /*
+   * Update the request status.
+   */
   const { error: requestUpdateError } = await supabase
     .from("service_requests")
     .update({
@@ -248,12 +355,20 @@ export async function acceptQuote(
 
     return {
       error:
-        "The job was created, but the request status could not be updated.",
+        "The job and conversation were created, but the request status could not be updated.",
     };
   }
 
+  /*
+   * Refresh customer pages.
+   */
   revalidatePath(`/dashboard/customer/requests/${request.id}`);
+
   revalidatePath("/dashboard/customer/requests");
+
+  /*
+   * Refresh worker pages.
+   */
   revalidatePath("/dashboard/worker/jobs");
   revalidatePath("/dashboard/worker/jobs/my");
 

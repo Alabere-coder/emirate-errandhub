@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CalendarDays, MapPin, Wallet } from "lucide-react";
 import { JobStatusActions } from "@/components/dashboard/worker/jobs/job-status-actions";
+import { ChatBox } from "@/components/dashboard/shared/chat-box";
 
 type WorkerJobPageProps = {
   params: Promise<{
@@ -87,6 +88,49 @@ export default async function WorkerJobDetailPage({
     : job.service_requests;
 
   const status = statusLabels[job.status] ?? job.status.replaceAll("_", " ");
+
+  let conversation = null;
+  let conversationMessages: Array<{
+    id: string;
+    message: string | null;
+    sender_id: string;
+    created_at: string;
+  }> = [];
+
+  const { data: conversationData, error: conversationError } = await supabase
+    .from("conversations")
+    .select("id")
+    .eq("job_id", job.id)
+    .maybeSingle();
+
+  if (conversationError) {
+    console.error("Conversation lookup error:", conversationError);
+  }
+
+  conversation = conversationData;
+
+  if (conversation?.id) {
+    const { data: messages, error: messagesError } = await supabase
+      .from("messages")
+      .select(
+        `
+        id,
+        message,
+        sender_id,
+        created_at
+      `,
+      )
+      .eq("conversation_id", conversation.id)
+      .order("created_at", {
+        ascending: true,
+      });
+
+    if (messagesError) {
+      console.error("Messages lookup error:", messagesError);
+    } else {
+      conversationMessages = messages ?? [];
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -252,6 +296,14 @@ export default async function WorkerJobDetailPage({
               <JobStatusActions jobId={job.id} status={job.status} />
             </CardContent>
           </Card>
+
+          {conversation && (
+            <ChatBox
+              conversationId={conversation.id}
+              currentUserId={user.id}
+              initialMessages={conversationMessages}
+            />
+          )}
         </div>
       </div>
     </div>
