@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 
 import { completeJob, startJob, type JobActionState } from "@/lib/actions/jobs";
@@ -25,12 +26,20 @@ function SubmitButton({ children }: { children: React.ReactNode }) {
 }
 
 export function JobStatusActions({ jobId, status }: JobStatusActionsProps) {
+  const router = useRouter();
+
   const [startState, startAction] = useActionState(startJob, initialState);
 
   const [completeState, completeAction] = useActionState(
     completeJob,
     initialState,
   );
+
+  useEffect(() => {
+    if (startState.success || completeState.success) {
+      router.refresh();
+    }
+  }, [startState.success, completeState.success, router]);
 
   return (
     <div className="space-y-4">

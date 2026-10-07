@@ -56,6 +56,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: Heart,
     },
     {
+      label: "Jobs",
+      href: "/dashboard/customer/jobs",
+      icon: BriefcaseBusiness,
+    },
+    {
       label: "Profile",
       href: "/dashboard/customer/profile",
       icon: UserRound,

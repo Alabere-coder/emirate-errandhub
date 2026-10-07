@@ -270,7 +270,7 @@ export async function acceptQuote(
       currency: quote.currency,
       status: "assigned",
     })
-    .select("id, customer_id, worker_id")
+    .select("id, customer_id, worker_id, request_id")
     .single();
 
   if (jobError || !job) {
@@ -279,6 +279,19 @@ export async function acceptQuote(
     return {
       error: "The quotation was accepted, but the job could not be created.",
     };
+  }
+
+  const { error: historyError } = await supabase
+    .from("job_status_history")
+    .insert({
+      job_id: job.id,
+      status: "assigned",
+      note: "Job assigned to worker.",
+      changed_by: user.id,
+    });
+
+  if (historyError) {
+    console.error("Create assigned job status history error:", historyError);
   }
 
   /*

@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, CalendarDays, MapPin, Wallet } from "lucide-react";
 import { JobStatusActions } from "@/components/dashboard/worker/jobs/job-status-actions";
 import { ChatBox } from "@/components/dashboard/shared/chat-box";
+import { JobMediaUploader } from "@/components/dashboard/shared/job-media-uploader";
+import {
+  RequestMediaGallery,
+  type RequestMediaItem,
+} from "@/components/dashboard/shared/request-media-gallery";
 
 type WorkerJobPageProps = {
   params: Promise<{
@@ -13,11 +18,29 @@ type WorkerJobPageProps = {
   }>;
 };
 
+type JobMedia = {
+  id: string;
+  file_url: string;
+  file_type: string;
+  media_type: "before" | "during" | "after" | "proof" | "other";
+  uploaded_by: string;
+  created_at: string;
+  signed_url: string;
+};
+
 const statusLabels: Record<string, string> = {
   assigned: "Assigned",
   in_progress: "In Progress",
   completed: "Completed",
   cancelled: "Cancelled",
+};
+
+const mediaTypeLabels: Record<string, string> = {
+  before: "Before",
+  during: "During",
+  after: "After",
+  proof: "Proof of completion",
+  other: "Other",
 };
 
 export default async function WorkerJobDetailPage({
@@ -87,6 +110,97 @@ export default async function WorkerJobDetailPage({
     ? job.service_requests[0]
     : job.service_requests;
 
+  let requestMedia: RequestMediaItem[] = [];
+
+  if (request?.id) {
+    const { data: media, error: requestMediaError } = await supabase
+      .from("service_request_media")
+      .select(
+        `
+      id,
+      file_url,
+      file_type,
+      created_at
+    `,
+      )
+      .eq("request_id", request.id)
+      .order("created_at", { ascending: true });
+
+    if (requestMediaError) {
+      console.error("Load worker request media error:", requestMediaError);
+    }
+
+    for (const mediaItem of media ?? []) {
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabase.storage
+          .from("request-media")
+          .createSignedUrl(mediaItem.file_url, 60 * 60);
+
+      if (signedUrlError || !signedUrlData?.signedUrl) {
+        console.error("Create worker request media signed URL error:", {
+          mediaId: mediaItem.id,
+          path: mediaItem.file_url,
+          error: signedUrlError,
+        });
+
+        continue;
+      }
+
+      requestMedia.push({
+        ...mediaItem,
+        signed_url: signedUrlData.signedUrl,
+      });
+    }
+  }
+
+  let jobMedia: JobMedia[] = [];
+
+  const { data: media, error: jobMediaError } = await supabase
+    .from("job_media")
+    .select(
+      `
+    id,
+    file_url,
+    file_type,
+    media_type,
+    uploaded_by,
+    created_at
+  `,
+    )
+    .eq("job_id", job.id)
+    .order("created_at", { ascending: true });
+
+  if (jobMediaError) {
+    console.error("Load worker job media error:", jobMediaError);
+  }
+
+  for (const mediaItem of media ?? []) {
+    const { data: signedUrlData, error: signedUrlError } =
+      await supabase.storage
+        .from("job-media")
+        .createSignedUrl(mediaItem.file_url, 60 * 60);
+
+    if (signedUrlError || !signedUrlData?.signedUrl) {
+      console.error("Create worker job media signed URL error:", {
+        mediaId: mediaItem.id,
+        path: mediaItem.file_url,
+        error: signedUrlError,
+      });
+
+      continue;
+    }
+
+    jobMedia.push({
+      ...mediaItem,
+      media_type: mediaItem.media_type as JobMedia["media_type"],
+      signed_url: signedUrlData.signedUrl,
+    });
+  }
+
+  // const request = Array.isArray(job.service_requests)
+  //   ? job.service_requests[0]
+  //   : job.service_requests;
+
   const status = statusLabels[job.status] ?? job.status.replaceAll("_", " ");
 
   let conversation = null;
@@ -133,7 +247,7 @@ export default async function WorkerJobDetailPage({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div>
         <Button variant="ghost" className="mb-4 -ml-3">
           <Link href="/dashboard/worker/jobs/my">
@@ -221,6 +335,8 @@ export default async function WorkerJobDetailPage({
             </CardContent>
           </Card>
 
+          <RequestMediaGallery media={requestMedia} />
+
           <Card>
             <CardHeader>
               <CardTitle>Job Information</CardTitle>
@@ -258,6 +374,83 @@ export default async function WorkerJobDetailPage({
                   </dd>
                 </div>
               </dl>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Job Media
+                {jobMedia.length > 0 && (
+                  <span className="ml-2 text-sm font-normal text-muted-foreground">
+                    ({jobMedia.length})
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              <JobMediaUploader jobId={job.id} />
+
+              {jobMedia.length === 0 ? (
+                <div className="rounded-lg border border-dashed p-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    No photos or videos have been uploaded for this job yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {jobMedia.map((media) => {
+                    const isVideo = media.file_type.startsWith("video/");
+
+                    return (
+                      <div
+                        key={media.id}
+                        className="overflow-hidden rounded-xl border bg-muted/20"
+                      >
+                        {isVideo ? (
+                          <video
+                            src={media.signed_url}
+                            controls
+                            preload="metadata"
+                            className="aspect-video w-full object-cover"
+                          />
+                        ) : (
+                          <a
+                            href={media.signed_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <img
+                              src={media.signed_url}
+                              alt={
+                                mediaTypeLabels[media.media_type] ?? "Job media"
+                              }
+                              className="aspect-video w-full object-cover transition-opacity hover:opacity-90"
+                            />
+                          </a>
+                        )}
+
+                        <div className="border-t px-3 py-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium">
+                              {mediaTypeLabels[media.media_type] ?? "Other"}
+                            </span>
+
+                            <span className="text-xs text-muted-foreground">
+                              {new Intl.DateTimeFormat("en-NG", {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              }).format(new Date(media.created_at))}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

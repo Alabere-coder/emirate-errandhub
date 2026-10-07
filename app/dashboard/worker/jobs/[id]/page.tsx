@@ -9,6 +9,11 @@ import { Button } from "@/components/ui/button";
 
 import { QuotationForm } from "@/components/dashboard/worker/jobs/quotation-form";
 
+import {
+  RequestMediaGallery,
+  type RequestMediaItem,
+} from "@/components/dashboard/shared/request-media-gallery";
+
 type WorkerRequestPageProps = {
   params: Promise<{
     id: string;
@@ -88,6 +93,47 @@ export default async function WorkerRequestDetailPage({
     notFound();
   }
 
+  let requestMedia: RequestMediaItem[] = [];
+
+  const { data: media, error: mediaError } = await supabase
+    .from("service_request_media")
+    .select(
+      `
+    id,
+    file_url,
+    file_type,
+    created_at
+  `,
+    )
+    .eq("request_id", request.id)
+    .order("created_at", { ascending: true });
+
+  if (mediaError) {
+    console.error("Worker request media lookup error:", mediaError);
+  }
+
+  for (const mediaItem of media ?? []) {
+    const { data: signedUrlData, error: signedUrlError } =
+      await supabase.storage
+        .from("request-media")
+        .createSignedUrl(mediaItem.file_url, 60 * 60);
+
+    if (signedUrlError || !signedUrlData?.signedUrl) {
+      console.error("Create request media signed URL error:", {
+        mediaId: mediaItem.id,
+        path: mediaItem.file_url,
+        error: signedUrlError,
+      });
+
+      continue;
+    }
+
+    requestMedia.push({
+      ...mediaItem,
+      signed_url: signedUrlData.signedUrl,
+    });
+  }
+
   const { data: quotation, error: quotationError } = await supabase
     .from("quotes")
     .select(
@@ -122,7 +168,7 @@ export default async function WorkerRequestDetailPage({
     request.status === "completed" || request.status === "cancelled";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Button variant="ghost" className="-ml-3">
@@ -198,6 +244,8 @@ export default async function WorkerRequestDetailPage({
               </div>
             </CardContent>
           </Card>
+
+          <RequestMediaGallery media={requestMedia} />
 
           <Card>
             <CardHeader>

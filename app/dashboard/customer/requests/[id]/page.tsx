@@ -19,7 +19,16 @@ import { Badge } from "@/components/ui/badge";
 import { QuoteActions } from "@/components/dashboard/customer/quotes/quote-actions";
 import { JobStatusCard } from "@/components/dashboard/customer/requests/job-status-card";
 import { AssignedWorkerCard } from "@/components/dashboard/customer/requests/assigned-worker-card";
+import { JobStatusTimeline } from "@/components/dashboard/customer/requests/job-status-timeline";
 import { ChatBox } from "@/components/dashboard/shared/chat-box";
+import {
+  RequestMediaGallery,
+  type RequestMediaItem,
+} from "@/components/dashboard/shared/request-media-gallery";
+import {
+  JobMediaGallery,
+  type JobMediaGalleryItem,
+} from "@/components/dashboard/jobs/job-media-gallery";
 
 type RequestDetailsPageProps = {
   params: Promise<{
@@ -27,12 +36,30 @@ type RequestDetailsPageProps = {
   }>;
 };
 
-type RequestMedia = {
+type JobMedia = {
   id: string;
   file_url: string;
   file_type: string;
+  media_type: "before" | "during" | "after" | "proof" | "other";
+  uploaded_by: string;
   created_at: string;
   signed_url: string;
+};
+
+const mediaTypeLabels: Record<JobMedia["media_type"], string> = {
+  before: "Before",
+  during: "During",
+  after: "After",
+  proof: "Proof of completion",
+  other: "Other",
+};
+
+type JobStatusHistoryItem = {
+  id: string;
+  status: string;
+  note: string | null;
+  changed_by: string | null;
+  created_at: string;
 };
 
 function formatDate(value: string | null) {
@@ -199,7 +226,7 @@ export default async function CustomerRequestDetailsPage({
     notFound();
   }
 
-  const { data: requestMedia, error: mediaError } = await supabase
+  const { data: requestMediaRows, error: mediaError } = await supabase
     .from("service_request_media")
     .select("id, file_url, file_type, created_at")
     .eq("request_id", request.id)
@@ -209,9 +236,9 @@ export default async function CustomerRequestDetailsPage({
     console.error("Load request media error:", mediaError);
   }
 
-  const mediaWithSignedUrls: RequestMedia[] = [];
+  const requestMedia: RequestMediaItem[] = [];
 
-  for (const media of requestMedia ?? []) {
+  for (const media of requestMediaRows ?? []) {
     const { data: signedUrlData, error: signedUrlError } =
       await supabase.storage
         .from("request-media")
@@ -227,7 +254,7 @@ export default async function CustomerRequestDetailsPage({
       continue;
     }
 
-    mediaWithSignedUrls.push({
+    requestMedia.push({
       ...media,
       signed_url: signedUrlData.signedUrl,
     });
@@ -294,6 +321,52 @@ export default async function CustomerRequestDetailsPage({
 
   if (jobError) {
     console.error("Customer job lookup error:", jobError);
+  }
+
+  let jobMedia: JobMedia[] = [];
+
+  if (job?.id) {
+    const { data: media, error: jobMediaError } = await supabase
+      .from("job_media")
+      .select(
+        `
+      id,
+      file_url,
+      file_type,
+      media_type,
+      uploaded_by,
+      created_at
+    `,
+      )
+      .eq("job_id", job.id)
+      .order("created_at", { ascending: true });
+
+    if (jobMediaError) {
+      console.error("Load job media error:", jobMediaError);
+    }
+
+    for (const mediaItem of media ?? []) {
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabase.storage
+          .from("job-media")
+          .createSignedUrl(mediaItem.file_url, 60 * 60);
+
+      if (signedUrlError || !signedUrlData?.signedUrl) {
+        console.error("Create job media signed URL error:", {
+          mediaId: mediaItem.id,
+          path: mediaItem.file_url,
+          error: signedUrlError,
+        });
+
+        continue;
+      }
+
+      jobMedia.push({
+        ...mediaItem,
+        media_type: mediaItem.media_type as JobMedia["media_type"],
+        signed_url: signedUrlData.signedUrl,
+      });
+    }
   }
 
   let assignedWorkerProfile = null;
@@ -371,6 +444,30 @@ export default async function CustomerRequestDetailsPage({
         conversationMessages = messages ?? [];
       }
     }
+  }
+
+  let jobStatusHistory: JobStatusHistoryItem[] = [];
+
+  if (job?.id) {
+    const { data: history, error: historyError } = await supabase
+      .from("job_status_history")
+      .select(
+        `
+        id,
+        status,
+        note,
+        changed_by,
+        created_at
+      `,
+      )
+      .eq("job_id", job.id)
+      .order("created_at", { ascending: true });
+
+    if (historyError) {
+      console.error("Load job status history error:", historyError);
+    }
+
+    jobStatusHistory = history ?? [];
   }
 
   return (
@@ -566,69 +663,9 @@ export default async function CustomerRequestDetailsPage({
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Attached Media
-                {mediaWithSignedUrls.length > 0 && (
-                  <span className="ml-2 text-sm font-normal text-muted-foreground">
-                    ({mediaWithSignedUrls.length})
-                  </span>
-                )}
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent>
-              {mediaError ? (
-                <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
-                  <p className="text-sm text-destructive">
-                    Unable to load the attached media.
-                  </p>
-                </div>
-              ) : mediaWithSignedUrls.length === 0 ? (
-                <div className="rounded-lg border border-dashed p-6 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    No images or videos were attached to this request.
-                  </p>
-                </div>
-              ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {mediaWithSignedUrls.map((media) => {
-                    const isVideo = media.file_type.startsWith("video/");
-
-                    return (
-                      <div
-                        key={media.id}
-                        className="overflow-hidden rounded-xl border bg-muted/20"
-                      >
-                        {isVideo ? (
-                          <video
-                            src={media.signed_url}
-                            controls
-                            preload="metadata"
-                            className="aspect-video w-full object-cover"
-                          />
-                        ) : (
-                          <a
-                            href={media.signed_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block"
-                          >
-                            <img
-                              src={media.signed_url}
-                              alt="Attached request media"
-                              className="aspect-video w-full object-cover transition-opacity hover:opacity-90"
-                            />
-                          </a>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <div>
+            <RequestMediaGallery media={requestMedia} />
+          </div>
 
           <Card>
             <CardHeader>
@@ -689,10 +726,16 @@ export default async function CustomerRequestDetailsPage({
                 </CardContent>
               </Card>
 
+              {job && <JobStatusTimeline history={jobStatusHistory} />}
+
               <AssignedWorkerCard
                 worker={assignedWorker}
                 workerProfile={assignedWorkerProfile}
               />
+
+              <div>
+                <JobMediaGallery media={jobMedia} />
+              </div>
             </>
           )}
 

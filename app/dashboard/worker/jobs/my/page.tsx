@@ -102,7 +102,7 @@ export default async function WorkerMyJobsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div>
         <h1 className="text-2xl font-semibold">My Jobs</h1>
         <p className="text-muted-foreground">

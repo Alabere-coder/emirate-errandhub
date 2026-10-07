@@ -62,14 +62,16 @@ export async function startJob(
     };
   }
 
-  const { error: updateError } = await supabase
+  const { data: updatedJob, error: updateError } = await supabase
     .from("jobs")
     .update({
       status: "in_progress",
       started_at: new Date().toISOString(),
     })
     .eq("id", job.id)
-    .eq("worker_id", workerProfile.id);
+    .eq("worker_id", workerProfile.id)
+    .select("id, status, started_at")
+    .maybeSingle();
 
   if (updateError) {
     console.error("Start job update error:", updateError);
@@ -78,6 +80,32 @@ export async function startJob(
       error: "Unable to start this job.",
     };
   }
+
+  if (!updatedJob) {
+    console.error("Start job update affected no rows:", {
+      jobId: job.id,
+      workerId: workerProfile.id,
+    });
+
+    return {
+      error: "The job could not be updated. Please check the job permissions.",
+    };
+  }
+
+  const { error: historyError } = await supabase
+    .from("job_status_history")
+    .insert({
+      job_id: job.id,
+      status: "in_progress",
+      note: "Worker started the job.",
+      changed_by: user.id,
+    });
+
+  if (historyError) {
+    console.error("Start job status history error:", historyError);
+  }
+
+  console.log("START JOB UPDATED:", updatedJob);
 
   revalidatePath(`/dashboard/worker/jobs/my/${job.id}`);
   revalidatePath("/dashboard/worker/jobs/my");
@@ -116,7 +144,7 @@ export async function completeJob(
 
   const { data: job, error: jobError } = await supabase
     .from("jobs")
-    .select("id, status")
+    .select("id, status, request_id")
     .eq("id", jobId)
     .eq("worker_id", workerProfile.id)
     .maybeSingle();
@@ -141,14 +169,16 @@ export async function completeJob(
     };
   }
 
-  const { error: updateError } = await supabase
+  const { data: updatedJob, error: updateError } = await supabase
     .from("jobs")
     .update({
       status: "completed",
       completed_at: new Date().toISOString(),
     })
     .eq("id", job.id)
-    .eq("worker_id", workerProfile.id);
+    .eq("worker_id", workerProfile.id)
+    .select("id, status, completed_at")
+    .maybeSingle();
 
   if (updateError) {
     console.error("Complete job update error:", updateError);
@@ -158,8 +188,37 @@ export async function completeJob(
     };
   }
 
+  if (!updatedJob) {
+    console.error("Complete job update affected no rows:", {
+      jobId: job.id,
+      workerId: workerProfile.id,
+    });
+
+    return {
+      error: "The job could not be updated. Please check the job permissions.",
+    };
+  }
+
+  const { error: historyError } = await supabase
+    .from("job_status_history")
+    .insert({
+      job_id: job.id,
+      status: "completed",
+      note: "Worker completed the job.",
+      changed_by: user.id,
+    });
+
+  if (historyError) {
+    console.error("Complete job status history error:", historyError);
+  }
+
+  console.log("COMPLETE JOB UPDATED:", updatedJob);
+
   revalidatePath(`/dashboard/worker/jobs/my/${job.id}`);
   revalidatePath("/dashboard/worker/jobs/my");
+
+  // Customer request page
+  revalidatePath(`/dashboard/customer/requests/${job.request_id}`);
 
   return {
     success: "Job completed successfully.",
