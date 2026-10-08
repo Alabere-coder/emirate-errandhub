@@ -12,6 +12,7 @@ export type ServiceQuotationActionState = {
 
 function getString(formData: FormData, name: string) {
   const value = formData.get(name);
+
   return typeof value === "string" ? value.trim() : "";
 }
 
@@ -40,29 +41,16 @@ export async function createServiceQuotation(
   const message = getString(formData, "message") || null;
   const estimatedDuration = getOptionalNumber(formData, "estimated_duration");
 
-  const { data: workerProfile, error: workerProfileError } = await supabase
-    .from("worker_profiles")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (workerProfileError) {
-    console.error("Worker profile lookup error:", workerProfileError);
-    return { error: "Unable to load your worker profile." };
-  }
-
-  if (!workerProfile) {
+  if (!serviceRequestId) {
     return {
-      error: "Your worker profile has not been created yet.",
+      error: "Service request is required.",
     };
   }
 
-  if (!serviceRequestId) {
-    return { error: "Service request is required." };
-  }
-
   if (amount === null || amount <= 0) {
-    return { error: "Please enter a valid quotation amount." };
+    return {
+      error: "Please enter a valid quotation amount.",
+    };
   }
 
   if (estimatedDuration !== null && estimatedDuration <= 0) {
@@ -71,6 +59,35 @@ export async function createServiceQuotation(
     };
   }
 
+  /*
+   * Get the worker profile.
+   *
+   * quotes.worker_id references worker_profiles.id,
+   * NOT auth.users.id.
+   */
+  const { data: workerProfile, error: workerProfileError } = await supabase
+    .from("worker_profiles")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (workerProfileError) {
+    console.error("Worker profile lookup error:", workerProfileError);
+
+    return {
+      error: "Unable to load your worker profile.",
+    };
+  }
+
+  if (!workerProfile) {
+    return {
+      error: "Your worker profile has not been created yet.",
+    };
+  }
+
+  /*
+   * Verify the service request.
+   */
   const { data: request, error: requestError } = await supabase
     .from("service_requests")
     .select("id, status")
@@ -97,27 +114,47 @@ export async function createServiceQuotation(
     };
   }
 
-  const { data: existingQuote, error: existingError } = await supabase
+  /*
+   * Check for an existing ACTIVE quotation from this worker.
+   *
+   * Rejected quotations are intentionally excluded.
+   * This allows the worker to submit a new quotation after rejection.
+   */
+  const { data: activeQuote, error: activeQuoteError } = await supabase
     .from("quotes")
     .select("id, status")
     .eq("request_id", serviceRequestId)
     .eq("worker_id", workerProfile.id)
+    .in("status", ["pending", "accepted"])
     .maybeSingle();
 
-  if (existingError) {
-    console.error("Existing quote lookup error:", existingError);
+  if (activeQuoteError) {
+    console.error("Active quote lookup error:", activeQuoteError);
 
     return {
       error: "Unable to check your existing quotation.",
     };
   }
 
-  if (existingQuote) {
+  if (activeQuote) {
+    if (activeQuote.status === "accepted") {
+      return {
+        error: "You already have an accepted quotation for this request.",
+      };
+    }
+
     return {
-      error: "You have already submitted a quotation for this request.",
+      error:
+        "You already have a pending quotation for this request. Please wait for the customer to respond.",
     };
   }
 
+  /*
+   * Create a NEW quotation.
+   *
+   * We do not update an old rejected quotation.
+   * This preserves the quotation history.
+   */
   const estimatedDurationMinutes =
     estimatedDuration !== null ? Math.round(estimatedDuration * 60) : null;
 

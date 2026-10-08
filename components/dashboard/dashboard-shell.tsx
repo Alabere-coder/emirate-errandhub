@@ -6,13 +6,18 @@ import {
   Bell,
   BriefcaseBusiness,
   ClipboardList,
+  Clock3,
+  FileCheck,
   Heart,
   Home,
   LogOut,
+  MapPin,
   Menu,
   Search,
   Settings,
+  ShieldCheck,
   UserRound,
+  Users,
   Wallet,
   X,
 } from "lucide-react";
@@ -51,6 +56,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: ClipboardList,
     },
     {
+      href: "/dashboard/customer/workers",
+      label: "Find Workers",
+      icon: Users,
+    },
+    {
       label: "Favorites",
       href: "/dashboard/customer/favorites",
       icon: Heart,
@@ -83,6 +93,32 @@ const navigation: Record<UserRole, NavItem[]> = {
       href: "/dashboard/worker/jobs/my",
       icon: ClipboardList,
     },
+
+    {
+      label: "Application",
+      href: "/dashboard/worker/application",
+      icon: ClipboardList,
+    },
+    {
+      href: "/dashboard/worker/categories",
+      label: "Service Categories",
+      icon: BriefcaseBusiness,
+    },
+    {
+      href: "/dashboard/worker/service-areas",
+      label: "Service Areas",
+      icon: MapPin,
+    },
+    {
+      href: "/dashboard/worker/availability",
+      label: "Availability",
+      icon: Clock3,
+    },
+    {
+      href: "/dashboard/worker/documents",
+      label: "Documents",
+      icon: FileCheck,
+    },
     {
       label: "Earnings",
       href: "/dashboard/worker/earnings",
@@ -110,6 +146,16 @@ const navigation: Record<UserRole, NavItem[]> = {
       label: "Services",
       href: "/dashboard/admin/services",
       icon: BriefcaseBusiness,
+    },
+    {
+      href: "/dashboard/admin/worker-verification",
+      label: "Worker Verification",
+      icon: ShieldCheck,
+    },
+    {
+      href: "/dashboard/admin/worker-applications",
+      label: "Worker Applications",
+      icon: ShieldCheck,
     },
     {
       label: "Requests & Jobs",

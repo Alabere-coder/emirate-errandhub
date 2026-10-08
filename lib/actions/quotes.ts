@@ -18,23 +18,35 @@ export async function rejectQuote(
   const supabase = await createClient();
 
   const quoteId = formData.get("quote_id");
+  const rejectionReason = formData.get("rejection_reason");
 
   if (typeof quoteId !== "string" || !quoteId) {
-    return { error: "Quotation is required." };
+    return {
+      error: "Quotation is required.",
+    };
+  }
+
+  if (
+    typeof rejectionReason !== "string" ||
+    rejectionReason.trim().length < 10
+  ) {
+    return {
+      error: "Please provide a rejection reason of at least 10 characters.",
+    };
   }
 
   const { data: quote, error: quoteError } = await supabase
     .from("quotes")
     .select(
       `
-      id,
-      request_id,
-      status,
-      service_requests!inner (
-        customer_id,
-        status
-      )
-    `,
+        id,
+        request_id,
+        status,
+        service_requests!inner (
+          customer_id,
+          status
+        )
+      `,
     )
     .eq("id", quoteId)
     .maybeSingle();
@@ -71,7 +83,12 @@ export async function rejectQuote(
 
   const { error } = await supabase
     .from("quotes")
-    .update({ status: "rejected" })
+    .update({
+      status: "rejected",
+      rejection_reason: rejectionReason.trim(),
+      rejected_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", quote.id)
     .eq("status", "pending");
 
@@ -84,9 +101,14 @@ export async function rejectQuote(
   }
 
   revalidatePath(`/dashboard/customer/requests/${quote.request_id}`);
+  revalidatePath("/dashboard/customer/requests");
+
+  revalidatePath("/dashboard/worker/jobs");
+  revalidatePath("/dashboard/worker/jobs/my");
+  revalidatePath(`/dashboard/worker/jobs/${quote.request_id}`);
 
   return {
-    success: "Quotation rejected.",
+    success: "Quotation rejected. The worker can submit a new quotation.",
   };
 }
 

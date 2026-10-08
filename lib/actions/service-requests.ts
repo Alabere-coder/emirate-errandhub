@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+
 import {
   deleteRequestMedia,
   uploadRequestMedia,
@@ -47,33 +48,61 @@ export async function createServiceRequest(
   formData: FormData,
 ): Promise<ServiceRequestActionState> {
   const { user } = await requireRole(["customer"]);
+
   const supabase = await createClient();
 
+  /*
+   * ---------------------------------------------------------
+   * FORM VALUES
+   * ---------------------------------------------------------
+   */
+
   const categoryId = getString(formData, "category_id");
+
   const serviceId = getOptionalString(formData, "service_id");
+
+  const workerId = getOptionalString(formData, "worker_id");
+
   const title = getString(formData, "title");
+
   const description = getString(formData, "description");
+
   const budget = getOptionalNumber(formData, "budget");
+
   const currency = getString(formData, "currency") || "NGN";
+
   const preferredDate = getOptionalString(formData, "preferred_date");
+
   const preferredTime = getOptionalString(formData, "preferred_time");
+
   const isUrgent = getBoolean(formData, "is_urgent");
+
   const address = getOptionalString(formData, "address");
+
   const city = getOptionalString(formData, "city");
+
   const state = getOptionalString(formData, "state");
+
   const latitude = getOptionalNumber(formData, "latitude");
+
   const longitude = getOptionalNumber(formData, "longitude");
 
   /*
-   * Get uploaded media files.
+   * ---------------------------------------------------------
+   * MEDIA
+   * ---------------------------------------------------------
    */
+
   const mediaFiles = formData
     .getAll("media")
     .filter((value): value is File => value instanceof File && value.size > 0);
 
   /*
-   * Basic validation.
+   * ---------------------------------------------------------
+   * BASIC VALIDATION
+   * ---------------------------------------------------------
    */
+
   if (!categoryId) {
     return {
       error: "Please select a service category.",
@@ -111,8 +140,11 @@ export async function createServiceRequest(
   }
 
   /*
-   * Verify category.
+   * ---------------------------------------------------------
+   * VERIFY CATEGORY
+   * ---------------------------------------------------------
    */
+
   const { data: category, error: categoryError } = await supabase
     .from("service_categories")
     .select("id, is_active")
@@ -140,8 +172,11 @@ export async function createServiceRequest(
   }
 
   /*
-   * Verify service if supplied.
+   * ---------------------------------------------------------
+   * VERIFY SERVICE
+   * ---------------------------------------------------------
    */
+
   if (serviceId) {
     const { data: service, error: serviceError } = await supabase
       .from("services")
@@ -177,8 +212,93 @@ export async function createServiceRequest(
   }
 
   /*
-   * Create the service request.
+   * ---------------------------------------------------------
+   * VERIFY SELECTED WORKER
+   * ---------------------------------------------------------
+   *
+   * Never trust the hidden worker_id field.
+   *
+   * We verify that:
+   *
+   * 1. The worker exists.
+   * 2. The worker is verified.
+   * 3. The worker is currently available.
+   *
+   * We also verify that the worker handles the selected
+   * service category.
    */
+
+  if (workerId) {
+    const { data: worker, error: workerError } = await supabase
+      .from("worker_profiles")
+      .select(
+        `
+        id,
+        verification_status,
+        is_available
+      `,
+      )
+      .eq("id", workerId)
+      .maybeSingle();
+
+    if (workerError) {
+      console.error("Worker lookup error:", workerError);
+
+      return {
+        error: "Unable to verify the selected worker.",
+      };
+    }
+
+    if (!worker) {
+      return {
+        error: "The selected worker does not exist.",
+      };
+    }
+
+    if (worker.verification_status !== "verified") {
+      return {
+        error: "The selected worker is not verified.",
+      };
+    }
+
+    if (!worker.is_available) {
+      return {
+        error: "The selected worker is currently unavailable.",
+      };
+    }
+
+    /*
+     * Make sure the worker actually offers this category.
+     */
+
+    const { data: workerCategory, error: workerCategoryError } = await supabase
+      .from("worker_categories")
+      .select("worker_id")
+      .eq("worker_id", workerId)
+      .eq("category_id", categoryId)
+      .maybeSingle();
+
+    if (workerCategoryError) {
+      console.error("Worker category lookup error:", workerCategoryError);
+
+      return {
+        error: "Unable to verify the worker's service category.",
+      };
+    }
+
+    if (!workerCategory) {
+      return {
+        error: "This worker does not provide the selected service category.",
+      };
+    }
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * CREATE SERVICE REQUEST
+   * ---------------------------------------------------------
+   */
+
   const { data: request, error: requestError } = await supabase
     .from("service_requests")
     .insert({
@@ -210,8 +330,48 @@ export async function createServiceRequest(
   }
 
   /*
-   * Upload request media.
+   * ---------------------------------------------------------
+   * ASSIGN SELECTED WORKER
+   * ---------------------------------------------------------
    */
+
+  if (workerId) {
+    const { error: assignmentError } = await supabase
+      .from("service_request_workers")
+      .insert({
+        request_id: request.id,
+        worker_id: workerId,
+        status: "assigned",
+      });
+
+    if (assignmentError) {
+      console.error("Create worker assignment error:", assignmentError);
+
+      /*
+       * Remove the request if the worker assignment fails.
+       * This prevents a request from being created while
+       * appearing to have been sent to a worker.
+       */
+
+      await supabase
+        .from("service_requests")
+        .delete()
+        .eq("id", request.id)
+        .eq("customer_id", user.id);
+
+      return {
+        error:
+          "Unable to assign the selected worker to your request. Please try again.",
+      };
+    }
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * UPLOAD REQUEST MEDIA
+   * ---------------------------------------------------------
+   */
+
   const uploadedPaths: string[] = [];
 
   for (const file of mediaFiles) {
@@ -226,8 +386,9 @@ export async function createServiceRequest(
       uploadedPaths.push(path);
 
       /*
-       * Save the storage path in the database.
+       * Save storage path in database.
        */
+
       const { error: mediaError } = await supabase
         .from("service_request_media")
         .insert({
@@ -271,16 +432,24 @@ export async function createServiceRequest(
     }
   }
 
+  /*
+   * ---------------------------------------------------------
+   * SUCCESS
+   * ---------------------------------------------------------
+   */
+
   console.log("SERVICE REQUEST CREATED SUCCESSFULLY:", {
     requestId: request.id,
     customerId: user.id,
+    workerId,
     mediaCount: mediaFiles.length,
   });
 
-  /*
-   * Everything succeeded.
-   */
   revalidatePath("/dashboard/customer/requests");
+
+  revalidatePath(`/dashboard/customer/requests/${request.id}`);
+
+  revalidatePath("/dashboard/worker/requests");
 
   redirect(`/dashboard/customer/requests/${request.id}`);
 }

@@ -4,13 +4,15 @@ import { useActionState, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { createServiceRequest } from "@/lib/actions/service-requests";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FileVideo, ImagePlus, X } from "lucide-react";
+
+import { BadgeCheck, ImagePlus } from "lucide-react";
 import { MediaPreview } from "./media-preview";
 
 type Category = {
@@ -33,6 +35,10 @@ type NewRequestFormProps = {
   services: Service[];
   initialCategoryId: string | null;
   initialServiceId: string | null;
+
+  // Optional worker selected from the worker discovery page
+  selectedWorkerId?: string | null;
+  selectedWorkerName?: string | null;
 };
 
 const initialState = {
@@ -54,6 +60,8 @@ export default function NewRequestForm({
   services,
   initialCategoryId,
   initialServiceId,
+  selectedWorkerId = null,
+  selectedWorkerName = null,
 }: NewRequestFormProps) {
   const [state, formAction] = useActionState(
     createServiceRequest,
@@ -115,6 +123,7 @@ export default function NewRequestForm({
 
     if (invalidType) {
       setMediaError(`"${invalidType.name}" is not a supported image or video.`);
+
       event.target.value = "";
       return;
     }
@@ -125,6 +134,7 @@ export default function NewRequestForm({
       setMediaError(
         `"${oversizedFile.name}" is too large. Maximum size is 50MB.`,
       );
+
       event.target.value = "";
       return;
     }
@@ -133,13 +143,16 @@ export default function NewRequestForm({
 
     if (combinedFiles.length > MAX_MEDIA_FILES) {
       setMediaError(`You can upload a maximum of ${MAX_MEDIA_FILES} files.`);
+
       event.target.value = "";
       return;
     }
 
     setSelectedFiles(combinedFiles);
 
-    // Keep all selected files in the actual input
+    /*
+     * Keep all selected files in the actual input.
+     */
     const dataTransfer = new DataTransfer();
 
     combinedFiles.forEach((file) => {
@@ -177,11 +190,20 @@ export default function NewRequestForm({
   };
 
   return (
-    <form
-      action={formAction}
-      // encType="multipart/form-data"
-      className="space-y-6"
-    >
+    <form action={formAction} className="space-y-6">
+      {/*
+       * -------------------------------------------------------
+       * SELECTED WORKER
+       * -------------------------------------------------------
+       *
+       * This is submitted with the request as worker_id.
+       *
+       * The value is worker_profiles.id, NOT auth.users.id.
+       */}
+      {selectedWorkerId && (
+        <input type="hidden" name="worker_id" value={selectedWorkerId} />
+      )}
+
       {state.error && (
         <div
           role="alert"
@@ -191,6 +213,31 @@ export default function NewRequestForm({
         </div>
       )}
 
+      {/* Selected worker */}
+      {selectedWorkerId && selectedWorkerName && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-5">
+            <div className="flex items-start gap-3">
+              <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
+
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Selected worker
+                </p>
+
+                <p className="mt-1 font-semibold">{selectedWorkerName}</p>
+
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Your request will be sent specifically to this verified
+                  worker.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Service */}
       <Card>
         <CardHeader>
           <CardTitle>Service</CardTitle>
@@ -258,6 +305,7 @@ export default function NewRequestForm({
         </CardContent>
       </Card>
 
+      {/* Request details */}
       <Card>
         <CardHeader>
           <CardTitle>What do you need?</CardTitle>
@@ -300,6 +348,7 @@ export default function NewRequestForm({
         </CardContent>
       </Card>
 
+      {/* Media */}
       <div className="space-y-4">
         <div>
           <label htmlFor="media" className="text-sm font-medium">
@@ -371,6 +420,7 @@ export default function NewRequestForm({
         )}
       </div>
 
+      {/* Budget and schedule */}
       <Card>
         <CardHeader>
           <CardTitle>Budget and schedule</CardTitle>
@@ -441,6 +491,7 @@ export default function NewRequestForm({
         </CardContent>
       </Card>
 
+      {/* Location */}
       <Card>
         <CardHeader>
           <CardTitle>Service location</CardTitle>
@@ -472,12 +523,14 @@ export default function NewRequestForm({
           </div>
 
           <input type="hidden" name="latitude" />
+
           <input type="hidden" name="longitude" />
         </CardContent>
       </Card>
 
+      {/* Actions */}
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button variant="outline">
+        <Button variant="outline" type="button">
           <Link href="/dashboard/customer/requests">Cancel</Link>
         </Button>
 

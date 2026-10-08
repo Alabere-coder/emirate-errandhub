@@ -27,46 +27,130 @@ function formatCurrency(amount: number | null, currency: string) {
 }
 
 export default async function AvailableJobsPage() {
-  await requireRole(["worker"]);
+  const { user } = await requireRole(["worker"]);
 
   const supabase = await createClient();
 
-  const { data: jobs, error } = await supabase
+  /*
+   * =========================================================
+   * GET CURRENT WORKER PROFILE
+   * =========================================================
+   *
+   * worker_profiles.id is the ID used by:
+   * - service_request_workers.worker_id
+   * - quotes.worker_id
+   * - jobs.worker_id
+   *
+   * It is NOT the same as auth.users.id.
+   */
+
+  const { data: workerProfile, error: workerProfileError } = await supabase
+    .from("worker_profiles")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (workerProfileError) {
+    console.error("Worker profile error:", workerProfileError);
+  }
+
+  if (!workerProfile) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Card>
+          <CardContent className="py-12 text-center">
+            <h2 className="text-lg font-semibold">Worker profile not found</h2>
+
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+              Your worker profile could not be found. Please complete your
+              worker profile before viewing available jobs.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  /*
+   * =========================================================
+   * LOAD SERVICE REQUESTS
+   * =========================================================
+   */
+
+  const { data: jobs, error: jobsError } = await supabase
     .from("service_requests")
     .select(
       `
-      id,
-      title,
-      description,
-      budget,
-      currency,
-      status,
-      is_urgent,
-      preferred_date,
-      preferred_time,
-      city,
-      state,
-      created_at,
-      service_categories (
         id,
-        name
-      ),
-      services (
-        id,
-        name
-      )
-    `,
+        title,
+        description,
+        budget,
+        currency,
+        status,
+        is_urgent,
+        preferred_date,
+        preferred_time,
+        city,
+        state,
+        created_at,
+
+        service_categories (
+          id,
+          name
+        ),
+
+        services (
+          id,
+          name
+        ),
+
+        service_request_workers (
+          id,
+          worker_id,
+          status
+        )
+      `,
     )
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Available jobs error:", error);
+  if (jobsError) {
+    console.error("Available jobs error:", jobsError);
   }
 
-  const availableJobs = jobs ?? [];
+  /*
+   * =========================================================
+   * PREPARE JOB LIST
+   * =========================================================
+   *
+   * We keep marketplace requests available here.
+   *
+   * We also detect whether the current worker was directly
+   * assigned to each request.
+   */
+
+  const availableJobs = (jobs ?? []).map((job) => {
+    const assignments = Array.isArray(job.service_request_workers)
+      ? job.service_request_workers
+      : job.service_request_workers
+        ? [job.service_request_workers]
+        : [];
+
+    const assignment = assignments.find(
+      (item) => item.worker_id === workerProfile.id,
+    );
+
+    return {
+      ...job,
+      directAssignment: assignment ?? null,
+    };
+  });
 
   return (
-    <div className="space-y-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
           Available Jobs
@@ -78,7 +162,11 @@ export default async function AvailableJobsPage() {
         </p>
       </div>
 
-      {error && (
+      {/* =====================================================
+          ERROR
+      ===================================================== */}
+
+      {(workerProfileError || jobsError) && (
         <Card>
           <CardContent className="py-6">
             <p className="text-sm text-destructive">
@@ -88,7 +176,11 @@ export default async function AvailableJobsPage() {
         </Card>
       )}
 
-      {!error && availableJobs.length === 0 && (
+      {/* =====================================================
+          EMPTY STATE
+      ===================================================== */}
+
+      {!jobsError && availableJobs.length === 0 && (
         <Card>
           <CardContent className="py-12 text-center">
             <h2 className="text-lg font-semibold">No available jobs</h2>
@@ -99,6 +191,10 @@ export default async function AvailableJobsPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* =====================================================
+          JOB LIST
+      ===================================================== */}
 
       {availableJobs.length > 0 && (
         <div className="grid gap-4">
@@ -111,13 +207,25 @@ export default async function AvailableJobsPage() {
               ? job.services[0]
               : job.services;
 
+            const isDirectRequest = job.directAssignment !== null;
+
             return (
               <Card key={job.id}>
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                    {/* =================================================
+                        JOB INFORMATION
+                    ================================================= */}
+
                     <div className="min-w-0 flex-1 space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
                         <h2 className="text-lg font-semibold">{job.title}</h2>
+
+                        {isDirectRequest && (
+                          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                            Direct Request
+                          </span>
+                        )}
 
                         {job.is_urgent && (
                           <span className="rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive">
@@ -128,6 +236,13 @@ export default async function AvailableJobsPage() {
                         <span className="rounded-full bg-muted px-2.5 py-1 text-xs capitalize">
                           {formatStatus(job.status)}
                         </span>
+
+                        {isDirectRequest && job.directAssignment?.status && (
+                          <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium capitalize text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                            Assignment:{" "}
+                            {formatStatus(job.directAssignment.status)}
+                          </span>
+                        )}
                       </div>
 
                       <p className="line-clamp-2 text-sm text-muted-foreground">
@@ -168,10 +283,23 @@ export default async function AvailableJobsPage() {
                         </p>
                       )}
 
+                      {(job.preferred_date || job.preferred_time) && (
+                        <p className="text-sm text-muted-foreground">
+                          Preferred:
+                          {job.preferred_date &&
+                            ` ${formatDate(job.preferred_date)}`}
+                          {job.preferred_time && ` at ${job.preferred_time}`}
+                        </p>
+                      )}
+
                       <p className="text-xs text-muted-foreground">
                         Posted {formatDate(job.created_at)}
                       </p>
                     </div>
+
+                    {/* =================================================
+                        ACTION
+                    ================================================= */}
 
                     <div className="shrink-0">
                       <Button>
