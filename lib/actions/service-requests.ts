@@ -804,3 +804,107 @@ export async function updateServiceRequest(
 
   redirect(`/dashboard/customer/requests/${requestId}`);
 }
+
+export async function deleteServiceRequest(
+  requestId: string,
+): Promise<{ error?: string; success?: string }> {
+  const { user, supabase } = await requireRole(["customer"]);
+
+  if (!requestId?.trim()) {
+    return { error: "Invalid service request." };
+  }
+
+  // Confirm the request belongs to this customer and is still pending.
+  const { data: request, error: requestError } = await supabase
+    .from("service_requests")
+    .select("id, customer_id, status")
+    .eq("id", requestId)
+    .eq("customer_id", user.id)
+    .maybeSingle();
+
+  if (requestError) {
+    console.error("Load request for deletion error:", requestError);
+    return { error: "Unable to verify this service request." };
+  }
+
+  if (!request) {
+    return {
+      error:
+        "Service request not found or you do not have permission to delete it.",
+    };
+  }
+
+  if (request.status !== "pending") {
+    return {
+      error: "Only pending service requests can be deleted.",
+    };
+  }
+
+  // Load associated media paths before deleting anything.
+  const { data: mediaRows, error: mediaError } = await supabase
+    .from("service_request_media")
+    .select("id, file_url")
+    .eq("request_id", requestId);
+
+  if (mediaError) {
+    console.error("Load request media for deletion error:", mediaError);
+    return { error: "Unable to load request attachments." };
+  }
+
+  // Delete the request. The customer_id filter protects ownership.
+  const { data: deletedRequest, error: deleteError } = await supabase
+    .from("service_requests")
+    .delete()
+    .eq("id", requestId)
+    .eq("customer_id", user.id)
+    .eq("status", "pending")
+    .select("id")
+    .maybeSingle();
+
+  if (deleteError) {
+    console.error("Delete service request error:", deleteError);
+    return { error: "Unable to delete the service request." };
+  }
+
+  if (!deletedRequest) {
+    return {
+      error:
+        "The request could not be deleted. It may have changed status; refresh and try again.",
+    };
+  }
+
+  // Remove attachment records if they were not automatically deleted
+  // by a database ON DELETE CASCADE constraint.
+  if (mediaRows && mediaRows.length > 0) {
+    const { error: mediaRowsDeleteError } = await supabase
+      .from("service_request_media")
+      .delete()
+      .eq("request_id", requestId);
+
+    if (mediaRowsDeleteError) {
+      console.error(
+        "Delete service request media records error:",
+        mediaRowsDeleteError,
+      );
+
+      return {
+        error:
+          "The request was deleted, but some attachment records need cleanup.",
+      };
+    }
+
+    // deleteRequestMedia should delete the supplied storage object paths
+    // from the private "request-media" bucket.
+    await deleteRequestMedia(
+      supabase,
+      mediaRows.map((media) => media.file_url),
+    );
+  }
+
+  revalidatePath("/dashboard/customer");
+  revalidatePath("/dashboard/customer/requests");
+  revalidatePath("/dashboard/worker");
+  revalidatePath("/dashboard/worker/jobs");
+
+  return { success: "Service request deleted successfully." };
+}

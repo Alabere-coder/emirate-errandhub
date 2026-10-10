@@ -31,6 +31,7 @@ import {
   JobMediaGallery,
   type JobMediaGalleryItem,
 } from "@/components/dashboard/jobs/job-media-gallery";
+import { DeleteServiceRequestButton } from "@/components/dashboard/customer/requests/delete-service-request-button";
 
 type RequestDetailsPageProps = {
   params: Promise<{
@@ -551,15 +552,16 @@ export default async function CustomerRequestDetailsPage({
                     </Link>
                   </Button>
 
-                  <Button
+                  {/* <Button
                     variant="destructive"
                     className="rounded-xl"
-                    // disabled
+                    disabled
                     title="Delete will be enabled after the server action is implemented."
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete Request
-                  </Button>
+                  </Button> */}
+                  <DeleteServiceRequestButton requestId={request.id} />
                 </div>
               )}
               <Badge
