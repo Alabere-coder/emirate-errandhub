@@ -72,6 +72,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: BriefcaseBusiness,
     },
     {
+      label: "Addresses",
+      href: "/dashboard/customer/addresses",
+      icon: MapPin,
+    },
+    {
       label: "Profile",
       href: "/dashboard/customer/profile",
       icon: UserRound,

@@ -23,8 +23,7 @@ type NewRequestPageProps = {
 export default async function NewRequestPage({
   searchParams,
 }: NewRequestPageProps) {
-  await requireRole(["customer"]);
-
+  const { user } = await requireRole(["customer"]);
   const supabase = await createClient();
 
   const { service: serviceId, worker: workerId } = await searchParams;
@@ -83,6 +82,19 @@ export default async function NewRequestPage({
         </div>
       </div>
     );
+  }
+
+  const { data: savedAddresses, error: addressesError } = await supabase
+    .from("customer_addresses")
+    .select(
+      "id, label, recipient_name, phone, address_line, city, state, country, postal_code, latitude, longitude, is_default",
+    )
+    .eq("customer_id", user.id)
+    .order("is_default", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (addressesError) {
+    console.error("Load customer addresses error:", addressesError);
   }
 
   // Load the selected worker for a direct worker request.
@@ -337,6 +349,7 @@ export default async function NewRequestPage({
             initialServiceId={initialServiceId}
             selectedWorkerId={selectedWorker?.id ?? null}
             selectedWorkerName={selectedWorker?.name ?? null}
+            savedAddresses={savedAddresses ?? []}
           />
         </div>
       </section>

@@ -19,6 +19,7 @@ import {
   Clock3,
   FileText,
   ImagePlus,
+  LoaderCircle,
   MapPin,
   ShieldCheck,
   Wallet,
@@ -26,7 +27,10 @@ import {
   Zap,
 } from "lucide-react";
 
-import { createServiceRequest } from "@/lib/actions/service-requests";
+import {
+  createServiceRequest,
+  updateServiceRequest,
+} from "@/lib/actions/service-requests";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -59,6 +63,48 @@ type NewRequestFormProps = {
   initialServiceId: string | null;
   selectedWorkerId?: string | null;
   selectedWorkerName?: string | null;
+  savedAddresses: SavedAddress[];
+  initialRequest?: ExistingRequest;
+  existingMedia?: ExistingMedia[];
+};
+
+type SavedAddress = {
+  id: string;
+  label: string;
+  recipient_name: string | null;
+  phone: string | null;
+  address_line: string;
+  city: string;
+  state: string;
+  country: string;
+  postal_code: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  is_default: boolean;
+};
+
+type ExistingRequest = {
+  id: string;
+  category_id: string;
+  service_id: string | null;
+  title: string;
+  description: string;
+  budget: number | null;
+  currency: string;
+  preferred_date: string | null;
+  preferred_time: string | null;
+  is_urgent: boolean;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  latitude: number | null;
+  longitude: number | null;
+};
+
+type ExistingMedia = {
+  id: string;
+  file_url: string;
+  file_type: string;
 };
 
 const initialState = {
@@ -102,25 +148,20 @@ function FieldHint({ children }: { children: React.ReactNode }) {
   return <p className="text-xs leading-5 text-slate-500">{children}</p>;
 }
 
-function SubmitButton() {
+function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
 
   return (
-    <Button
-      type="submit"
-      disabled={pending}
-      className="h-12 w-full gap-2 rounded-xl bg-teal-600 px-6 font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:opacity-60 sm:w-auto"
-    >
+    <Button type="submit" disabled={pending} className="w-full sm:w-auto">
       {pending ? (
         <>
-          <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-          Submitting request...
+          <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+          {isEditing ? "Saving changes..." : "Submitting request..."}
         </>
+      ) : isEditing ? (
+        "Save changes"
       ) : (
-        <>
-          Submit request
-          <ArrowRight className="size-4" />
-        </>
+        "Submit request"
       )}
     </Button>
   );
@@ -133,18 +174,36 @@ export default function NewRequestForm({
   initialServiceId,
   selectedWorkerId = null,
   selectedWorkerName = null,
+  savedAddresses,
+  initialRequest,
+  existingMedia = [],
 }: NewRequestFormProps) {
-  const [state, formAction] = useActionState(
-    createServiceRequest,
-    initialState,
-  );
+  const action = initialRequest
+    ? updateServiceRequest.bind(null, initialRequest.id)
+    : createServiceRequest;
+
+  const [state, formAction] = useActionState(action, initialState);
+
+  const [removedMediaIds, setRemovedMediaIds] = useState<string[]>([]);
+  const [mediaToRemove, setMediaToRemove] = useState<{
+    id: string;
+    fileName: string;
+  } | null>(null);
+
+  // const [selectedCategoryId, setSelectedCategoryId] = useState(
+  //   initialCategoryId ?? "",
+  // );
+
+  // const [selectedServiceId, setSelectedServiceId] = useState(
+  //   initialServiceId ?? "",
+  // );
 
   const [selectedCategoryId, setSelectedCategoryId] = useState(
-    initialCategoryId ?? "",
+    initialRequest?.category_id ?? initialCategoryId ?? "",
   );
 
   const [selectedServiceId, setSelectedServiceId] = useState(
-    initialServiceId ?? "",
+    initialRequest?.service_id ?? initialServiceId ?? "",
   );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -170,6 +229,51 @@ export default function NewRequestForm({
     );
 
     setSelectedServiceId(currentService?.id ?? "");
+  }
+
+  const defaultSavedAddress =
+    savedAddresses.find((address) => address.is_default) ??
+    savedAddresses[0] ??
+    null;
+
+  const [selectedAddressId, setSelectedAddressId] = useState(
+    initialRequest ? "" : (defaultSavedAddress?.id ?? ""),
+  );
+
+  const [locationAddress, setLocationAddress] = useState(
+    initialRequest?.address ?? defaultSavedAddress?.address_line ?? "",
+  );
+
+  const [locationCity, setLocationCity] = useState(
+    initialRequest?.city ?? defaultSavedAddress?.city ?? "",
+  );
+
+  const [locationState, setLocationState] = useState(
+    initialRequest?.state ?? defaultSavedAddress?.state ?? "",
+  );
+
+  const [locationLatitude, setLocationLatitude] = useState(
+    initialRequest?.latitude?.toString() ??
+      defaultSavedAddress?.latitude?.toString() ??
+      "",
+  );
+
+  const [locationLongitude, setLocationLongitude] = useState(
+    initialRequest?.longitude?.toString() ??
+      defaultSavedAddress?.longitude?.toString() ??
+      "",
+  );
+
+  function handleSavedAddressChange(addressId: string) {
+    setSelectedAddressId(addressId);
+
+    const address = savedAddresses.find((item) => item.id === addressId);
+
+    setLocationAddress(address?.address_line ?? "");
+    setLocationCity(address?.city ?? "");
+    setLocationState(address?.state ?? "");
+    setLocationLatitude(address?.latitude?.toString() ?? "");
+    setLocationLongitude(address?.longitude?.toString() ?? "");
   }
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -244,6 +348,14 @@ export default function NewRequestForm({
     <form action={formAction} className="space-y-6">
       {selectedWorkerId && (
         <input type="hidden" name="worker_id" value={selectedWorkerId} />
+      )}
+
+      {selectedAddressId && (
+        <input
+          type="hidden"
+          name="saved_address_id"
+          value={selectedAddressId}
+        />
       )}
 
       {state.error && (
@@ -384,6 +496,7 @@ export default function NewRequestForm({
               <Input
                 id="title"
                 name="title"
+                defaultValue={initialRequest?.title ?? ""}
                 placeholder="e.g. Repair my air conditioner"
                 required
                 minLength={3}
@@ -402,6 +515,7 @@ export default function NewRequestForm({
               <Textarea
                 id="description"
                 name="description"
+                defaultValue={initialRequest?.description ?? ""}
                 placeholder="Explain what needs to be done, the problem you're experiencing, and any important details."
                 required
                 minLength={10}
@@ -427,6 +541,170 @@ export default function NewRequestForm({
             title="Add photos or videos"
             description="Visual details can help workers understand the job before quoting."
           />
+
+          {/* {existingMedia.length > 0 && (
+            <div className="space-y-3">
+              <div>
+                <p className="font-semibold text-slate-900">
+                  Existing photos and videos
+                </p>
+                <p className="text-sm text-slate-500">
+                  Already attached to this request.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                {existingMedia.map((media) => (
+                  <div
+                    key={media.id}
+                    className="overflow-hidden rounded-xl border border-slate-200"
+                  >
+                    {media.file_type.startsWith("video/") ? (
+                      <video
+                        src={media.file_url}
+                        controls
+                        preload="metadata"
+                        className="aspect-square w-full bg-slate-100 object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={media.file_url}
+                        alt="Existing request attachment"
+                        className="aspect-square w-full bg-slate-100 object-cover"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )} */}
+
+          {existingMedia.length > 0 && (
+            <div className="space-y-3">
+              <div>
+                <p className="font-semibold text-slate-900">
+                  Existing photos and videos
+                </p>
+                <p className="text-sm text-slate-500">
+                  Remove attachments you no longer want to keep.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                {existingMedia
+                  .filter((media) => !removedMediaIds.includes(media.id))
+                  .map((media) => (
+                    <div
+                      key={media.id}
+                      className="overflow-hidden rounded-xl border border-slate-200"
+                    >
+                      {media.file_type.startsWith("video/") ? (
+                        <video
+                          src={media.file_url}
+                          controls
+                          preload="metadata"
+                          className="aspect-square w-full bg-slate-100 object-cover"
+                        />
+                      ) : (
+                        <img
+                          src={media.file_url}
+                          alt="Existing request attachment"
+                          className="aspect-square w-full bg-slate-100 object-cover"
+                        />
+                      )}
+
+                      {/* <button
+                        type="button"
+                        onClick={() =>
+                          setRemovedMediaIds((current) => [
+                            ...current,
+                            media.id,
+                          ])
+                        }
+                        className="w-full border-t border-slate-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                      >
+                        Remove
+                      </button> */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setMediaToRemove({
+                            id: media.id,
+                            fileName: media.file_type.startsWith("video/")
+                              ? "this video"
+                              : "this image",
+                          })
+                        }
+                        className="w-full border-t border-slate-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+              </div>
+
+              {removedMediaIds.map((id) => (
+                <input
+                  key={id}
+                  type="hidden"
+                  name="remove_media_ids"
+                  value={id}
+                />
+              ))}
+            </div>
+          )}
+
+          {mediaToRemove && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="remove-media-title"
+                aria-describedby="remove-media-description"
+                className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+              >
+                <h2
+                  id="remove-media-title"
+                  className="text-lg font-semibold text-slate-900"
+                >
+                  Remove attachment?
+                </h2>
+
+                <p
+                  id="remove-media-description"
+                  className="mt-2 text-sm text-slate-600"
+                >
+                  Are you sure you want to remove {mediaToRemove.fileName}? You
+                  can keep it by cancelling.
+                </p>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setMediaToRemove(null)}
+                    className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRemovedMediaIds((current) =>
+                        current.includes(mediaToRemove.id)
+                          ? current
+                          : [...current, mediaToRemove.id],
+                      );
+                      setMediaToRemove(null);
+                    }}
+                    className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                  >
+                    Yes, remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-4 border-t border-slate-100 pt-6">
             <input
@@ -532,8 +810,8 @@ export default function NewRequestForm({
                   type="number"
                   min="0"
                   step="0.01"
+                  defaultValue={initialRequest?.budget ?? ""}
                   placeholder="e.g. 50000"
-                  className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
                 />
                 <FieldHint>
                   This is an estimate; the worker can submit a quotation.
@@ -550,7 +828,7 @@ export default function NewRequestForm({
                 <select
                   id="currency"
                   name="currency"
-                  defaultValue="NGN"
+                  defaultValue={initialRequest?.currency ?? "NGN"}
                   className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
                 >
                   <option value="NGN">NGN — Nigerian Naira</option>
@@ -573,6 +851,7 @@ export default function NewRequestForm({
                 <Input
                   id="preferred_date"
                   name="preferred_date"
+                  defaultValue={initialRequest?.preferred_date ?? ""}
                   type="date"
                   className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
                 />
@@ -589,6 +868,7 @@ export default function NewRequestForm({
                 <Input
                   id="preferred_time"
                   name="preferred_time"
+                  defaultValue={initialRequest?.preferred_time ?? ""}
                   type="time"
                   className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
                 />
@@ -596,7 +876,12 @@ export default function NewRequestForm({
             </div>
 
             <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/70 p-4 transition hover:bg-amber-50">
-              <Checkbox id="is_urgent" name="is_urgent" className="mt-0.5" />
+              <Checkbox
+                id="is_urgent"
+                name="is_urgent"
+                className="mt-0.5"
+                defaultChecked={initialRequest?.is_urgent ?? false}
+              />
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-2 font-semibold text-slate-900">
                   <Zap className="size-4 text-amber-600" />
@@ -622,6 +907,51 @@ export default function NewRequestForm({
           />
 
           <div className="space-y-5 border-t border-slate-100 pt-6">
+            {savedAddresses.length > 0 && (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="saved_address_id"
+                  className="text-sm font-semibold text-slate-800"
+                >
+                  Use a saved address
+                </Label>
+
+                <select
+                  id="saved_address_id"
+                  value={selectedAddressId}
+                  onChange={(event) =>
+                    handleSavedAddressChange(event.target.value)
+                  }
+                  className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
+                >
+                  <option value="">Enter a new address manually</option>
+
+                  {savedAddresses.map((address) => (
+                    <option key={address.id} value={address.id}>
+                      {address.label}
+                      {address.is_default ? " (Default)" : ""} —{" "}
+                      {address.address_line}, {address.city}
+                    </option>
+                  ))}
+                </select>
+
+                {selectedAddressId && (
+                  <p className="text-xs leading-5 text-slate-500">
+                    The address details below have been filled from your saved
+                    address. You can edit them for this request.
+                  </p>
+                )}
+
+                <Link
+                  href="/dashboard/customer/addresses"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-teal-700 hover:text-teal-800"
+                >
+                  Manage saved addresses
+                  <ArrowRight className="size-3.5" />
+                </Link>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label
                 htmlFor="address"
@@ -632,6 +962,8 @@ export default function NewRequestForm({
               <Input
                 id="address"
                 name="address"
+                value={locationAddress}
+                onChange={(event) => setLocationAddress(event.target.value)}
                 placeholder="House number, street, area or nearby landmark"
                 className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
               />
@@ -648,6 +980,8 @@ export default function NewRequestForm({
                 <Input
                   id="city"
                   name="city"
+                  value={locationCity}
+                  onChange={(event) => setLocationCity(event.target.value)}
                   placeholder="e.g. Ibadan"
                   className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
                 />
@@ -663,14 +997,16 @@ export default function NewRequestForm({
                 <Input
                   id="state"
                   name="state"
+                  value={locationState}
+                  onChange={(event) => setLocationState(event.target.value)}
                   placeholder="e.g. Oyo"
                   className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
                 />
               </div>
             </div>
 
-            <input type="hidden" name="latitude" value="" />
-            <input type="hidden" name="longitude" value="" />
+            <input type="hidden" name="latitude" value={locationLatitude} />
+            <input type="hidden" name="longitude" value={locationLongitude} />
           </div>
         </CardContent>
       </Card>
@@ -691,20 +1027,20 @@ export default function NewRequestForm({
         </div>
 
         <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <Button
-            variant="outline"
-            className="h-12 rounded-xl border-slate-200 px-5"
-          >
+          <Button variant="outline">
             <Link
-              href="/dashboard/customer/requests"
-              className="flex items-center gap-1"
+              href={
+                initialRequest
+                  ? `/dashboard/customer/requests/${initialRequest.id}`
+                  : "/dashboard/customer/requests"
+              }
             >
               <ArrowLeft className="mr-2 size-4" />
               Cancel
             </Link>
           </Button>
 
-          <SubmitButton />
+          <SubmitButton isEditing={Boolean(initialRequest)} />
         </div>
       </div>
     </form>
