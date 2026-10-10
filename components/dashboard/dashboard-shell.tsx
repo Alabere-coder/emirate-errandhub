@@ -10,6 +10,7 @@ import {
   FileCheck,
   Heart,
   Home,
+  Images,
   LogOut,
   MapPin,
   Menu,
@@ -123,6 +124,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       label: "Earnings",
       href: "/dashboard/worker/earnings",
       icon: Wallet,
+    },
+    {
+      href: "/dashboard/worker/portfolio",
+      label: "Portfolio",
+      icon: Images,
     },
     {
       label: "Profile",

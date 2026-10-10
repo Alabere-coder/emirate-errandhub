@@ -1,5 +1,16 @@
-import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  ClipboardList,
+  ShieldCheck,
+  UserRound,
+  Wrench,
+} from "lucide-react";
+
 import { requireRole } from "@/lib/auth/require-role";
+import { createClient } from "@/lib/supabase/server";
 import NewRequestForm from "@/components/dashboard/customer/requests/new-request-form";
 
 type NewRequestPageProps = {
@@ -47,27 +58,35 @@ export default async function NewRequestPage({
 
   if (categoriesError || servicesError) {
     return (
-      <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
-        <h1 className="text-lg font-semibold">Unable to load services</h1>
+      <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
+        <div className="rounded-2xl border border-red-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-600">
+            <AlertCircle className="h-6 w-6" />
+          </div>
 
-        <p className="mt-2 text-sm text-muted-foreground">
-          We could not load the available services. Please try again later.
-        </p>
+          <h1 className="mt-5 text-xl font-bold text-slate-900">
+            Unable to load services
+          </h1>
+
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            We could not load the available service categories and services.
+            Please refresh the page and try again.
+          </p>
+
+          <Link
+            href="/services"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-700 hover:text-teal-800"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Browse services
+          </Link>
+        </div>
       </div>
     );
   }
 
-  /*
-   * ---------------------------------------------------------
-   * LOAD SELECTED WORKER
-   * ---------------------------------------------------------
-   */
-
-  let selectedWorker: {
-    id: string;
-    name: string;
-  } | null = null;
-
+  // Load the selected worker for a direct worker request.
+  let selectedWorker: { id: string; name: string } | null = null;
   let workerCategoryIds: string[] = [];
 
   if (workerId) {
@@ -107,9 +126,7 @@ export default async function NewRequestPage({
         name: fullName || "Selected Worker",
       };
 
-      /*
-       * Load the categories this worker provides.
-       */
+      // Load the categories this worker provides.
       const { data: workerCategories, error: workerCategoriesError } =
         await supabase
           .from("worker_categories")
@@ -128,18 +145,8 @@ export default async function NewRequestPage({
     }
   }
 
-  /*
-   * ---------------------------------------------------------
-   * FILTER CATEGORIES FOR DIRECT WORKER REQUEST
-   * ---------------------------------------------------------
-   *
-   * Normal request:
-   *   Show every active category.
-   *
-   * Direct worker request:
-   *   Show only categories that belong to the selected worker.
-   */
-
+  // Normal requests show all active categories.
+  // Direct worker requests show only that worker's categories.
   const availableCategories =
     selectedWorker && workerId
       ? (categories ?? []).filter((category) =>
@@ -147,12 +154,7 @@ export default async function NewRequestPage({
         )
       : (categories ?? []);
 
-  /*
-   * ---------------------------------------------------------
-   * PRESELECT SERVICE / CATEGORY
-   * ---------------------------------------------------------
-   */
-
+  // Preselect a valid service and its category, if supplied.
   let initialCategoryId: string | null = null;
   let initialServiceId: string | null = null;
 
@@ -161,15 +163,6 @@ export default async function NewRequestPage({
       (service) => service.id === serviceId,
     );
 
-    /*
-     * Only preselect the service if:
-     *
-     * 1. It exists.
-     * 2. It belongs to an allowed category.
-     *
-     * For a direct worker request, this prevents selecting a
-     * service outside the worker's categories.
-     */
     if (
       selectedService &&
       availableCategories.some(
@@ -181,10 +174,8 @@ export default async function NewRequestPage({
     }
   }
 
-  /*
-   * If a worker was selected but there was no valid service
-   * preselection, use the worker's first available category.
-   */
+  // For direct worker requests, select the first supported category
+  // when there is no valid service preselection.
   if (selectedWorker && availableCategories.length > 0) {
     const categoryStillValid =
       initialCategoryId &&
@@ -197,42 +188,97 @@ export default async function NewRequestPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Request a Service
-        </h1>
+    <div className="mx-auto w-full max-w-5xl space-y-8 px-4 py-6 sm:px-6 lg:px-8">
+      {/* Header */}
+      <section className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-8 sm:py-10">
+        <div className="pointer-events-none absolute -right-12 -top-20 h-60 w-60 rounded-full bg-teal-500/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-blue-500/10 blur-3xl" />
 
-        <p className="mt-2 text-sm text-muted-foreground">
-          Tell us what you need help with and provide the details needed to
-          connect you with the right service provider.
-        </p>
-      </div>
+        <div className="relative">
+          <Link
+            href="/dashboard/customer/requests"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 transition-colors hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to my requests
+          </Link>
 
+          <div className="mt-6 flex items-start gap-4">
+            <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-teal-300 sm:flex">
+              <ClipboardList className="h-7 w-7" />
+            </div>
+
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">
+                EMIRATE ERRANDHUB
+              </p>
+
+              <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                Request a service
+              </h1>
+
+              <p className="mt-3 text-sm leading-6 text-slate-300 sm:text-base">
+                Tell us what you need, where you need it, and when you need it.
+                Provide enough detail to help workers understand your request
+                and send suitable quotations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Direct worker notice */}
       {workerId && !selectedWorker && (
-        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4">
-          <p className="text-sm font-medium text-destructive">
-            This worker is no longer available.
-          </p>
+        <div className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
 
-          <p className="mt-1 text-sm text-muted-foreground">
-            You can continue by creating a normal service request instead.
-          </p>
+          <div>
+            <p className="font-semibold text-amber-900">
+              This worker is no longer available
+            </p>
+
+            <p className="mt-1 text-sm leading-6 text-amber-800">
+              You can still submit a normal service request and receive
+              quotations from available workers.
+            </p>
+
+            <Link
+              href="/services"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-900 underline underline-offset-4"
+            >
+              Explore services
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </div>
       )}
 
       {selectedWorker && (
-        <div className="rounded-xl border border-primary/20 bg-primary/5 p-5">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Requesting a specific worker
-          </p>
+        <div className="overflow-hidden rounded-2xl border border-teal-200 bg-white shadow-sm">
+          <div className="flex items-start gap-4 p-5 sm:p-6">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-800">
+              <UserRound className="h-6 w-6" />
+            </div>
 
-          <div className="mt-2 flex items-center justify-between gap-4">
-            <div>
-              <p className="font-semibold">{selectedWorker.name}</p>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-teal-700">
+                  Direct worker request
+                </p>
 
-              <p className="mt-1 text-sm text-muted-foreground">
-                This request will be directed to this verified worker.
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  Verified worker
+                </span>
+              </div>
+
+              <h2 className="mt-2 text-lg font-bold text-slate-900">
+                {selectedWorker.name}
+              </h2>
+
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Your request will be directed to this worker. Choose one of
+                their available service categories below.
               </p>
             </div>
           </div>
@@ -240,120 +286,72 @@ export default async function NewRequestPage({
       )}
 
       {selectedWorker && availableCategories.length === 0 && (
-        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4">
-          <p className="text-sm font-medium text-destructive">
-            This worker has no service categories assigned.
-          </p>
+        <div className="flex gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 sm:p-5">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
 
-          <p className="mt-1 text-sm text-muted-foreground">
-            Please choose another worker or create a normal service request.
-          </p>
+          <div>
+            <p className="font-semibold text-red-900">
+              No service categories assigned
+            </p>
+
+            <p className="mt-1 text-sm leading-6 text-red-800">
+              This worker has no service categories available for direct
+              requests. Please choose another worker or create a normal service
+              request.
+            </p>
+
+            <Link
+              href="/services"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-red-900 underline underline-offset-4"
+            >
+              Browse services
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </div>
       )}
 
-      <NewRequestForm
-        categories={availableCategories}
-        services={services ?? []}
-        initialCategoryId={initialCategoryId}
-        initialServiceId={initialServiceId}
-        selectedWorkerId={selectedWorker?.id ?? null}
-        selectedWorkerName={selectedWorker?.name ?? null}
-      />
+      {/* Form section */}
+      <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-100 bg-slate-50/80 px-5 py-5 sm:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-800">
+              <Wrench className="h-5 w-5" />
+            </div>
+
+            <div>
+              <h2 className="font-bold text-slate-900">Request details</h2>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Complete the form below to describe the work you need.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5 sm:p-8">
+          <NewRequestForm
+            categories={availableCategories}
+            services={services ?? []}
+            initialCategoryId={initialCategoryId}
+            initialServiceId={initialServiceId}
+            selectedWorkerId={selectedWorker?.id ?? null}
+            selectedWorkerName={selectedWorker?.name ?? null}
+          />
+        </div>
+      </section>
+
+      {/* Helpful note */}
+      <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-teal-700" />
+
+        <p className="text-sm leading-6 text-slate-600">
+          <span className="font-semibold text-slate-800">Helpful tip:</span>{" "}
+          Include clear job details, your location, and any important scheduling
+          preferences. This helps workers assess your request and provide more
+          relevant quotations.
+        </p>
+      </div>
     </div>
   );
 }
-
-// import { createClient } from "@/lib/supabase/server";
-// import { requireRole } from "@/lib/auth/require-role";
-// import NewRequestForm from "@/components/dashboard/customer/requests/new-request-form";
-
-// type NewRequestPageProps = {
-//   searchParams: Promise<{
-//     service?: string;
-//   }>;
-// };
-
-// export default async function NewRequestPage({
-//   searchParams,
-// }: NewRequestPageProps) {
-//   await requireRole(["customer"]);
-
-//   const supabase = await createClient();
-
-//   const { service: serviceId } = await searchParams;
-
-//   const [
-//     { data: categories, error: categoriesError },
-//     { data: services, error: servicesError },
-//   ] = await Promise.all([
-//     supabase
-//       .from("service_categories")
-//       .select("id, name, description, icon")
-//       .eq("is_active", true)
-//       .order("sort_order", { ascending: true })
-//       .order("name", { ascending: true }),
-
-//     supabase
-//       .from("services")
-//       .select("id, category_id, name, description, icon")
-//       .eq("is_active", true)
-//       .order("sort_order", { ascending: true })
-//       .order("name", { ascending: true }),
-//   ]);
-
-//   if (categoriesError) {
-//     console.error("Load service categories error:", categoriesError);
-//   }
-
-//   if (servicesError) {
-//     console.error("Load services error:", servicesError);
-//   }
-
-//   if (categoriesError || servicesError) {
-//     return (
-//       <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
-//         <h1 className="text-lg font-semibold">Unable to load services</h1>
-
-//         <p className="mt-2 text-sm text-muted-foreground">
-//           We could not load the available services. Please try again later.
-//         </p>
-//       </div>
-//     );
-//   }
-
-//   let initialCategoryId: string | null = null;
-//   let initialServiceId: string | null = null;
-
-//   if (serviceId) {
-//     const selectedService = services?.find(
-//       (service) => service.id === serviceId,
-//     );
-
-//     if (selectedService) {
-//       initialServiceId = selectedService.id;
-//       initialCategoryId = selectedService.category_id;
-//     }
-//   }
-
-//   return (
-//     <div className="mx-auto w-full max-w-4xl space-y-8">
-//       <div>
-//         <h1 className="text-2xl font-semibold tracking-tight">
-//           Request a Service
-//         </h1>
-
-//         <p className="mt-2 text-sm text-muted-foreground">
-//           Tell us what you need help with and provide the details needed to
-//           connect you with the right service provider.
-//         </p>
-//       </div>
-
-//       <NewRequestForm
-//         categories={categories ?? []}
-//         services={services ?? []}
-//         initialCategoryId={initialCategoryId}
-//         initialServiceId={initialServiceId}
-//       />
-//     </div>
-//   );
-// }
