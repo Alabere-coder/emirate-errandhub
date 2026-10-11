@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  BriefcaseBusiness,
+  CircleAlert,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { WorkerProfileForm } from "@/components/dashboard/worker/profile/worker-profile-form";
@@ -29,23 +36,58 @@ export default async function WorkerProfilePage() {
 
   if (!workerProfile) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-semibold">My Profile</h1>
+      <div className="mx-auto max-w-5xl space-y-6">
+        <Link
+          href="/dashboard/worker"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          Back to dashboard
+        </Link>
 
-          <p className="mt-1 text-muted-foreground">
-            Manage your professional worker profile.
-          </p>
-        </div>
+        <section className="overflow-hidden rounded-3xl border bg-card">
+          <div className="border-b bg-muted/20 p-6 sm:p-8">
+            <div className="flex items-start gap-4">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl border bg-background text-primary">
+                <UserRound className="size-6" />
+              </div>
 
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-6">
-          <h2 className="font-semibold">Worker profile not found</h2>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  My Profile
+                </h1>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Manage the professional information customers see about you.
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <p className="mt-2 text-sm text-muted-foreground">
-            Your worker profile has not been created yet. Please contact an
-            administrator.
-          </p>
-        </div>
+          <div className="p-6 sm:p-10">
+            <div className="mx-auto flex max-w-lg flex-col items-center text-center">
+              <div className="flex size-16 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+                <CircleAlert className="size-7" />
+              </div>
+
+              <h2 className="mt-5 text-xl font-semibold">
+                Worker profile not found
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Your worker profile has not been created yet. Please contact an
+                administrator.
+              </p>
+
+              <Link
+                href="/dashboard/worker"
+                className="mt-6 inline-flex h-10 items-center justify-center gap-2 rounded-xl border bg-background px-4 text-sm font-medium transition-colors hover:bg-muted"
+              >
+                <ArrowLeft className="size-4" />
+                Return to dashboard
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
@@ -55,30 +97,93 @@ export default async function WorkerProfilePage() {
     "Service Provider";
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      <div>
-        <Link
-          href="/dashboard/worker"
-          className="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to dashboard
-        </Link>
+    <div className="mx-auto max-w-7xl space-y-7">
+      <Link
+        href="/dashboard/worker"
+        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Back to dashboard
+      </Link>
 
-        <h1 className="text-2xl font-semibold">My Profile</h1>
+      {/* Profile header */}
+      <section className="relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-8">
+        <div className="absolute -right-12 -top-12 size-48 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute -bottom-20 right-1/4 size-40 rounded-full bg-primary/5 blur-3xl" />
 
-        <p className="mt-1 text-muted-foreground">
-          Manage the professional information customers see about you.
-        </p>
-      </div>
+        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
+          <div className="flex size-20 shrink-0 items-center justify-center rounded-3xl border bg-background text-primary shadow-sm">
+            <UserRound className="size-9" />
+          </div>
 
-      <div className="rounded-lg border bg-muted/30 px-4 py-3 text-sm">
-        <span className="font-medium">{fullName}</span>
-        <span className="mx-2 text-muted-foreground">•</span>
-        <span className="text-muted-foreground">Worker / Service Provider</span>
-      </div>
+          <div className="min-w-0 flex-1">
+            <span className="inline-flex items-center gap-2 rounded-full border bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
+              <BriefcaseBusiness className="size-3.5 text-primary" />
+              Worker account
+            </span>
 
-      <WorkerProfileForm profile={workerProfile} />
+            <h1 className="mt-3 wrap-break-word text-2xl font-bold tracking-tight sm:text-3xl">
+              My Profile
+            </h1>
+
+            <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
+              Manage your professional information and the details customers see
+              when considering your services.
+            </p>
+          </div>
+        </div>
+
+        <div className="relative mt-7 grid gap-3 sm:grid-cols-2">
+          <div className="flex items-center gap-3 rounded-2xl border bg-background/80 p-4">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <UserRound className="size-5" />
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-muted-foreground">
+                Profile name
+              </p>
+              <p className="mt-1 truncate font-semibold">{fullName}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 rounded-2xl border bg-background/80 p-4">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <ShieldCheck className="size-5" />
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-muted-foreground">
+                Verification
+              </p>
+              <p className="mt-1 font-semibold">Account verification status</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Managed by the administrator
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Profile form section */}
+      <section className="space-y-4">
+        <div className="flex items-start gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border bg-card text-primary">
+            <BadgeCheck className="size-5" />
+          </div>
+
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">
+              Professional details
+            </h2>
+            <p className="mt-1 text-sm leading-5 text-muted-foreground">
+              Keep your experience, pricing, and availability up to date.
+            </p>
+          </div>
+        </div>
+
+        <WorkerProfileForm profile={workerProfile} />
+      </section>
     </div>
   );
 }

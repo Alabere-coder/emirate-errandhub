@@ -6,44 +6,14 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-function formatStatus(status: string) {
-  return status.replaceAll("_", " ");
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en-NG", {
-    dateStyle: "medium",
-  }).format(new Date(value));
-}
-
-function formatCurrency(amount: number | null, currency: string) {
-  if (amount === null) return "No budget specified";
-
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
+import AvailableJobsList from "./available-jobs-list";
 
 export default async function AvailableJobsPage() {
   const { user } = await requireRole(["worker"]);
 
   const supabase = await createClient();
 
-  /*
-   * =========================================================
-   * GET CURRENT WORKER PROFILE
-   * =========================================================
-   *
-   * worker_profiles.id is the ID used by:
-   * - service_request_workers.worker_id
-   * - quotes.worker_id
-   * - jobs.worker_id
-   *
-   * It is NOT the same as auth.users.id.
-   */
-
+  // Find the worker profile belonging to the authenticated user.
   const { data: workerProfile, error: workerProfileError } = await supabase
     .from("worker_profiles")
     .select("id")
@@ -52,18 +22,16 @@ export default async function AvailableJobsPage() {
 
   if (workerProfileError) {
     console.error("Worker profile error:", workerProfileError);
-  }
 
-  if (!workerProfile) {
     return (
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Card>
-          <CardContent className="py-12 text-center">
-            <h2 className="text-lg font-semibold">Worker profile not found</h2>
-
-            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-              Your worker profile could not be found. Please complete your
-              worker profile before viewing available jobs.
+          <CardContent className="py-10 text-center">
+            <h2 className="font-semibold text-slate-900">
+              Unable to load worker profile
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Please refresh the page and try again.
             </p>
           </CardContent>
         </Card>
@@ -71,62 +39,84 @@ export default async function AvailableJobsPage() {
     );
   }
 
-  /*
-   * =========================================================
-   * LOAD SERVICE REQUESTS
-   * =========================================================
-   */
+  if (!workerProfile) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <Card>
+          <CardContent className="py-10 text-center">
+            <h2 className="font-semibold text-slate-900">
+              Worker profile not found
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+              Complete your worker profile before viewing available jobs.
+            </p>
+            <Button className="mt-5">
+              <Link href="/dashboard/worker/profile">
+                Complete worker profile
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
+  // Fetch customer requests and their related category, service,
+  // and worker-assignment information.
   const { data: jobs, error: jobsError } = await supabase
     .from("service_requests")
     .select(
       `
+      id,
+      title,
+      description,
+      budget,
+      currency,
+      status,
+      is_urgent,
+      preferred_date,
+      preferred_time,
+      city,
+      state,
+      created_at,
+      service_categories (
         id,
-        title,
-        description,
-        budget,
-        currency,
-        status,
-        is_urgent,
-        preferred_date,
-        preferred_time,
-        city,
-        state,
-        created_at,
-
-        service_categories (
-          id,
-          name
-        ),
-
-        services (
-          id,
-          name
-        ),
-
-        service_request_workers (
-          id,
-          worker_id,
-          status
-        )
-      `,
+        name
+      ),
+      services (
+        id,
+        name
+      ),
+      service_request_workers (
+        id,
+        worker_id,
+        status
+      )
+    `,
     )
     .order("created_at", { ascending: false });
 
   if (jobsError) {
     console.error("Available jobs error:", jobsError);
+
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <Card>
+          <CardContent className="py-10 text-center">
+            <h2 className="font-semibold text-slate-900">
+              Unable to load available jobs
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Please refresh the page. If the problem continues, try again
+              later.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
-  /*
-   * =========================================================
-   * PREPARE JOB LIST
-   * =========================================================
-   *
-   * We keep marketplace requests available here.
-   *
-   * We also detect whether the current worker was directly
-   * assigned to each request.
-   */
+  // Find any direct assignment for this worker on each request.
 
   const availableJobs = (jobs ?? []).map((job) => {
     const assignments = Array.isArray(job.service_request_workers)
@@ -136,7 +126,8 @@ export default async function AvailableJobsPage() {
         : [];
 
     const assignment = assignments.find(
-      (item) => item.worker_id === workerProfile.id,
+      (item: { worker_id: string; id: string; status: string }) =>
+        item.worker_id === workerProfile.id,
     );
 
     return {
@@ -145,176 +136,68 @@ export default async function AvailableJobsPage() {
     };
   });
 
-  return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
+  // Normalize Supabase relationships for the client-side list.
+  const normalizedJobs = availableJobs.map((job) => {
+    const category = Array.isArray(job.service_categories)
+      ? job.service_categories[0]
+      : job.service_categories;
 
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Available Jobs
+    const service = Array.isArray(job.services)
+      ? job.services[0]
+      : job.services;
+
+    return {
+      id: job.id,
+      title: job.title,
+      description: job.description,
+      budget: job.budget,
+      currency: job.currency || "NGN",
+      status: job.status,
+      is_urgent: job.is_urgent,
+      preferred_date: job.preferred_date,
+      preferred_time: job.preferred_time,
+      city: job.city,
+      state: job.state,
+      created_at: job.created_at,
+      category: category
+        ? {
+            id: category.id,
+            name: category.name,
+          }
+        : null,
+      service: service
+        ? {
+            id: service.id,
+            name: service.name,
+          }
+        : null,
+      directAssignment: job.directAssignment
+        ? {
+            id: job.directAssignment.id,
+            status: job.directAssignment.status,
+          }
+        : null,
+    };
+  });
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+      <section>
+        <p className="text-sm font-semibold text-emerald-700">
+          WORKER WORKSPACE
+        </p>
+
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+          Available jobs
         </h1>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Browse customer requests and submit quotations for jobs you can
-          handle.
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+          Discover customer requests, review the requirements, and find
+          opportunities that match your skills.
         </p>
-      </div>
+      </section>
 
-      {/* =====================================================
-          ERROR
-      ===================================================== */}
-
-      {(workerProfileError || jobsError) && (
-        <Card>
-          <CardContent className="py-6">
-            <p className="text-sm text-destructive">
-              Unable to load available jobs.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* =====================================================
-          EMPTY STATE
-      ===================================================== */}
-
-      {!jobsError && availableJobs.length === 0 && (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <h2 className="text-lg font-semibold">No available jobs</h2>
-
-            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-              There are currently no customer requests available for quotation.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* =====================================================
-          JOB LIST
-      ===================================================== */}
-
-      {availableJobs.length > 0 && (
-        <div className="grid gap-4">
-          {availableJobs.map((job) => {
-            const category = Array.isArray(job.service_categories)
-              ? job.service_categories[0]
-              : job.service_categories;
-
-            const service = Array.isArray(job.services)
-              ? job.services[0]
-              : job.services;
-
-            const isDirectRequest = job.directAssignment !== null;
-
-            return (
-              <Card key={job.id}>
-                <CardContent className="p-6">
-                  <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                    {/* =================================================
-                        JOB INFORMATION
-                    ================================================= */}
-
-                    <div className="min-w-0 flex-1 space-y-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-lg font-semibold">{job.title}</h2>
-
-                        {isDirectRequest && (
-                          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-                            Direct Request
-                          </span>
-                        )}
-
-                        {job.is_urgent && (
-                          <span className="rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive">
-                            Urgent
-                          </span>
-                        )}
-
-                        <span className="rounded-full bg-muted px-2.5 py-1 text-xs capitalize">
-                          {formatStatus(job.status)}
-                        </span>
-
-                        {isDirectRequest && job.directAssignment?.status && (
-                          <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium capitalize text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                            Assignment:{" "}
-                            {formatStatus(job.directAssignment.status)}
-                          </span>
-                        )}
-                      </div>
-
-                      <p className="line-clamp-2 text-sm text-muted-foreground">
-                        {job.description}
-                      </p>
-
-                      <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-                        {category?.name && (
-                          <span>
-                            <span className="text-muted-foreground">
-                              Category:
-                            </span>{" "}
-                            {category.name}
-                          </span>
-                        )}
-
-                        {service?.name && (
-                          <span>
-                            <span className="text-muted-foreground">
-                              Service:
-                            </span>{" "}
-                            {service.name}
-                          </span>
-                        )}
-
-                        <span>
-                          <span className="text-muted-foreground">
-                            Customer budget:
-                          </span>{" "}
-                          {formatCurrency(job.budget, job.currency)}
-                        </span>
-                      </div>
-
-                      {(job.city || job.state) && (
-                        <p className="text-sm text-muted-foreground">
-                          Location:{" "}
-                          {[job.city, job.state].filter(Boolean).join(", ")}
-                        </p>
-                      )}
-
-                      {(job.preferred_date || job.preferred_time) && (
-                        <p className="text-sm text-muted-foreground">
-                          Preferred:
-                          {job.preferred_date &&
-                            ` ${formatDate(job.preferred_date)}`}
-                          {job.preferred_time && ` at ${job.preferred_time}`}
-                        </p>
-                      )}
-
-                      <p className="text-xs text-muted-foreground">
-                        Posted {formatDate(job.created_at)}
-                      </p>
-                    </div>
-
-                    {/* =================================================
-                        ACTION
-                    ================================================= */}
-
-                    <div className="shrink-0">
-                      <Button>
-                        <Link href={`/dashboard/worker/jobs/${job.id}`}>
-                          View job
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+      <AvailableJobsList jobs={normalizedJobs} />
     </div>
   );
 }
