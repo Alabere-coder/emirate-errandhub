@@ -21,8 +21,11 @@ import {
   Users,
   Wallet,
   X,
+  Sparkles,
+  ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
+import { AccountDropdown } from "./profile-menu";
 
 type UserRole = "customer" | "worker" | "admin";
 
@@ -41,143 +44,84 @@ type DashboardShellProps = {
 
 const navigation: Record<UserRole, NavItem[]> = {
   customer: [
-    {
-      label: "Overview",
-      href: "/dashboard/customer",
-      icon: Home,
-    },
-    {
-      label: "Find Services",
-      href: "/services",
-      icon: Search,
-    },
+    { label: "Overview", href: "/dashboard/customer", icon: Home },
+    { label: "Find Services", href: "/services", icon: Search },
     {
       label: "My Requests",
       href: "/dashboard/customer/requests",
       icon: ClipboardList,
     },
-    {
-      href: "/dashboard/customer/workers",
-      label: "Find Workers",
-      icon: Users,
-    },
-    {
-      label: "Favorites",
-      href: "/dashboard/customer/favorites",
-      icon: Heart,
-    },
+    { label: "Find Workers", href: "/dashboard/customer/workers", icon: Users },
+    { label: "Favorites", href: "/dashboard/customer/favorites", icon: Heart },
     {
       label: "Jobs",
       href: "/dashboard/customer/jobs",
       icon: BriefcaseBusiness,
     },
-    {
-      label: "Addresses",
-      href: "/dashboard/customer/addresses",
-      icon: MapPin,
-    },
-    {
-      label: "Profile",
-      href: "/dashboard/customer/profile",
-      icon: UserRound,
-    },
+    { label: "Addresses", href: "/dashboard/customer/addresses", icon: MapPin },
+    { label: "Profile", href: "/dashboard/customer/profile", icon: UserRound },
   ],
-
   worker: [
-    {
-      label: "Overview",
-      href: "/dashboard/worker",
-      icon: Home,
-    },
-    {
-      label: "Available Jobs",
-      href: "/dashboard/worker/jobs",
-      icon: Search,
-    },
+    { label: "Overview", href: "/dashboard/worker", icon: Home },
+    { label: "Available Jobs", href: "/dashboard/worker/jobs", icon: Search },
     {
       label: "My Jobs",
       href: "/dashboard/worker/jobs/my",
       icon: ClipboardList,
     },
-
     {
       label: "Application",
       href: "/dashboard/worker/application",
-      icon: ClipboardList,
-    },
-    {
-      href: "/dashboard/worker/categories",
-      label: "Service Categories",
-      icon: BriefcaseBusiness,
-    },
-    {
-      href: "/dashboard/worker/service-areas",
-      label: "Service Areas",
-      icon: MapPin,
-    },
-    {
-      href: "/dashboard/worker/availability",
-      label: "Availability",
-      icon: Clock3,
-    },
-    {
-      href: "/dashboard/worker/documents",
-      label: "Documents",
       icon: FileCheck,
     },
     {
-      label: "Earnings",
-      href: "/dashboard/worker/earnings",
-      icon: Wallet,
+      label: "Service Categories",
+      href: "/dashboard/worker/categories",
+      icon: BriefcaseBusiness,
     },
     {
-      href: "/dashboard/worker/portfolio",
-      label: "Portfolio",
-      icon: Images,
+      label: "Service Areas",
+      href: "/dashboard/worker/service-areas",
+      icon: MapPin,
     },
     {
-      label: "Profile",
-      href: "/dashboard/worker/profile",
-      icon: UserRound,
+      label: "Availability",
+      href: "/dashboard/worker/availability",
+      icon: Clock3,
     },
+    {
+      label: "Documents",
+      href: "/dashboard/worker/documents",
+      icon: FileCheck,
+    },
+    { label: "Earnings", href: "/dashboard/worker/earnings", icon: Wallet },
+    { label: "Portfolio", href: "/dashboard/worker/portfolio", icon: Images },
+    { label: "Profile", href: "/dashboard/worker/profile", icon: UserRound },
   ],
-
   admin: [
-    {
-      label: "Overview",
-      href: "/dashboard/admin",
-      icon: Home,
-    },
-    {
-      label: "Users",
-      href: "/dashboard/admin/users",
-      icon: UserRound,
-    },
+    { label: "Overview", href: "/dashboard/admin", icon: Home },
+    { label: "Users", href: "/dashboard/admin/users", icon: UserRound },
     {
       label: "Services",
       href: "/dashboard/admin/services",
       icon: BriefcaseBusiness,
     },
     {
-      href: "/dashboard/admin/worker-verification",
       label: "Worker Verification",
+      href: "/dashboard/admin/worker-verification",
       icon: ShieldCheck,
     },
     {
-      href: "/dashboard/admin/worker-applications",
       label: "Worker Applications",
-      icon: ShieldCheck,
+      href: "/dashboard/admin/worker-applications",
+      icon: FileCheck,
     },
     {
       label: "Requests & Jobs",
       href: "/dashboard/admin/jobs",
       icon: ClipboardList,
     },
-    {
-      label: "Settings",
-      href: "/dashboard/admin/settings",
-      icon: Settings,
-    },
+    { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
   ],
 };
 
@@ -185,13 +129,15 @@ function getRoleLabel(role: UserRole) {
   switch (role) {
     case "customer":
       return "Customer";
-
     case "worker":
       return "Service Provider";
-
     case "admin":
       return "Administrator";
   }
+}
+
+function getDashboardRoot(role: UserRole) {
+  return `/dashboard/${role}`;
 }
 
 export function DashboardShell({
@@ -207,89 +153,113 @@ export function DashboardShell({
   const [loggingOut, setLoggingOut] = useState(false);
 
   const items = navigation[role];
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  const currentPage =
+    [...items]
+      .sort((a, b) => b.href.length - a.href.length)
+      .find(
+        (item) =>
+          pathname === item.href ||
+          (item.href !== getDashboardRoot(role) &&
+            pathname.startsWith(`${item.href}/`)),
+      )?.label ?? "Dashboard";
 
   async function handleLogout() {
     setLoggingOut(true);
 
-    const response = await fetch("/api/auth/logout", {
-      method: "POST",
-    });
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
 
-    if (response.ok) {
-      router.push("/login");
-      router.refresh();
-      return;
+      if (response.ok) {
+        router.push("/login");
+        router.refresh();
+        return;
+      }
+    } catch {
+      // Keep the existing page in place if the request fails.
     }
 
     setLoggingOut(false);
   }
 
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f6f8fb] text-slate-900">
       {mobileOpen && (
         <button
           type="button"
           aria-label="Close navigation"
-          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/45 backdrop-blur-[2px] lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white transition-transform duration-200 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-70 flex-col border-r border-slate-200/80 bg-white shadow-xl shadow-slate-900/5 transition-transform duration-200 lg:translate-x-0 lg:shadow-none ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-16 items-center justify-between border-b border-slate-200 px-6">
+        <div className="flex h-19 shrink-0 items-center justify-between border-b border-slate-100 px-5">
           <Link
             href="/dashboard"
-            className="text-lg font-bold tracking-tight text-slate-900"
+            className="group flex min-w-0 items-center gap-3"
+            onClick={() => setMobileOpen(false)}
           >
-            Emirate ErrandHub
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-900/15 transition group-hover:bg-emerald-800">
+              <BriefcaseBusiness className="h-5 w-5" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[15px] font-bold tracking-tight text-slate-900">
+                Emirate ErrandHub
+              </span>
+              <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.17em] text-slate-400">
+                Services made easier
+              </span>
+            </span>
           </Link>
 
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+            className="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 lg:hidden"
             aria-label="Close navigation"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="border-b border-slate-200 px-4 py-5">
+        <div className="mx-4 mt-5 rounded-2xl border border-slate-100 bg-slate-50/90 p-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
-              {initials}
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-emerald-700 to-emerald-900 text-sm font-bold text-white ring-4 ring-white">
+              {initials || "U"}
             </div>
-
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-slate-900">
                 {firstName} {lastName}
               </p>
-
-              <p className="text-xs text-slate-500">{getRoleLabel(role)}</p>
+              <p className="mt-0.5 truncate text-xs text-slate-500">
+                {getRoleLabel(role)}
+              </p>
             </div>
+            <span
+              className="h-2 w-2 shrink-0 rounded-full bg-emerald-500 ring-4 ring-emerald-100"
+              title="Account"
+            />
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto p-4">
-          <p className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-            Menu
+        <nav className="flex-1 overflow-y-auto px-4 pb-5 pt-6">
+          <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+            Workspace
           </p>
 
           <div className="space-y-1">
             {items.map((item) => {
               const Icon = item.icon;
-
               const active =
                 pathname === item.href ||
-                (item.href !== "/dashboard/customer" &&
-                  item.href !== "/dashboard/worker" &&
-                  item.href !== "/dashboard/admin" &&
+                (item.href !== getDashboardRoot(role) &&
                   pathname.startsWith(`${item.href}/`));
 
               return (
@@ -297,55 +267,80 @@ export function DashboardShell({
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                  aria-current={active ? "page" : undefined}
+                  className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-medium transition-all duration-150 ${
                     active
-                      ? "bg-slate-900 text-white"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      ? "bg-emerald-50 text-emerald-800 shadow-sm shadow-emerald-900/3"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
                   }`}
                 >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  {item.label}
+                  {active && (
+                    <span className="absolute bottom-2.5 left-0 top-2.5 w-0.75 rounded-r-full bg-emerald-700" />
+                  )}
+                  <Icon
+                    className={`h-4.5 w-4.5 shrink-0 transition-colors ${
+                      active
+                        ? "text-emerald-700"
+                        : "text-slate-400 group-hover:text-slate-700"
+                    }`}
+                  />
+                  <span className="flex-1">{item.label}</span>
+                  {active && (
+                    <ChevronRight className="h-4 w-4 text-emerald-700/70" />
+                  )}
                 </Link>
               );
             })}
           </div>
         </nav>
 
-        <div className="border-t border-slate-200 p-4">
+        <div className="shrink-0 border-t border-slate-100 p-4">
           <button
             type="button"
             onClick={handleLogout}
             disabled={loggingOut}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-semibold text-slate-500 transition hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <LogOut className="h-4 w-4" />
-
+            <LogOut className="h-4.5 w-4.5" />
             {loggingOut ? "Logging out..." : "Log out"}
           </button>
         </div>
       </aside>
 
-      <div className="lg:pl-72">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6">
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
-            aria-label="Open navigation"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+      <div className="lg:pl-70">
+        <header className="sticky top-0 z-30 flex h-18 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className="rounded-xl border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 lg:hidden"
+              aria-label="Open navigation"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
 
-          <div className="ml-auto flex items-center gap-2">
+            <div className="min-w-0">
+              <p className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 sm:block">
+                {getRoleLabel(role)} workspace
+              </p>
+              <h1 className="truncate text-sm font-bold text-slate-900 sm:mt-0.5 sm:text-base">
+                {currentPage}
+              </h1>
+            </div>
+          </div>
+
+          <div className="ml-3 flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
               href="/notifications"
-              className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               aria-label="Notifications"
+              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-4.5 w-4.5" />
             </Link>
 
-            <Link
+            <div className="hidden h-8 w-px bg-slate-200 sm:block" />
+
+            {/* <Link
               href={
                 role === "customer"
                   ? "/dashboard/customer/profile"
@@ -353,14 +348,23 @@ export function DashboardShell({
                     ? "/dashboard/worker/profile"
                     : "/dashboard/admin/settings"
               }
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200"
+              aria-label="Open profile"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-800 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-900 focus:outline-none focus:ring-4 focus:ring-emerald-100"
             >
-              {initials}
-            </Link>
+              {initials || "U"}
+            </Link> */}
+
+            <AccountDropdown
+              role={role}
+              firstName={firstName}
+              lastName={lastName}
+            />
           </div>
         </header>
 
-        <main>{children}</main>
+        <main className="min-h-[calc(100vh-72px)] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-9">
+          <div className="mx-auto w-full max-w-360">{children}</div>
+        </main>
       </div>
     </div>
   );
