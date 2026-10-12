@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import { getCategoryBySlug } from "@/lib/services/categories";
 import { createClient } from "@/lib/supabase/server";
 import { ServiceMedia } from "@/components/services/service-media";
+import { PublicNavbar } from "@/components/navigation/public-navbar";
 
 type ServicePageProps = {
   params: Promise<{
@@ -87,6 +88,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   return (
     <main className="min-h-screen bg-slate-50">
+      <PublicNavbar />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <nav

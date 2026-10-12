@@ -1,259 +1,213 @@
-"use client";
-
 import Link from "next/link";
-import { useActionState } from "react";
-import { useState } from "react";
-import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  UserRound,
+  BriefcaseBusiness,
+  ArrowRight,
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
+import { PublicNavbar } from "@/components/navigation/public-navbar";
 
-import { signUp, type SignUpState } from "./actions";
-
-const initialState: SignUpState = {};
+const accountTypes = [
+  {
+    title: "I need a service",
+    subtitle: "For customers",
+    description:
+      "Get help with everyday tasks from trusted professionals in your area.",
+    features: [
+      "Browse available services",
+      "Compare quotes from professionals",
+      "Track your requests in one place",
+    ],
+    href: "/signup/customer",
+    buttonText: "Create customer account",
+    icon: UserRound,
+    theme: "customer",
+  },
+  {
+    title: "I offer services",
+    subtitle: "For service providers",
+    description:
+      "Showcase your skills, connect with customers, and grow your service business.",
+    features: [
+      "Receive customer requests",
+      "Submit quotes for jobs",
+      "Build your professional reputation",
+    ],
+    href: "/signup/worker",
+    buttonText: "Join as a provider",
+    icon: BriefcaseBusiness,
+    theme: "worker",
+  },
+];
 
 export default function SignupPage() {
-  const [state, formAction, isPending] = useActionState(signUp, initialState);
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  if (state.success) {
-    return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm text-center">
-            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-green-50">
-              <CheckCircle2 className="h-7 w-7 text-green-600" />
-            </div>
-
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-              Check your email
-            </h1>
-
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              Your account has been created successfully. We sent a confirmation
-              link to your email address.
-            </p>
-
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              Please confirm your email before signing in.
-            </p>
-
-            <Link
-              href="/login"
-              className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-lg bg-slate-900 px-5 text-sm font-medium text-white transition hover:bg-slate-800"
-            >
-              Go to login
-            </Link>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-10">
-      <div className="mx-auto w-full max-w-md">
-        <div className="mb-8 text-center">
-          <Link
-            href="/"
-            className="text-2xl font-bold tracking-tight text-slate-900"
-          >
-            Emirate ErrandHub
-          </Link>
+    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-50 px-4 py-8 sm:px-6 sm:py-12">
+      {/* Decorative background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-110 bg-linear-to-b from-emerald-50 via-slate-50 to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 top-16 -z-10 h-72 w-72 rounded-full bg-emerald-200/20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-24 top-64 -z-10 h-72 w-72 rounded-full bg-blue-200/20 blur-3xl"
+      />
 
-          <h1 className="mt-6 text-2xl font-bold tracking-tight text-slate-900">
-            Create your account
+      {/* Brand */}
+      {/* <header className="mx-auto flex w-full max-w-6xl items-center justify-between">
+        <Link
+          href="/"
+          className="group inline-flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-4"
+        >
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-lg shadow-emerald-900/15 transition group-hover:scale-105">
+            <Zap className="h-6 w-6 fill-current" />
+          </span>
+          <span className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">
+            Emirate <span className="text-emerald-700">ErrandHub</span>
+          </span>
+        </Link>
+
+        <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
+          <ShieldCheck className="h-4 w-4 text-emerald-700" />
+          <span>Get started in minutes</span>
+        </div>
+      </header> */}
+
+      {/* Navigation */}
+      <div className="mx-auto w-full max-w-6xl">
+        <PublicNavbar variant="auth" />
+      </div>
+
+      {/* Main content */}
+      <div className="mx-auto my-auto w-full max-w-5xl py-12 sm:py-16">
+        <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-xs font-semibold tracking-wide text-emerald-800 shadow-sm sm:text-sm">
+            YOUR EVERYDAY TASKS, SIMPLIFIED
+          </span>
+
+          <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
+            How would you like to
+            <span className="mt-1 block text-emerald-700">use ErrandHub?</span>
           </h1>
 
-          <p className="mt-2 text-sm text-slate-600">
-            Create an account to find trusted service providers.
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+            Whether you need a helping hand or want to offer your expertise,
+            there&apos;s a place for you here.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          {state.error && (
-            <div
-              role="alert"
-              className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
-              {state.error}
-            </div>
-          )}
+        <div className="grid gap-6 md:grid-cols-2 md:gap-7">
+          {accountTypes.map((account) => {
+            const Icon = account.icon;
+            const isWorker = account.theme === "worker";
 
-          <form action={formAction} className="space-y-5">
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="firstName"
-                  className="mb-2 block text-sm font-medium text-slate-700"
-                >
-                  First name
-                </label>
-
-                <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  required
-                  autoComplete="given-name"
-                  placeholder="John"
-                  className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="lastName"
-                  className="mb-2 block text-sm font-medium text-slate-700"
-                >
-                  Last name
-                </label>
-
-                <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  required
-                  autoComplete="family-name"
-                  placeholder="Doe"
-                  className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="phone"
-                className="mb-2 block text-sm font-medium text-slate-700"
+            return (
+              <section
+                key={account.theme}
+                className={`group relative flex flex-col overflow-hidden rounded-3xl border bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8 ${
+                  isWorker
+                    ? "border-emerald-200/80 hover:border-emerald-300"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
               >
-                Phone number
-                <span className="ml-1 text-slate-400">(optional)</span>
-              </label>
-
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                placeholder="+234 800 000 0000"
-                className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-2 block text-sm font-medium text-slate-700"
-              >
-                Email address
-              </label>
-
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="you@example.com"
-                className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="mb-2 block text-sm font-medium text-slate-700"
-              >
-                Password
-              </label>
-
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                  placeholder="At least 8 characters"
-                  className="h-11 w-full rounded-lg border border-slate-300 px-3 pr-11 text-sm outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
+                <div
+                  aria-hidden="true"
+                  className={`absolute inset-x-0 top-0 h-1 ${
+                    isWorker
+                      ? "bg-linear-to-r from-emerald-500 to-teal-300"
+                      : "bg-linear-to-r from-slate-700 to-slate-400"
+                  }`}
                 />
 
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((value) => !value)}
-                  className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center text-slate-500 hover:text-slate-900"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                <div className="flex items-start justify-between gap-4">
+                  <div
+                    className={`flex h-14 w-14 items-center justify-center rounded-2xl transition duration-300 group-hover:scale-105 ${
+                      isWorker
+                        ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                        : "bg-slate-100 text-slate-800 ring-1 ring-slate-200"
+                    }`}
+                  >
+                    <Icon className="h-7 w-7" strokeWidth={1.8} />
+                  </div>
+
+                  <span
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                      isWorker
+                        ? "bg-emerald-50 text-emerald-800"
+                        : "bg-slate-100 text-slate-600"
+                    }`}
+                  >
+                    {account.subtitle}
+                  </span>
+                </div>
+
+                <h2 className="mt-6 text-2xl font-bold tracking-tight text-slate-950">
+                  {account.title}
+                </h2>
+
+                <p className="mt-3 min-h-14 text-sm leading-7 text-slate-600">
+                  {account.description}
+                </p>
+
+                <ul className="mt-6 space-y-3 border-t border-slate-100 pt-6">
+                  {account.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-start gap-3 text-sm text-slate-700"
+                    >
+                      <CheckCircle2
+                        className={`mt-0.5 h-4 w-4 shrink-0 ${
+                          isWorker ? "text-emerald-600" : "text-slate-500"
+                        }`}
+                      />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={account.href}
+                  className={`mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                    isWorker
+                      ? "bg-emerald-700 shadow-emerald-900/10 hover:bg-emerald-800 focus-visible:ring-emerald-600"
+                      : "bg-slate-900 shadow-slate-900/10 hover:bg-slate-800 focus-visible:ring-slate-700"
+                  }`}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="mb-2 block text-sm font-medium text-slate-700"
-              >
-                Confirm password
-              </label>
-
-              <div className="relative">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                  placeholder="Re-enter your password"
-                  className="h-11 w-full rounded-lg border border-slate-300 px-3 pr-11 text-sm outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword((value) => !value)}
-                  className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center text-slate-500 hover:text-slate-900"
-                  aria-label={
-                    showConfirmPassword ? "Hide password" : "Show password"
-                  }
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isPending}
-              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-
-              {isPending ? "Creating account..." : "Create account"}
-            </button>
-          </form>
-
-          <div className="mt-6 border-t border-slate-200 pt-6 text-center">
-            <p className="text-sm text-slate-600">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="font-medium text-slate-900 hover:underline"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
+                  {account.buttonText}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </section>
+            );
+          })}
         </div>
+
+        <p className="mt-9 text-center text-sm text-slate-600">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-semibold text-emerald-800 underline-offset-4 transition hover:underline"
+          >
+            Sign in
+          </Link>
+        </p>
       </div>
+
+      {/* Footer */}
+      <footer className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-center text-xs text-slate-500 sm:flex-row sm:text-left">
+        <p>
+          © {new Date().getFullYear()} Emirate ErrandHub. All rights reserved.
+        </p>
+        <p className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-emerald-700" />
+          Your journey starts here.
+        </p>
+      </footer>
     </main>
   );
 }

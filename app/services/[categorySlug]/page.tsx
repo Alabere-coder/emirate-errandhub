@@ -7,6 +7,7 @@ import {
   getChildCategories,
 } from "@/lib/services/categories";
 import { ServiceMedia } from "@/components/services/service-media";
+import { PublicNavbar } from "@/components/navigation/public-navbar";
 
 type ServiceCategoryPageProps = {
   params: Promise<{
@@ -35,6 +36,7 @@ export default async function ServiceCategoryPage({
 
   return (
     <main className="min-h-screen bg-slate-50">
+      <PublicNavbar />
       {/* Category hero */}
       <section className="relative isolate overflow-hidden border-b border-slate-200 bg-slate-950">
         <div

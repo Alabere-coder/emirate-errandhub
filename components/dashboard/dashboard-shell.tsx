@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
+import { DashboardNavbar } from "../navigation/dashboard-navbar";
 
 type UserRole = "customer" | "worker" | "admin";
 
@@ -308,7 +309,7 @@ export function DashboardShell({
       </aside>
 
       <div className="lg:pl-70">
-        <header className="sticky top-0 z-30 flex h-18 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+        {/* <header className="sticky top-0 z-30 flex h-18 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -340,19 +341,7 @@ export function DashboardShell({
 
             <div className="hidden h-8 w-px bg-slate-200 sm:block" />
 
-            {/* <Link
-              href={
-                role === "customer"
-                  ? "/dashboard/customer/profile"
-                  : role === "worker"
-                    ? "/dashboard/worker/profile"
-                    : "/dashboard/admin/settings"
-              }
-              aria-label="Open profile"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-800 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-900 focus:outline-none focus:ring-4 focus:ring-emerald-100"
-            >
-              {initials || "U"}
-            </Link> */}
+           
 
             <AccountDropdown
               role={role}
@@ -360,7 +349,19 @@ export function DashboardShell({
               lastName={lastName}
             />
           </div>
-        </header>
+        </header> */}
+
+        <DashboardNavbar
+          role={role}
+          currentPage={currentPage}
+          onMenuClick={() => setMobileOpen(true)}
+        >
+          <AccountDropdown
+            role={role}
+            firstName={firstName}
+            lastName={lastName}
+          />
+        </DashboardNavbar>
 
         <main className="min-h-[calc(100vh-72px)] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-9">
           <div className="mx-auto w-full max-w-360">{children}</div>

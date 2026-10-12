@@ -17,6 +17,7 @@ export async function signUp(
   const email = formData.get("email");
   const password = formData.get("password");
   const confirmPassword = formData.get("confirmPassword");
+  const submittedRole = formData.get("role");
 
   if (
     typeof firstName !== "string" ||
@@ -25,33 +26,29 @@ export async function signUp(
     typeof password !== "string" ||
     typeof confirmPassword !== "string"
   ) {
-    return {
-      error: "Please provide all required fields.",
-    };
+    return { error: "Please provide all required fields." };
   }
 
   if (!firstName.trim() || !lastName.trim()) {
-    return {
-      error: "First name and last name are required.",
-    };
+    return { error: "First name and last name are required." };
   }
 
-  if (!email.trim()) {
-    return {
-      error: "Email address is required.",
-    };
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!normalizedEmail) {
+    return { error: "Email address is required." };
   }
 
   if (password.length < 8) {
-    return {
-      error: "Password must be at least 8 characters.",
-    };
+    return { error: "Password must be at least 8 characters." };
   }
 
   if (password !== confirmPassword) {
-    return {
-      error: "Passwords do not match.",
-    };
+    return { error: "Passwords do not match." };
+  }
+
+  if (submittedRole !== "customer" && submittedRole !== "worker") {
+    return { error: "Please select a valid account type." };
   }
 
   const supabase = await createClient();
@@ -59,7 +56,7 @@ export async function signUp(
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   const { error } = await supabase.auth.signUp({
-    email: email.trim().toLowerCase(),
+    email: normalizedEmail,
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
@@ -67,6 +64,7 @@ export async function signUp(
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         phone: typeof phone === "string" && phone.trim() ? phone.trim() : null,
+        role: submittedRole,
       },
     },
   });
@@ -75,11 +73,10 @@ export async function signUp(
     console.error("Signup error:", error);
 
     return {
-      error: error.message,
+      error:
+        "Unable to create your account. Please check your details and try again.",
     };
   }
 
-  return {
-    success: true,
-  };
+  return { success: true };
 }
