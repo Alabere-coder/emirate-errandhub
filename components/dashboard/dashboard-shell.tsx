@@ -294,63 +294,9 @@ export function DashboardShell({
             })}
           </div>
         </nav>
-
-        {/* <div className="shrink-0 border-t border-slate-100 p-4">
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-semibold text-slate-500 transition hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <LogOut className="h-4.5 w-4.5" />
-            {loggingOut ? "Logging out..." : "Log out"}
-          </button>
-        </div> */}
       </aside>
 
       <div className="lg:pl-70">
-        {/* <header className="sticky top-0 z-30 flex h-18 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
-          <div className="flex min-w-0 items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setMobileOpen(true)}
-              className="rounded-xl border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 lg:hidden"
-              aria-label="Open navigation"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-
-            <div className="min-w-0">
-              <p className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 sm:block">
-                {getRoleLabel(role)} workspace
-              </p>
-              <h1 className="truncate text-sm font-bold text-slate-900 sm:mt-0.5 sm:text-base">
-                {currentPage}
-              </h1>
-            </div>
-          </div>
-
-          <div className="ml-3 flex shrink-0 items-center gap-2 sm:gap-3">
-            <Link
-              href="/notifications"
-              aria-label="Notifications"
-              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
-            >
-              <Bell className="h-4.5 w-4.5" />
-            </Link>
-
-            <div className="hidden h-8 w-px bg-slate-200 sm:block" />
-
-           
-
-            <AccountDropdown
-              role={role}
-              firstName={firstName}
-              lastName={lastName}
-            />
-          </div>
-        </header> */}
-
         <DashboardNavbar
           role={role}
           currentPage={currentPage}

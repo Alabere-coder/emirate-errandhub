@@ -1,68 +1,149 @@
 import Link from "next/link";
 import {
   Activity,
+  ArrowDownRight,
   ArrowRight,
-  BarChart3,
+  ArrowUpRight,
   BriefcaseBusiness,
   CheckCircle2,
   ClipboardList,
   Clock3,
-  Layers3,
-  ShieldAlert,
+  FileCheck2,
+  LayoutDashboard,
+  Settings,
+  ShieldCheck,
+  ShoppingBag,
   Users,
-  XCircle,
+  Wrench,
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
 
-const requestStatuses = [
-  { key: "pending", label: "Pending", color: "bg-amber-500" },
-  { key: "quoted", label: "Quoted", color: "bg-blue-500" },
-  { key: "accepted", label: "Accepted", color: "bg-indigo-500" },
-  { key: "assigned", label: "Assigned", color: "bg-violet-500" },
-  { key: "in_progress", label: "In progress", color: "bg-cyan-500" },
-  { key: "completed", label: "Completed", color: "bg-emerald-500" },
-  { key: "cancelled", label: "Cancelled", color: "bg-slate-400" },
-  { key: "rejected", label: "Rejected", color: "bg-rose-500" },
-] as const;
+export const dynamic = "force-dynamic";
+
+type RequestRow = {
+  id: string;
+  title: string;
+  status: string;
+  created_at: string;
+  city: string | null;
+  customer_id: string;
+  category_id: string;
+};
 
 function formatStatus(status: string) {
-  return status
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return status.replaceAll("_", " ");
+}
+
+function statusStyle(status: string) {
+  switch (status) {
+    case "completed":
+    case "approved":
+    case "verified":
+      return "bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400";
+
+    case "pending":
+    case "quoted":
+      return "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400";
+
+    case "cancelled":
+    case "rejected":
+      return "bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-500/10 dark:text-red-400";
+
+    case "assigned":
+    case "accepted":
+    case "in_progress":
+      return "bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-500/10 dark:text-blue-400";
+
+    default:
+      return "bg-muted text-muted-foreground ring-border";
+  }
 }
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleDateString("en-NG", {
+  return new Intl.DateTimeFormat("en-NG", {
     day: "numeric",
     month: "short",
     year: "numeric",
-  });
+  }).format(new Date(date));
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    pending: "bg-amber-50 text-amber-700",
-    quoted: "bg-blue-50 text-blue-700",
-    accepted: "bg-indigo-50 text-indigo-700",
-    assigned: "bg-violet-50 text-violet-700",
-    in_progress: "bg-cyan-50 text-cyan-700",
-    completed: "bg-emerald-50 text-emerald-700",
-    cancelled: "bg-slate-100 text-slate-600",
-    rejected: "bg-rose-50 text-rose-700",
-  };
+function MetricCard({
+  title,
+  value,
+  description,
+  icon: Icon,
+  href,
+  accent = "default",
+}: {
+  title: string;
+  value: number;
+  description: string;
+  icon: typeof Users;
+  href: string;
+  accent?: "default" | "warning" | "success";
+}) {
+  const iconStyle = {
+    default: "bg-primary/10 text-primary",
+    warning: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  }[accent];
 
   return (
-    <span
-      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-        styles[status] ?? "bg-slate-100 text-slate-600"
-      }`}
+    <Link
+      href={href}
+      className="group rounded-2xl border border-border bg-card p-5 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md sm:p-6"
     >
-      {formatStatus(status)}
-    </span>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums">
+            {value.toLocaleString("en-NG")}
+          </p>
+        </div>
+
+        <div
+          className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${iconStyle}`}
+        >
+          <Icon className="size-5" />
+        </div>
+      </div>
+
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">{description}</p>
+        <ArrowUpRight className="size-4 shrink-0 text-muted-foreground transition group-hover:text-primary" />
+      </div>
+    </Link>
   );
 }
+
+const quickActions = [
+  {
+    title: "Manage users",
+    description: "View customers and service providers.",
+    href: "/dashboard/admin/users",
+    icon: Users,
+  },
+  {
+    title: "Review workers",
+    description: "Review submitted verification documents.",
+    href: "/dashboard/admin/worker-verification",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Manage services",
+    description: "Maintain available service categories.",
+    href: "/dashboard/admin/categories",
+    icon: Wrench,
+  },
+  {
+    title: "Requests and jobs",
+    description: "Monitor service requests and assigned jobs.",
+    href: "/dashboard/admin/requests",
+    icon: ClipboardList,
+  },
+];
 
 export default async function AdminDashboardPage() {
   const { profile } = await requireRole(["admin"]);
@@ -71,18 +152,12 @@ export default async function AdminDashboardPage() {
   const [
     customersResult,
     workersResult,
-    activeProfilesResult,
-    inactiveProfilesResult,
-    jobsResult,
-    categoriesResult,
-    pendingResult,
-    quotedResult,
-    acceptedResult,
-    assignedResult,
-    inProgressResult,
-    completedResult,
-    cancelledResult,
-    rejectedResult,
+    pendingDocumentsResult,
+    pendingRequestsResult,
+    totalRequestsResult,
+    activeJobsResult,
+    completedJobsResult,
+    pendingWorkersResult,
     recentRequestsResult,
   ] = await Promise.all([
     supabase
@@ -91,484 +166,430 @@ export default async function AdminDashboardPage() {
       .eq("role", "customer"),
 
     supabase
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .eq("role", "worker"),
+      .from("worker_profiles")
+      .select("id", { count: "exact", head: true }),
 
     supabase
-      .from("profiles")
+      .from("worker_documents")
       .select("id", { count: "exact", head: true })
-      .eq("is_active", true),
-
-    supabase
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .eq("is_active", false),
-
-    supabase.from("jobs").select("id", { count: "exact", head: true }),
-
-    supabase
-      .from("service_categories")
-      .select("id", { count: "exact", head: true })
-      .eq("is_active", true),
+      .eq("status", "pending"),
 
     supabase
       .from("service_requests")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
-    supabase
-      .from("service_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "quoted"),
-    supabase
-      .from("service_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "accepted"),
-    supabase
-      .from("service_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "assigned"),
-    supabase
-      .from("service_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "in_progress"),
-    supabase
-      .from("service_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "completed"),
-    supabase
-      .from("service_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "cancelled"),
-    supabase
-      .from("service_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "rejected"),
 
     supabase
       .from("service_requests")
-      .select("id, title, status, created_at, city")
+      .select("id", { count: "exact", head: true }),
+
+    supabase
+      .from("jobs")
+      .select("id", { count: "exact", head: true })
+      .in("status", ["assigned", "in_progress"]),
+
+    supabase
+      .from("jobs")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "completed"),
+
+    supabase
+      .from("worker_profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("verification_status", "pending"),
+
+    supabase
+      .from("service_requests")
+      .select("id, title, status, created_at, city, customer_id, category_id")
       .order("created_at", { ascending: false })
       .limit(6),
   ]);
 
-  const results = [
-    customersResult,
-    workersResult,
-    activeProfilesResult,
-    inactiveProfilesResult,
-    jobsResult,
-    categoriesResult,
-    pendingResult,
-    quotedResult,
-    acceptedResult,
-    assignedResult,
-    inProgressResult,
-    completedResult,
-    cancelledResult,
-    rejectedResult,
-    recentRequestsResult,
+  const queryResults = [
+    ["customer count", customersResult.error],
+    ["worker count", workersResult.error],
+    ["pending documents", pendingDocumentsResult.error],
+    ["pending requests", pendingRequestsResult.error],
+    ["request count", totalRequestsResult.error],
+    ["active jobs", activeJobsResult.error],
+    ["completed jobs", completedJobsResult.error],
+    ["pending worker verification", pendingWorkersResult.error],
+    ["recent requests", recentRequestsResult.error],
+  ] as const;
+
+  for (const [name, error] of queryResults) {
+    if (error) {
+      console.error(`Admin dashboard ${name} query failed:`, error);
+    }
+  }
+
+  const recentRequests = (recentRequestsResult.data ?? []) as RequestRow[];
+
+  const customerIds = [
+    ...new Set(recentRequests.map((request) => request.customer_id)),
   ];
 
-  const hasError = results.some((result) => result.error);
-
-  const totalRequests = [
-    pendingResult,
-    quotedResult,
-    acceptedResult,
-    assignedResult,
-    inProgressResult,
-    completedResult,
-    cancelledResult,
-    rejectedResult,
-  ].reduce((sum, result) => sum + (result.count ?? 0), 0);
-
-  const statuses = [
-    { ...requestStatuses[0], count: pendingResult.count ?? 0 },
-    { ...requestStatuses[1], count: quotedResult.count ?? 0 },
-    { ...requestStatuses[2], count: acceptedResult.count ?? 0 },
-    { ...requestStatuses[3], count: assignedResult.count ?? 0 },
-    { ...requestStatuses[4], count: inProgressResult.count ?? 0 },
-    { ...requestStatuses[5], count: completedResult.count ?? 0 },
-    { ...requestStatuses[6], count: cancelledResult.count ?? 0 },
-    { ...requestStatuses[7], count: rejectedResult.count ?? 0 },
+  const categoryIds = [
+    ...new Set(recentRequests.map((request) => request.category_id)),
   ];
 
-  const overviewCards = [
+  const [customersLookup, categoriesLookup] = await Promise.all([
+    customerIds.length
+      ? supabase
+          .from("profiles")
+          .select("id, first_name, last_name")
+          .in("id", customerIds)
+      : Promise.resolve({ data: [], error: null }),
+
+    categoryIds.length
+      ? supabase
+          .from("service_categories")
+          .select("id, name")
+          .in("id", categoryIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (customersLookup.error) {
+    console.error(
+      "Unable to load recent request customers:",
+      customersLookup.error,
+    );
+  }
+
+  if (categoriesLookup.error) {
+    console.error(
+      "Unable to load recent request categories:",
+      categoriesLookup.error,
+    );
+  }
+
+  const customerNames = new Map(
+    (customersLookup.data ?? []).map((customer) => [
+      customer.id,
+      `${customer.first_name ?? ""} ${customer.last_name ?? ""}`.trim() ||
+        "Customer",
+    ]),
+  );
+
+  const categoryNames = new Map(
+    (categoriesLookup.data ?? []).map((category) => [
+      category.id,
+      category.name,
+    ]),
+  );
+
+  const firstName = profile?.first_name?.trim();
+  const displayName = firstName || "Administrator";
+
+  const metrics = [
     {
       title: "Customers",
-      value: customersResult.count,
+      value: customersResult.count ?? 0,
       description: "Registered customer accounts",
       icon: Users,
+      href: "/dashboard/admin/users",
+      accent: "default" as const,
     },
     {
-      title: "Workers",
-      value: workersResult.count,
-      description: "Registered service providers",
+      title: "Service providers",
+      value: workersResult.count ?? 0,
+      description: "Worker profiles created",
       icon: BriefcaseBusiness,
+      href: "/dashboard/admin/users",
+      accent: "default" as const,
     },
     {
-      title: "Service requests",
-      value: totalRequests,
-      description: "Requests across all statuses",
-      icon: ClipboardList,
+      title: "Pending documents",
+      value: pendingDocumentsResult.count ?? 0,
+      description: "Documents awaiting review",
+      icon: FileCheck2,
+      href: "/dashboard/admin/worker-verification",
+      accent: "warning" as const,
     },
     {
-      title: "Jobs",
-      value: jobsResult.count,
-      description: "Jobs recorded on the platform",
+      title: "Pending requests",
+      value: pendingRequestsResult.count ?? 0,
+      description: "Requests awaiting a response",
+      icon: Clock3,
+      href: "/dashboard/admin/jobs",
+      accent: "warning" as const,
+    },
+    {
+      title: "Active jobs",
+      value: activeJobsResult.count ?? 0,
+      description: "Assigned or in progress",
       icon: Activity,
+      href: "/dashboard/admin/jobs",
+      accent: "default" as const,
+    },
+    {
+      title: "Completed jobs",
+      value: completedJobsResult.count ?? 0,
+      description: "Jobs marked as completed",
+      icon: CheckCircle2,
+      href: "/dashboard/admin/jobs",
+      accent: "success" as const,
     },
   ];
 
-  const pendingRequests = pendingResult.count ?? 0;
-  const inProgressRequests = inProgressResult.count ?? 0;
-  const completedRequests = completedResult.count ?? 0;
-
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-        {/* Page heading */}
-        <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-500">
-              Administration / Overview
-            </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
-              Welcome, {profile.first_name || "Admin"}
-            </h1>
-            <p className="mt-2 text-slate-600">
-              Monitor your marketplace, manage service activity, and keep
-              operations running smoothly.
-            </p>
-          </div>
+    <main className="min-h-full bg-muted/30">
+      <div className="mx-auto max-w-7xl space-y-8 p-4 sm:p-6 lg:p-8">
+        {/* Welcome header */}
+        <section className="relative overflow-hidden rounded-3xl bg-slate-950 p-6 text-white sm:p-8 lg:p-10">
+          <div className="pointer-events-none absolute -right-12 -top-20 size-64 rounded-full bg-emerald-400/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 right-1/3 size-56 rounded-full bg-blue-400/10 blur-3xl" />
 
-          <div className="flex items-center gap-2 self-start rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
-            <CheckCircle2 className="h-4 w-4" />
-            Admin access
-          </div>
-        </section>
+          <div className="relative flex flex-col justify-between gap-7 sm:flex-row sm:items-center">
+            <div className="max-w-2xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200">
+                <LayoutDashboard className="size-3.5" />
+                Admin control centre
+              </div>
 
-        {hasError && (
-          <div
-            role="alert"
-            className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
-          >
-            <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <div>
-              <p className="font-semibold">
-                Some dashboard data could not be loaded.
-              </p>
-              <p className="mt-1">
-                Check the Supabase query errors and Row Level Security policies.
-                A missing count may otherwise appear as zero.
-              </p>
-            </div>
-          </div>
-        )}
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Welcome back, {displayName}
+              </h1>
 
-        {/* Main statistics */}
-        <section>
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Marketplace overview
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              A snapshot of registered users and platform activity.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {overviewCards.map((card) => {
-              const Icon = card.icon;
-
-              return (
-                <div
-                  key={card.title}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <span className="text-3xl font-bold tracking-tight text-slate-900">
-                      {card.value?.toLocaleString() ?? "—"}
-                    </span>
-                  </div>
-                  <h3 className="mt-5 font-semibold text-slate-900">
-                    {card.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {card.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Operational indicators */}
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Clock3 className="h-4 w-4" />
-              Pending requests
-            </div>
-            <p className="mt-3 text-2xl font-bold text-amber-600">
-              {pendingResult.count?.toLocaleString() ?? "—"}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">
-              Waiting for the next step
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Activity className="h-4 w-4" />
-              In-progress requests
-            </div>
-            <p className="mt-3 text-2xl font-bold text-cyan-700">
-              {inProgressRequests.toLocaleString()}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">
-              Currently being fulfilled
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <CheckCircle2 className="h-4 w-4" />
-              Completed requests
-            </div>
-            <p className="mt-3 text-2xl font-bold text-emerald-700">
-              {completedRequests.toLocaleString()}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">Marked as completed</p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-5">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Layers3 className="h-4 w-4" />
-              Active categories
-            </div>
-            <p className="mt-3 text-2xl font-bold text-slate-900">
-              {categoriesResult.count?.toLocaleString() ?? "—"}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">
-              Categories available to customers
-            </p>
-          </div>
-        </section>
-
-        {/* Status breakdown */}
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Request status breakdown
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              See how customer requests are distributed across their lifecycle.
-            </p>
-          </div>
-
-          {totalRequests === 0 ? (
-            <p className="rounded-xl bg-slate-50 p-6 text-center text-sm text-slate-500">
-              No requests to display yet.
-            </p>
-          ) : (
-            <div className="space-y-5">
-              {statuses.map((status) => {
-                const percentage =
-                  totalRequests > 0 ? (status.count / totalRequests) * 100 : 0;
-
-                return (
-                  <div key={status.key}>
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <span className="text-sm font-medium text-slate-700">
-                        {status.label}
-                      </span>
-                      <span className="text-sm tabular-nums text-slate-500">
-                        {status.count.toLocaleString()}{" "}
-                        <span className="text-slate-400">
-                          ({percentage.toFixed(1)}%)
-                        </span>
-                      </span>
-                    </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className={`h-full rounded-full ${status.color}`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        {/* Recent requests */}
-        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex flex-col gap-3 border-b border-slate-200 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">
-                Recent service requests
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                The latest requests submitted by customers.
+              <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
+                Here&apos;s an overview of your ErrandHub marketplace. Manage
+                service providers, monitor requests, and keep daily operations
+                moving.
               </p>
             </div>
 
             <Link
               href="/dashboard/admin/requests"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-slate-950"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
             >
               View requests
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="size-4" />
             </Link>
           </div>
-
-          {recentRequestsResult.error ? (
-            <p className="p-6 text-sm text-rose-600">
-              Unable to load recent requests.
-            </p>
-          ) : !recentRequestsResult.data?.length ? (
-            <div className="p-10 text-center">
-              <ClipboardList className="mx-auto h-9 w-9 text-slate-300" />
-              <p className="mt-3 font-medium text-slate-700">
-                No service requests yet
-              </p>
-              <p className="mt-1 text-sm text-slate-500">
-                New customer requests will appear here.
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-162.5 text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                  <tr>
-                    <th className="px-6 py-4 font-medium">Request</th>
-                    <th className="px-6 py-4 font-medium">Location</th>
-                    <th className="px-6 py-4 font-medium">Status</th>
-                    <th className="px-6 py-4 font-medium">Submitted</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {recentRequestsResult.data.map((request) => (
-                    <tr key={request.id} className="hover:bg-slate-50">
-                      <td className="px-6 py-4">
-                        <p className="font-medium text-slate-900">
-                          {request.title || "Untitled request"}
-                        </p>
-                        <p className="mt-1 text-xs text-slate-400">
-                          {request.id.slice(0, 8)}
-                        </p>
-                      </td>
-                      <td className="px-6 py-4 text-slate-600">
-                        {request.city || "Not specified"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <StatusBadge status={request.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-slate-500">
-                        {formatDate(request.created_at)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </section>
 
-        {/* Quick actions */}
-        <section>
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Quick actions
+        {/* Marketplace metrics */}
+        <section className="space-y-4">
+          <div>
+            <h2 className="text-lg font-bold tracking-tight">
+              Marketplace overview
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Shortcuts to common administration tasks.
+            <p className="mt-1 text-sm text-muted-foreground">
+              Current totals from your database.
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Link
-              href="/dashboard/admin/categories"
-              className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md"
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                  <Layers3 className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900">
-                    Manage categories
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Organize marketplace services.
-                  </p>
-                </div>
-              </div>
-              <ArrowRight className="h-5 w-5 text-slate-400 transition group-hover:translate-x-1" />
-            </Link>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {metrics.map((metric) => (
+              <MetricCard key={metric.title} {...metric} />
+            ))}
+          </div>
+        </section>
 
-            <Link
-              href="/dashboard/admin/requests"
-              className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md"
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                  <ClipboardList className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900">
-                    Review requests
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Monitor and review customer requests.
-                  </p>
-                </div>
+        {/* Operations and shortcuts */}
+        <section className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="flex items-center justify-between gap-4 border-b border-border p-5 sm:p-6">
+              <div>
+                <h2 className="font-bold tracking-tight">Recent requests</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  The latest service requests submitted by customers.
+                </p>
               </div>
-              <ArrowRight className="h-5 w-5 text-slate-400 transition group-hover:translate-x-1" />
-            </Link>
 
-            <Link
-              href="/dashboard/admin/users"
-              className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md"
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                  <Users className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900">Manage users</h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Review customer and worker accounts.
-                  </p>
-                </div>
-              </div>
-              <ArrowRight className="h-5 w-5 text-slate-400 transition group-hover:translate-x-1" />
-            </Link>
+              <Link
+                href="/dashboard/admin/requests"
+                className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary hover:underline"
+              >
+                View all
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
 
-            <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                  <BarChart3 className="h-5 w-5" />
+            {recentRequestsResult.error ? (
+              <div className="p-6 text-sm text-muted-foreground">
+                Unable to load recent requests. Check the server logs and your
+                Supabase permissions.
+              </div>
+            ) : recentRequests.length === 0 ? (
+              <div className="flex flex-col items-center px-6 py-12 text-center">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-muted">
+                  <ShoppingBag className="size-5 text-muted-foreground" />
                 </div>
+                <h3 className="mt-4 font-semibold">No requests yet</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  New customer requests will appear here.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {recentRequests.map((request) => (
+                  <div
+                    key={request.id}
+                    className="flex flex-col gap-3 p-5 transition hover:bg-muted/30 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <ShoppingBag className="size-4" />
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">
+                          {request.title}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {customerNames.get(request.customer_id) ?? "Customer"}
+                          {" · "}
+                          {categoryNames.get(request.category_id) ??
+                            "Service request"}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {request.city || "Location not specified"}
+                          {" · "}
+                          {formatDate(request.created_at)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3 sm:justify-end">
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize ring-1 ring-inset ${statusStyle(request.status)}`}
+                      >
+                        {formatStatus(request.status)}
+                      </span>
+
+                      <Link
+                        href="/dashboard/admin/requests"
+                        aria-label={`View requests including ${request.title}`}
+                        className="rounded-lg p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                      >
+                        <ArrowRight className="size-4" />
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            {/* Verification summary */}
+            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+              <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="font-semibold text-slate-900">
-                    Account activity
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {activeProfilesResult.count ?? "—"} active ·{" "}
-                    {inactiveProfilesResult.count ?? "—"} inactive profiles
+                  <h2 className="font-bold tracking-tight">
+                    Verification centre
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Keep provider onboarding moving.
                   </p>
                 </div>
+
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <ShieldCheck className="size-5" />
+                </div>
               </div>
-              <XCircle className="h-5 w-5 text-slate-400" />
+
+              <div className="mt-5 space-y-3">
+                <Link
+                  href="/dashboard/admin/worker-verification"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border p-4 transition hover:border-primary/30 hover:bg-muted/30"
+                >
+                  <div>
+                    <p className="text-sm font-semibold">Pending documents</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Documents requiring admin review
+                    </p>
+                  </div>
+                  <span className="text-xl font-bold tabular-nums">
+                    {pendingDocumentsResult.count ?? 0}
+                  </span>
+                </Link>
+
+                <Link
+                  href="/dashboard/admin/worker-verification"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border p-4 transition hover:border-primary/30 hover:bg-muted/30"
+                >
+                  <div>
+                    <p className="text-sm font-semibold">
+                      Workers awaiting verification
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Worker profiles still marked pending
+                    </p>
+                  </div>
+                  <span className="text-xl font-bold tabular-nums">
+                    {pendingWorkersResult.count ?? 0}
+                  </span>
+                </Link>
+              </div>
+
+              <Link
+                href="/dashboard/admin/worker-verification"
+                className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+              >
+                Review verification
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
+
+            {/* Quick actions */}
+            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+              <h2 className="font-bold tracking-tight">Quick actions</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Jump straight to an admin task.
+              </p>
+
+              <div className="mt-4 space-y-2">
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
+
+                  return (
+                    <Link
+                      key={action.title}
+                      href={action.href}
+                      className="group flex items-center gap-3 rounded-xl p-3 transition hover:bg-muted/60"
+                    >
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-muted-foreground transition group-hover:border-primary/20 group-hover:text-primary">
+                        <Icon className="size-4" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold">{action.title}</p>
+                        <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
+                          {action.description}
+                        </p>
+                      </div>
+
+                      <ArrowRight className="size-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
+        </section>
+
+        {/* Bottom summary */}
+        <section className="flex flex-col justify-between gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:p-6">
+          <div>
+            <div className="flex items-center gap-2">
+              <Activity className="size-5 text-primary" />
+              <h2 className="font-bold tracking-tight">Marketplace activity</h2>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {totalRequestsResult.count ?? 0} service requests recorded across
+              the marketplace.
+            </p>
+          </div>
+
+          <Link
+            href="/dashboard/admin/requests"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-border px-4 text-sm font-semibold transition hover:bg-muted"
+          >
+            Manage requests and jobs
+            <ArrowRight className="size-4" />
+          </Link>
         </section>
       </div>
     </main>
