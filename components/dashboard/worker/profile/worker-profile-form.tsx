@@ -265,8 +265,9 @@ export function WorkerProfileForm({ profile }: WorkerProfileFormProps) {
               <div className="min-w-0">
                 <p className="font-semibold">Available for new jobs</p>
                 <p className="mt-1 text-sm leading-5 text-muted-foreground">
-                  When enabled, customers can see that you are currently
-                  available for work.
+                  {profile.is_available
+                    ? "You're available to receive job opportunities and submit quotations."
+                    : "Turn this on when you're ready to receive job opportunities and submit quotations."}
                 </p>
 
                 <span

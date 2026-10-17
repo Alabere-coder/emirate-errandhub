@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import {
   BriefcaseBusiness,
@@ -67,6 +67,18 @@ export function WorkerCategoryForm({
     initialState,
   );
 
+  const [selectedIds, setSelectedIds] = useState<string[]>(selectedCategoryIds);
+
+  function toggleCategory(categoryId: string, checked: boolean) {
+    setSelectedIds((current) =>
+      checked
+        ? current.includes(categoryId)
+          ? current
+          : [...current, categoryId]
+        : current.filter((id) => id !== categoryId),
+    );
+  }
+
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="worker_id" value={workerId} />
@@ -93,7 +105,7 @@ export function WorkerCategoryForm({
             <div className="flex w-fit shrink-0 items-center gap-2 rounded-full border bg-background px-3 py-2 text-sm">
               <Layers3 className="size-4 text-primary" />
               <span className="font-semibold tabular-nums">
-                {selectedCategoryIds.length}
+                {selectedIds.length}
               </span>
               <span className="text-muted-foreground">selected</span>
             </div>
@@ -117,7 +129,7 @@ export function WorkerCategoryForm({
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {categories.map((category) => {
-                const checked = selectedCategoryIds.includes(category.id);
+                const checked = selectedIds.includes(category.id);
 
                 return (
                   <label
@@ -133,6 +145,9 @@ export function WorkerCategoryForm({
                       name="category_ids"
                       value={category.id}
                       defaultChecked={checked}
+                      onChange={(event) =>
+                        toggleCategory(category.id, event.target.checked)
+                      }
                       className="peer sr-only"
                     />
 

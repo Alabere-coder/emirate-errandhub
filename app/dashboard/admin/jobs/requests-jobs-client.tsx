@@ -13,6 +13,15 @@ import {
   Search,
   Users,
 } from "lucide-react";
+import ProviderAssignmentForm, {
+  type ProviderOption,
+} from "./component/provider-assignment-form";
+
+import RequestQuotesList, {
+  type RequestQuote,
+} from "./component/request-quotes-list";
+
+import ReassignProviderForm from "./component/reassign-provider-form";
 
 type RequestRecord = {
   id: string;
@@ -58,6 +67,8 @@ type JobRecord = {
 type Props = {
   requests: RequestRecord[];
   jobs: JobRecord[];
+  providers: ProviderOption[];
+  quotes: RequestQuote[];
 };
 
 type Tab = "requests" | "jobs";
@@ -148,7 +159,12 @@ function SummaryCard({
   );
 }
 
-export function RequestsJobsClient({ requests, jobs }: Props) {
+export function RequestsJobsClient({
+  requests,
+  jobs,
+  providers,
+  quotes,
+}: Props) {
   const [tab, setTab] = useState<Tab>("requests");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -506,6 +522,76 @@ export function RequestsJobsClient({ requests, jobs }: Props) {
                               <p className="mt-2 break-all text-xs text-slate-500">
                                 Request ID: {request.id}
                               </p>
+                            </div>
+                            <div className="mt-6 space-y-5">
+                              <RequestQuotesList
+                                requestId={request.id}
+                                quotes={quotes}
+                              />
+
+                              {/* {!["completed", "cancelled", "rejected"].includes(
+                                request.status.toLowerCase(),
+                              ) && (
+                                <ProviderAssignmentForm
+                                  requestId={request.id}
+                                  providers={providers}
+                                />
+                              )} */}
+                              {(() => {
+                                const requestStatus =
+                                  request.status.toLowerCase();
+
+                                const isClosed = [
+                                  "completed",
+                                  "cancelled",
+                                  "rejected",
+                                ].includes(requestStatus);
+
+                                const requestQuotes = quotes.filter(
+                                  (quote) => quote.request_id === request.id,
+                                );
+
+                                const acceptedQuote = requestQuotes.find(
+                                  (quote) =>
+                                    quote.status.toLowerCase() === "accepted",
+                                );
+
+                                const existingJob = jobs.find(
+                                  (job) => job.request_id === request.id,
+                                );
+
+                                if (isClosed) {
+                                  return null;
+                                }
+
+                                if (acceptedQuote) {
+                                  if (!existingJob) {
+                                    return (
+                                      <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-800">
+                                        An accepted quotation exists, but the
+                                        corresponding job could not be found.
+                                        Please resolve the job record before
+                                        reassigning the provider.
+                                      </p>
+                                    );
+                                  }
+
+                                  return (
+                                    <ReassignProviderForm
+                                      requestId={request.id}
+                                      currentWorkerId={existingJob.worker_id}
+                                      providers={providers}
+                                    />
+                                  );
+                                }
+
+                                return (
+                                  <ProviderAssignmentForm
+                                    requestId={request.id}
+                                    providers={providers}
+                                  />
+                                );
+                              })()}
                             </div>
                           </div>
                         </td>

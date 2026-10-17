@@ -16,6 +16,7 @@ export default async function AdminRequestsPage() {
     categoriesResult,
     servicesResult,
     workerProfilesResult,
+    quotesResult,
   ] = await Promise.all([
     supabase
       .from("service_requests")
@@ -41,7 +42,17 @@ export default async function AdminRequestsPage() {
 
     supabase.from("services").select("id, name"),
 
-    supabase.from("worker_profiles").select("id, user_id"),
+    supabase
+      .from("worker_profiles")
+      .select("id, user_id, verification_status, is_available"),
+
+    supabase
+      .from("quotes")
+      .select(
+        "id, request_id, worker_id, amount, currency, message, status, created_at",
+      )
+      .order("created_at", { ascending: false })
+      .limit(1000),
   ]);
 
   if (requestsResult.error) {
@@ -55,8 +66,11 @@ export default async function AdminRequestsPage() {
   }
 
   if (profilesResult.error) {
-    console.error("Admin profiles query failed:", profilesResult.error.message);
-    throw new Error("Unable to load user information.");
+    console.error("Admin profiles query failed:", profilesResult.error);
+
+    throw new Error(
+      `Unable to load user information: ${profilesResult.error.message}`,
+    );
   }
 
   if (categoriesResult.error) {
@@ -80,15 +94,25 @@ export default async function AdminRequestsPage() {
     throw new Error("Unable to load worker profiles.");
   }
 
+  if (quotesResult.error) {
+    console.error("Admin quotes query failed:", quotesResult.error.message);
+    throw new Error("Unable to load quotations.");
+  }
+
   const profiles = profilesResult.data ?? [];
   const categories = categoriesResult.data ?? [];
   const services = servicesResult.data ?? [];
+  const workerProfiles = workerProfilesResult.data ?? [];
+  const quoteRecords = quotesResult.data ?? [];
 
-  const profileMap = Object.fromEntries(
+  // Profiles are indexed by the Supabase Auth user ID.
+  const profileMap = new Map(
     profiles.map((profile) => [
       profile.id,
       {
-        name: `${profile.first_name} ${profile.last_name}`.trim(),
+        name: `${profile.first_name ?? ""} ${profile.last_name ?? ""}`.trim(),
+        first_name: profile.first_name,
+        last_name: profile.last_name,
         phone: profile.phone,
         role: profile.role,
         isActive: profile.is_active,
@@ -96,11 +120,39 @@ export default async function AdminRequestsPage() {
     ]),
   );
 
-  const workerProfiles = workerProfilesResult.data ?? [];
-
-  const workerProfileMap = Object.fromEntries(
-    workerProfiles.map((worker) => [worker.id, profileMap[worker.user_id]]),
+  // Worker profiles are indexed by worker_profiles.id.
+  const workerProfileMap = new Map(
+    workerProfiles.map((worker) => [worker.id, worker]),
   );
+
+  const providers = workerProfiles.map((worker) => {
+    const profile = profileMap.get(worker.user_id);
+
+    return {
+      id: worker.id,
+      name: profile?.name || "Unnamed provider",
+      phone: profile?.phone ?? null,
+      verification_status: worker.verification_status ?? "",
+      is_available: worker.is_available ?? false,
+    };
+  });
+
+  const quotes = quoteRecords.map((quote) => {
+    const worker = workerProfileMap.get(quote.worker_id);
+    const profile = worker ? profileMap.get(worker.user_id) : undefined;
+
+    return {
+      id: quote.id,
+      request_id: quote.request_id,
+      worker_id: quote.worker_id,
+      amount: Number(quote.amount),
+      currency: quote.currency || "NGN",
+      message: quote.message,
+      status: quote.status,
+      created_at: quote.created_at,
+      workerName: profile?.name || "Service provider",
+    };
+  });
 
   const categoryMap = Object.fromEntries(
     categories.map((category) => [category.id, category.name]),
@@ -112,8 +164,9 @@ export default async function AdminRequestsPage() {
 
   const requests = (requestsResult.data ?? []).map((request) => ({
     ...request,
-    customerName: profileMap[request.customer_id]?.name ?? "Unknown customer",
-    customerPhone: profileMap[request.customer_id]?.phone ?? null,
+    customerName:
+      profileMap.get(request.customer_id)?.name || "Unknown customer",
+    customerPhone: profileMap.get(request.customer_id)?.phone ?? null,
     categoryName: request.category_id
       ? (categoryMap[request.category_id] ?? "Unknown category")
       : "Not specified",
@@ -122,21 +175,32 @@ export default async function AdminRequestsPage() {
       : "General request",
   }));
 
-  const jobs = (jobsResult.data ?? []).map((job) => ({
-    ...job,
-    customerName: profileMap[job.customer_id]?.name ?? "Unknown customer",
+  const jobs = (jobsResult.data ?? []).map((job) => {
+    const worker = job.worker_id
+      ? workerProfileMap.get(job.worker_id)
+      : undefined;
 
-    workerName: job.worker_id
-      ? (workerProfileMap[job.worker_id]?.name ?? "Unknown worker")
-      : "Not assigned",
+    const workerProfile = worker ? profileMap.get(worker.user_id) : undefined;
 
-    workerPhone: job.worker_id
-      ? (workerProfileMap[job.worker_id]?.phone ?? null)
-      : null,
-    requestTitle:
-      requests.find((request) => request.id === job.request_id)?.title ??
-      "Service request",
-  }));
+    return {
+      ...job,
+      customerName: profileMap.get(job.customer_id)?.name || "Unknown customer",
+      workerName:
+        workerProfile?.name ||
+        (job.worker_id ? "Unknown worker" : "Not assigned"),
+      workerPhone: workerProfile?.phone ?? null,
+      requestTitle:
+        requests.find((request) => request.id === job.request_id)?.title ??
+        "Service request",
+    };
+  });
 
-  return <RequestsJobsClient requests={requests} jobs={jobs} />;
+  return (
+    <RequestsJobsClient
+      requests={requests}
+      jobs={jobs}
+      providers={providers}
+      quotes={quotes}
+    />
+  );
 }

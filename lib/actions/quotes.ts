@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import { checkWorkerEligibility } from "@/lib/actions/worker-eligibility";
 
 export type QuoteActionState = {
   error?: string;
@@ -144,7 +145,8 @@ export async function acceptQuote(
       service_requests!inner (
         id,
         customer_id,
-        status
+        status,
+        category_id
       )
     `,
     )
@@ -219,7 +221,7 @@ export async function acceptQuote(
    */
   const { data: workerProfile, error: workerProfileError } = await supabase
     .from("worker_profiles")
-    .select("id, user_id")
+    .select("id, user_id, verification_status")
     .eq("id", quote.worker_id)
     .maybeSingle();
 
@@ -234,6 +236,27 @@ export async function acceptQuote(
   if (!workerProfile) {
     return {
       error: "The assigned service provider could not be found.",
+    };
+  }
+
+  if (workerProfile.verification_status !== "verified") {
+    return {
+      error:
+        "This service provider is not currently verified and cannot be assigned to a job.",
+    };
+  }
+
+  const eligibility = await checkWorkerEligibility(
+    supabase,
+    workerProfile.id,
+    request.category_id,
+  );
+
+  if (!eligibility.allowed) {
+    return {
+      error:
+        eligibility.error ??
+        "This service provider is not eligible for this request.",
     };
   }
 

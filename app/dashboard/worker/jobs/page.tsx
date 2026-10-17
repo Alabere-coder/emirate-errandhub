@@ -8,12 +8,18 @@ import { Button } from "@/components/ui/button";
 
 import AvailableJobsList from "./available-jobs-list";
 
+const ASSIGNMENT_INACTIVE_STATUSES = [
+  "cancelled",
+  "canceled",
+  "declined",
+  "rejected",
+  "withdrawn",
+];
+
 export default async function AvailableJobsPage() {
   const { user } = await requireRole(["worker"]);
-
   const supabase = await createClient();
 
-  // Find the worker profile belonging to the authenticated user.
   const { data: workerProfile, error: workerProfileError } = await supabase
     .from("worker_profiles")
     .select("id")
@@ -61,39 +67,39 @@ export default async function AvailableJobsPage() {
     );
   }
 
-  // Fetch customer requests and their related category, service,
-  // and worker-assignment information.
+  // Only requests that are still open for quotations can be considered.
   const { data: jobs, error: jobsError } = await supabase
     .from("service_requests")
     .select(
       `
-      id,
-      title,
-      description,
-      budget,
-      currency,
-      status,
-      is_urgent,
-      preferred_date,
-      preferred_time,
-      city,
-      state,
-      created_at,
-      service_categories (
         id,
-        name
-      ),
-      services (
-        id,
-        name
-      ),
-      service_request_workers (
-        id,
-        worker_id,
-        status
-      )
-    `,
+        title,
+        description,
+        budget,
+        currency,
+        status,
+        is_urgent,
+        preferred_date,
+        preferred_time,
+        city,
+        state,
+        created_at,
+        service_categories (
+          id,
+          name
+        ),
+        services (
+          id,
+          name
+        ),
+        service_request_workers (
+          id,
+          worker_id,
+          status
+        )
+      `,
     )
+    .in("status", ["pending", "quoted"])
     .order("created_at", { ascending: false });
 
   if (jobsError) {
@@ -116,27 +122,38 @@ export default async function AvailableJobsPage() {
     );
   }
 
-  // Find any direct assignment for this worker on each request.
-
-  const availableJobs = (jobs ?? []).map((job) => {
+  const candidateJobs = (jobs ?? []).map((job) => {
     const assignments = Array.isArray(job.service_request_workers)
       ? job.service_request_workers
       : job.service_request_workers
         ? [job.service_request_workers]
         : [];
 
-    const assignment = assignments.find(
-      (item: { worker_id: string; id: string; status: string }) =>
-        item.worker_id === workerProfile.id,
+    const activeAssignments = assignments.filter((assignment) => {
+      const assignmentStatus = assignment.status?.toLowerCase() ?? "";
+
+      return (
+        assignment.worker_id &&
+        !ASSIGNMENT_INACTIVE_STATUSES.includes(assignmentStatus)
+      );
+    });
+
+    const assignmentForCurrentWorker = activeAssignments.find(
+      (assignment) => assignment.worker_id === workerProfile.id,
     );
 
     return {
       ...job,
-      directAssignment: assignment ?? null,
+      activeAssignments,
+      directAssignment: assignmentForCurrentWorker ?? null,
     };
   });
 
-  // Normalize Supabase relationships for the client-side list.
+  // A request with an active worker assignment is no longer generally available.
+  const availableJobs = candidateJobs.filter(
+    (job) => job.activeAssignments.length === 0,
+  );
+
   const normalizedJobs = availableJobs.map((job) => {
     const category = Array.isArray(job.service_categories)
       ? job.service_categories[0]
@@ -192,8 +209,8 @@ export default async function AvailableJobsPage() {
         </h1>
 
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-          Discover customer requests, review the requirements, and find
-          opportunities that match your skills.
+          Discover open customer requests that are still available for
+          quotations. Requests already assigned to a worker are excluded.
         </p>
       </section>
 

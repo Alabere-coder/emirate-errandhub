@@ -295,7 +295,7 @@ export function DashboardShell({
           </div>
         </nav>
 
-        <div className="shrink-0 border-t border-slate-100 p-4">
+        {/* <div className="shrink-0 border-t border-slate-100 p-4">
           <button
             type="button"
             onClick={handleLogout}
@@ -305,7 +305,7 @@ export function DashboardShell({
             <LogOut className="h-4.5 w-4.5" />
             {loggingOut ? "Logging out..." : "Log out"}
           </button>
-        </div>
+        </div> */}
       </aside>
 
       <div className="lg:pl-70">

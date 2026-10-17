@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import { checkWorkerEligibility } from "@/lib/actions/worker-eligibility";
 
 export type ServiceQuotationActionState = {
   error?: string;
@@ -65,9 +66,10 @@ export async function createServiceQuotation(
    * quotes.worker_id references worker_profiles.id,
    * NOT auth.users.id.
    */
+
   const { data: workerProfile, error: workerProfileError } = await supabase
     .from("worker_profiles")
-    .select("id")
+    .select("id, verification_status, is_available")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -85,12 +87,27 @@ export async function createServiceQuotation(
     };
   }
 
+  // Require admin verification before submitting quotations.
+  if (workerProfile.verification_status !== "verified") {
+    return {
+      error:
+        "Your account must be verified by an administrator before you can submit quotations. Please complete your document submission and wait for approval.",
+    };
+  }
+
+  // Prevent unavailable workers from submitting quotations.
+  if (!workerProfile.is_available) {
+    return {
+      error:
+        "Your availability is turned off. Please enable 'Available for new jobs' in your worker profile dashboard before submitting a quotation.",
+    };
+  }
   /*
    * Verify the service request.
    */
   const { data: request, error: requestError } = await supabase
     .from("service_requests")
-    .select("id, status")
+    .select("id, category_id, status")
     .eq("id", serviceRequestId)
     .maybeSingle();
 
@@ -146,6 +163,20 @@ export async function createServiceQuotation(
     return {
       error:
         "You already have a pending quotation for this request. Please wait for the customer to respond.",
+    };
+  }
+
+  const eligibility = await checkWorkerEligibility(
+    supabase,
+    workerProfile.id,
+    request.category_id,
+  );
+
+  if (!eligibility.allowed) {
+    return {
+      error:
+        eligibility.error ??
+        "The service provider is not eligible for this request.",
     };
   }
 

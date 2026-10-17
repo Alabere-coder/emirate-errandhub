@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import {
   CheckCircle2,
@@ -60,10 +60,27 @@ export function WorkerServiceAreaForm({
   serviceAreas,
   selectedAreaIds,
 }: WorkerServiceAreaFormProps) {
+  // const [state, formAction] = useActionState(
+  //   updateWorkerServiceAreas,
+  //   initialState,
+  // );
+
   const [state, formAction] = useActionState(
     updateWorkerServiceAreas,
     initialState,
   );
+
+  const [selectedIds, setSelectedIds] = useState<string[]>(selectedAreaIds);
+
+  function toggleArea(areaId: string, checked: boolean) {
+    setSelectedIds((current) =>
+      checked
+        ? current.includes(areaId)
+          ? current
+          : [...current, areaId]
+        : current.filter((id) => id !== areaId),
+    );
+  }
 
   return (
     <form action={formAction} className="space-y-6">
@@ -92,7 +109,8 @@ export function WorkerServiceAreaForm({
             <div className="flex w-fit shrink-0 items-center gap-2 rounded-full border bg-background px-3 py-2 text-sm">
               <MapPin className="size-4 text-primary" />
               <span className="font-semibold tabular-nums">
-                {selectedAreaIds.length}
+                {/* {selectedAreaIds.length} */}
+                {selectedIds.length}
               </span>
               <span className="text-muted-foreground">selected</span>
             </div>
@@ -115,7 +133,8 @@ export function WorkerServiceAreaForm({
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {serviceAreas.map((area) => {
-                const checked = selectedAreaIds.includes(area.id);
+                // const checked = selectedAreaIds.includes(area.id);
+                const checked = selectedIds.includes(area.id);
 
                 return (
                   <label
@@ -131,6 +150,9 @@ export function WorkerServiceAreaForm({
                       name="service_area_ids"
                       value={area.id}
                       defaultChecked={checked}
+                      onChange={(event) =>
+                        toggleArea(area.id, event.target.checked)
+                      }
                       className="peer sr-only"
                     />
 

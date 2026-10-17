@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import {
   Banknote,
@@ -14,7 +14,16 @@ import {
   createServiceQuotation,
   type ServiceQuotationActionState,
 } from "@/lib/actions/service-quotations";
+import { enableWorkerAvailability } from "@/lib/actions/worker-availability";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,12 +65,55 @@ export function QuotationForm({ serviceRequestId }: QuotationFormProps) {
     initialState,
   );
 
+  const [availabilityDialogOpen, setAvailabilityDialogOpen] = useState(false);
+  const [enablingAvailability, setEnablingAvailability] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState("");
+  const [availabilitySuccess, setAvailabilitySuccess] = useState("");
+
+  const isAvailabilityError = Boolean(
+    state.error &&
+    (state.error.toLowerCase().includes("unavailable for new jobs") ||
+      state.error.toLowerCase().includes("availability is turned off")),
+  );
+
+  useEffect(() => {
+    if (isAvailabilityError) {
+      setAvailabilityDialogOpen(true);
+    }
+  }, [isAvailabilityError]);
+
+  async function handleEnableAvailability() {
+    setEnablingAvailability(true);
+    setAvailabilityError("");
+    setAvailabilitySuccess("");
+
+    try {
+      const result = await enableWorkerAvailability();
+
+      if (result.error) {
+        setAvailabilityError(result.error);
+        return;
+      }
+
+      if (result.success) {
+        setAvailabilitySuccess(result.success);
+        setAvailabilityDialogOpen(false);
+      }
+    } catch {
+      setAvailabilityError(
+        "Something went wrong while enabling your availability. Please try again.",
+      );
+    } finally {
+      setEnablingAvailability(false);
+    }
+  }
+
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="service_request_id" value={serviceRequestId} />
 
       {/* Feedback */}
-      {state.error && (
+      {state.error && !isAvailabilityError && (
         <div
           role="alert"
           className="flex gap-3 rounded-xl border border-destructive/25 bg-destructive/5 p-4 text-sm text-destructive"
@@ -78,6 +130,15 @@ export function QuotationForm({ serviceRequestId }: QuotationFormProps) {
         >
           <span className="mt-0.5 size-2 shrink-0 rounded-full bg-emerald-500" />
           <p>{state.success}</p>
+        </div>
+      )}
+
+      {availabilitySuccess && (
+        <div
+          role="status"
+          className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-4 text-sm text-emerald-700 dark:text-emerald-400"
+        >
+          {availabilitySuccess}
         </div>
       )}
 
@@ -208,6 +269,62 @@ export function QuotationForm({ serviceRequestId }: QuotationFormProps) {
 
         <SubmitButton />
       </div>
+      <Dialog
+        open={availabilityDialogOpen}
+        onOpenChange={setAvailabilityDialogOpen}
+      >
+        <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogHeader>
+            <div className="mb-2 flex size-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+              <Clock3 className="size-6" />
+            </div>
+
+            <DialogTitle>Enable your availability</DialogTitle>
+
+            <DialogDescription className="leading-6">
+              Your profile is currently marked as unavailable for new jobs.
+              Enable your availability to submit quotations and receive new job
+              opportunities.
+            </DialogDescription>
+          </DialogHeader>
+
+          {availabilityError && (
+            <div
+              role="alert"
+              className="rounded-xl border border-destructive/25 bg-destructive/5 p-3 text-sm text-destructive"
+            >
+              {availabilityError}
+            </div>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={enablingAvailability}
+              onClick={() => setAvailabilityDialogOpen(false)}
+            >
+              Not now
+            </Button>
+
+            <Button
+              type="button"
+              disabled={enablingAvailability}
+              onClick={handleEnableAvailability}
+              className="gap-2"
+            >
+              {enablingAvailability ? (
+                <>
+                  <span className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                  Enabling...
+                </>
+              ) : (
+                "Enable availability"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

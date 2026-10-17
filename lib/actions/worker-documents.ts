@@ -185,7 +185,16 @@ export async function approveWorkerDocument(
     };
   }
 
-  await updateWorkerVerificationStatus(supabase, workerId);
+  const verificationError = await updateWorkerVerificationStatus(
+    supabase,
+    workerId,
+  );
+
+  if (verificationError) {
+    return {
+      error: `Document approved, but worker verification status could not be updated: ${verificationError}`,
+    };
+  }
 
   revalidatePath(`/dashboard/admin/worker-verification/${workerId}`);
 
@@ -269,18 +278,14 @@ export async function rejectWorkerDocument(
     };
   }
 
-  // A rejected document means the worker cannot currently be verified.
-  const { error: workerError } = await supabase
-    .from("worker_profiles")
-    .update({
-      verification_status: "rejected",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", workerId);
+  const verificationError = await updateWorkerVerificationStatus(
+    supabase,
+    workerId,
+  );
 
-  if (workerError) {
+  if (verificationError) {
     return {
-      error: "Document was rejected, but worker status could not be updated.",
+      error: `Document was rejected, but worker verification status could not be updated: ${verificationError}`,
     };
   }
 
@@ -293,63 +298,100 @@ export async function rejectWorkerDocument(
   };
 }
 
+// async function updateWorkerVerificationStatus(
+//   supabase: Awaited<ReturnType<typeof createClient>>,
+//   workerId: string,
+// ): Promise<string | null> {
+//   const { data: identityDocuments, error: documentsError } = await supabase
+//     .from("worker_documents")
+//     .select("status, created_at")
+//     .eq("worker_id", workerId)
+//     .eq("document_type", "identity")
+//     .order("created_at", { ascending: false });
+
+//   if (documentsError) {
+//     return documentsError.message;
+//   }
+
+//   const latestIdentityDocument = identityDocuments?.[0];
+
+//   let verificationStatus: "pending" | "verified" | "rejected" = "pending";
+
+//   if (latestIdentityDocument?.status === "approved") {
+//     verificationStatus = "verified";
+//   } else if (latestIdentityDocument?.status === "rejected") {
+//     verificationStatus = "rejected";
+//   }
+
+//   const { error: updateError } = await supabase
+//     .from("worker_profiles")
+//     .update({
+//       verification_status: verificationStatus,
+//       updated_at: new Date().toISOString(),
+//     })
+//     .eq("id", workerId);
+
+//   if (updateError) {
+//     return updateError.message;
+//   }
+
+//   return null;
+// }
+
 async function updateWorkerVerificationStatus(
   supabase: Awaited<ReturnType<typeof createClient>>,
   workerId: string,
-) {
-  const { data: documents } = await supabase
+): Promise<string | null> {
+  // Find the worker's identity documents, newest first.
+  const { data: identityDocuments, error: documentsError } = await supabase
     .from("worker_documents")
-    .select("document_type, status")
-    .eq("worker_id", workerId);
+    .select("id, status, created_at")
+    .eq("worker_id", workerId)
+    .eq("document_type", "identity")
+    .order("created_at", { ascending: false });
 
-  if (!documents || documents.length === 0) {
-    return;
+  if (documentsError) {
+    console.error("Failed to load worker identity documents:", documentsError);
+    return `Unable to load identity documents: ${documentsError.message}`;
   }
 
-  const identityApproved = documents.some(
-    (document) =>
-      document.document_type === "identity" && document.status === "approved",
-  );
+  const latestIdentityDocument = identityDocuments?.[0];
 
-  if (!identityApproved) {
-    await supabase
-      .from("worker_profiles")
-      .update({
-        verification_status: "pending",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", workerId);
+  let verificationStatus: "pending" | "verified" | "rejected" = "pending";
 
-    return;
+  if (latestIdentityDocument?.status === "approved") {
+    verificationStatus = "verified";
+  } else if (latestIdentityDocument?.status === "rejected") {
+    verificationStatus = "rejected";
   }
 
-  const hasPendingDocuments = documents.some(
-    (document) => document.status === "pending",
-  );
+  // Update the worker profile and verify that a row was returned.
+  const { data: updatedProfile, error: updateError } = await supabase
+    .from("worker_profiles")
+    .update({
+      verification_status: verificationStatus,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", workerId)
+    .select("id, verification_status")
+    .maybeSingle();
 
-  const hasRejectedDocuments = documents.some(
-    (document) => document.status === "rejected",
-  );
-
-  if (hasRejectedDocuments) {
-    await supabase
-      .from("worker_profiles")
-      .update({
-        verification_status: "rejected",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", workerId);
-
-    return;
+  if (updateError) {
+    console.error("Failed to update worker verification status:", updateError);
+    return `Unable to update worker profile: ${updateError.message}`;
   }
 
-  if (!hasPendingDocuments) {
-    await supabase
-      .from("worker_profiles")
-      .update({
-        verification_status: "verified",
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", workerId);
+  if (!updatedProfile) {
+    return (
+      "No worker profile was returned after the update. " +
+      "Check that the worker profile exists and that your Supabase RLS " +
+      "policies permit administrators to update it."
+    );
   }
+
+  if (updatedProfile.verification_status !== verificationStatus) {
+    return "The saved verification status does not match the expected status.";
+  }
+
+  return null;
 }

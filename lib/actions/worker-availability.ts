@@ -133,3 +133,46 @@ export async function updateWorkerAvailability(
     success: "Your availability has been updated.",
   };
 }
+
+export async function enableWorkerAvailability(): Promise<WorkerAvailabilityActionState> {
+  const { user } = await requireRole(["worker"]);
+  const supabase = await createClient();
+
+  const { data: workerProfile, error: workerError } = await supabase
+    .from("worker_profiles")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (workerError || !workerProfile) {
+    return {
+      error: "Unable to find your worker profile.",
+    };
+  }
+
+  const { data: updatedProfile, error: updateError } = await supabase
+    .from("worker_profiles")
+    .update({
+      is_available: true,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", workerProfile.id)
+    .eq("user_id", user.id)
+    .select("id")
+    .maybeSingle();
+
+  if (updateError || !updatedProfile) {
+    return {
+      error: "Unable to enable your availability. Please try again.",
+    };
+  }
+
+  revalidatePath("/dashboard/worker");
+  revalidatePath("/dashboard/worker/availability");
+  revalidatePath("/dashboard/worker/jobs");
+
+  return {
+    success:
+      "Your availability is now enabled. You can submit your quotation again.",
+  };
+}
