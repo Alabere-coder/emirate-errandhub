@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
 import ReportReviewForm from "./report-review-form";
+import ReviewVoteButtons from "./review-vote-buttons";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -123,6 +124,45 @@ export default async function CustomerWorkerProfilePage({ params }: PageProps) {
       ? reviewList.reduce((total, review) => total + review.rating, 0) /
         reviewList.length
       : null;
+
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser();
+
+  const reviewIds = reviewList.map((review) => review.id);
+
+  const { data: votes, error: votesError } = reviewIds.length
+    ? await supabase
+        .from("review_votes")
+        .select("review_id, voter_id, vote")
+        .in("review_id", reviewIds)
+    : { data: [], error: null };
+
+  if (votesError) {
+    throw new Error("Unable to load review votes.");
+  }
+
+  const voteList = votes ?? [];
+
+  const voteSummary = new Map(
+    reviewIds.map((reviewId) => {
+      const reviewVotes = voteList.filter(
+        (vote) => vote.review_id === reviewId,
+      );
+
+      return [
+        reviewId,
+        {
+          helpfulCount: reviewVotes.filter((vote) => vote.vote === 1).length,
+          notHelpfulCount: reviewVotes.filter((vote) => vote.vote === -1)
+            .length,
+          currentVote:
+            (reviewVotes.find((vote) => vote.voter_id === currentUser?.id)
+              ?.vote as 1 | -1 | undefined) ?? null,
+        },
+      ];
+    }),
+  );
 
   const reviewerIds = [
     ...new Set(reviewList.map((review) => review.customer_id)),
@@ -588,6 +628,21 @@ export default async function CustomerWorkerProfilePage({ params }: PageProps) {
                             No written comment provided.
                           </p>
                         )}
+
+                        {(() => {
+                          const summary = voteSummary.get(review.id);
+
+                          if (!summary) return null;
+
+                          return (
+                            <ReviewVoteButtons
+                              reviewId={review.id}
+                              helpfulCount={summary.helpfulCount}
+                              notHelpfulCount={summary.notHelpfulCount}
+                              currentVote={summary.currentVote}
+                            />
+                          );
+                        })()}
 
                         {currentUserId &&
                           currentUserId !== review.customer_id &&

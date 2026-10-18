@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowLeft, Eye, EyeOff, MessageSquareText, Star } from "lucide-react";
+import {
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  MessageSquareText,
+  Star,
+  ThumbsUp,
+  ThumbsDown,
+} from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
@@ -70,6 +78,35 @@ export default async function AdminReviewsPage() {
   }
 
   const reviews = (reviewsResult.data ?? []) as ReviewRow[];
+
+  const reviewIds = reviews.map((review) => review.id);
+
+  const { data: votes, error: votesError } = reviewIds.length
+    ? await supabase
+        .from("review_votes")
+        .select("review_id, vote")
+        .in("review_id", reviewIds)
+    : { data: [], error: null };
+
+  if (votesError) {
+    console.error("Unable to load review votes:", votesError);
+  }
+
+  const voteCounts = new Map(
+    reviewIds.map((reviewId) => {
+      const reviewVotes = votesError
+        ? []
+        : (votes ?? []).filter((vote) => vote.review_id === reviewId);
+
+      return [
+        reviewId,
+        {
+          helpful: reviewVotes.filter((vote) => vote.vote === 1).length,
+          notHelpful: reviewVotes.filter((vote) => vote.vote === -1).length,
+        },
+      ];
+    }),
+  );
 
   const customerIds = [...new Set(reviews.map((review) => review.customer_id))];
 
@@ -308,11 +345,31 @@ export default async function AdminReviewsPage() {
                       </div>
                     </div>
 
-                    <div className="rounded-xl bg-muted/40 p-4">
-                      <p className="whitespace-pre-line text-sm leading-7">
-                        {review.comment?.trim() ||
-                          "No written comment provided."}
-                      </p>
+                    <div className="space-y-4">
+                      <div className="rounded-xl bg-muted/40 p-4">
+                        <p className="whitespace-pre-line text-sm leading-7">
+                          {review.comment?.trim() ||
+                            "No written comment provided."}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                        <span className="inline-flex items-center gap-2">
+                          <ThumbsUp className="size-4" />
+                          Helpful
+                          <span className="font-semibold text-foreground">
+                            {voteCounts.get(review.id)?.helpful ?? 0}
+                          </span>
+                        </span>
+
+                        <span className="inline-flex items-center gap-2">
+                          <ThumbsDown className="size-4" />
+                          Not helpful
+                          <span className="font-semibold text-foreground">
+                            {voteCounts.get(review.id)?.notHelpful ?? 0}
+                          </span>
+                        </span>
+                      </div>
                     </div>
 
                     <form

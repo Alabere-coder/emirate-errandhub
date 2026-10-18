@@ -99,6 +99,11 @@ const navigation: Record<UserRole, NavItem[]> = {
     },
     { label: "Earnings", href: "/dashboard/worker/earnings", icon: Wallet },
     { label: "Portfolio", href: "/dashboard/worker/portfolio", icon: Images },
+    {
+      label: "My Reviews",
+      href: "/dashboard/worker/reviews",
+      icon: Star,
+    },
     { label: "Profile", href: "/dashboard/worker/profile", icon: UserRound },
   ],
   admin: [
