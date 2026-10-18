@@ -9,6 +9,7 @@ import {
   Clock3,
   MapPin,
   ShieldCheck,
+  Star,
 } from "lucide-react";
 
 type PageProps = {
@@ -96,6 +97,57 @@ export default async function CustomerWorkerProfilePage({ params }: PageProps) {
   const fullName =
     `${profile?.first_name ?? ""} ${profile?.last_name ?? ""}`.trim() ||
     "Worker";
+
+  const { data: reviews, error: reviewsError } = await supabase
+    .from("reviews")
+    .select("id, customer_id, rating, comment, created_at")
+    .eq("worker_id", worker.id)
+    .eq("is_visible", true)
+    .order("created_at", { ascending: false });
+
+  if (reviewsError) {
+    console.error("Failed to load worker reviews:", reviewsError);
+  }
+
+  const reviewList = reviews ?? [];
+
+  const averageRating =
+    reviewList.length > 0
+      ? reviewList.reduce((total, review) => total + review.rating, 0) /
+        reviewList.length
+      : null;
+
+  const reviewerIds = [
+    ...new Set(reviewList.map((review) => review.customer_id)),
+  ];
+
+  const ratingBreakdown = [5, 4, 3, 2, 1].map((rating) => {
+    const count = reviewList.filter(
+      (review) => review.rating === rating,
+    ).length;
+
+    return {
+      rating,
+      count,
+      percentage: reviewList.length > 0 ? (count / reviewList.length) * 100 : 0,
+    };
+  });
+
+  const { data: reviewers, error: reviewersError } =
+    reviewerIds.length > 0
+      ? await supabase
+          .from("profiles")
+          .select("id, first_name, last_name")
+          .in("id", reviewerIds)
+      : { data: [], error: null };
+
+  if (reviewersError) {
+    console.error("Failed to load reviewer names:", reviewersError);
+  }
+
+  const reviewerById = new Map(
+    (reviewers ?? []).map((reviewer) => [reviewer.id, reviewer]),
+  );
 
   const categories =
     worker.worker_categories
@@ -209,6 +261,23 @@ export default async function CustomerWorkerProfilePage({ params }: PageProps) {
                     {worker.is_available
                       ? "Currently accepting jobs"
                       : "Currently unavailable"}
+                  </span>
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <div className="flex items-center gap-1.5 rounded-full border bg-background px-3 py-1.5 text-sm font-semibold">
+                    <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+
+                    {averageRating !== null ? (
+                      <span>{averageRating.toFixed(1)} / 5</span>
+                    ) : (
+                      <span>No ratings yet</span>
+                    )}
+                  </div>
+
+                  <span className="text-sm text-muted-foreground">
+                    {reviewList.length}{" "}
+                    {reviewList.length === 1 ? "review" : "reviews"}
                   </span>
                 </div>
               </div>
@@ -354,6 +423,173 @@ export default async function CustomerWorkerProfilePage({ params }: PageProps) {
           </div>
         )}
       </div>
+
+      {/* Customer reviews */}
+
+      <section id="reviews" className="rounded-2xl border bg-card p-6 sm:p-7">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Customer Reviews</h2>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              Feedback from customers who have worked with this professional.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 rounded-xl bg-muted/50 px-4 py-3">
+            <Star className="h-6 w-6 fill-amber-400 text-amber-400" />
+
+            <div>
+              <p className="text-xl font-bold">
+                {averageRating !== null ? averageRating.toFixed(1) : "—"}
+
+                <span className="text-sm font-medium text-muted-foreground">
+                  {" "}
+                  / 5
+                </span>
+              </p>
+
+              <p className="text-xs text-muted-foreground">
+                {reviewList.length}{" "}
+                {reviewList.length === 1 ? "review" : "reviews"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {reviewList.length === 0 ? (
+          <div className="mt-6 rounded-xl border border-dashed px-5 py-10 text-center">
+            <Star className="mx-auto h-8 w-8 text-muted-foreground/50" />
+
+            <h3 className="mt-3 font-semibold">No reviews yet</h3>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              This worker has not received any public reviews yet.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Rating Breakdown */}
+            <div className="mt-6 border-t pt-5">
+              <h3 className="mb-4 text-sm font-semibold">Rating Breakdown</h3>
+
+              <div className="space-y-3">
+                {[5, 4, 3, 2, 1].map((rating) => {
+                  const count = reviewList.filter(
+                    (review) => review.rating === rating,
+                  ).length;
+
+                  const percentage = (count / reviewList.length) * 100;
+
+                  return (
+                    <div
+                      key={rating}
+                      className="grid grid-cols-[42px_minmax(0,1fr)_32px] items-center gap-3"
+                    >
+                      <div className="flex items-center gap-1 text-sm">
+                        <span>{rating}</span>
+
+                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                      </div>
+
+                      <div
+                        className="h-2 overflow-hidden rounded-full bg-muted"
+                        role="progressbar"
+                        aria-label={`${rating}-star reviews`}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={Math.round(percentage)}
+                      >
+                        <div
+                          className="h-full rounded-full bg-amber-400 transition-all"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+
+                      <span className="text-right text-sm text-muted-foreground">
+                        {count}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Individual Customer Reviews */}
+            <div className="mt-6 divide-y border-t">
+              {reviewList.map((review) => {
+                const reviewer = reviewerById.get(review.customer_id);
+
+                const reviewerName =
+                  `${reviewer?.first_name ?? ""} ${
+                    reviewer?.last_name ?? ""
+                  }`.trim() || "Customer";
+
+                const reviewerInitial = reviewerName.charAt(0).toUpperCase();
+
+                return (
+                  <article
+                    key={review.id}
+                    className="py-5 first:pt-5 last:pb-0"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
+                        {reviewerInitial}
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <div>
+                            <h3 className="font-semibold">{reviewerName}</h3>
+
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {new Intl.DateTimeFormat("en-NG", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }).format(new Date(review.created_at))}
+                            </p>
+                          </div>
+
+                          <div
+                            className="flex items-center gap-1"
+                            aria-label={`${review.rating} out of 5 stars`}
+                          >
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`h-4 w-4 ${
+                                  star <= review.rating
+                                    ? "fill-amber-400 text-amber-400"
+                                    : "text-muted-foreground/30"
+                                }`}
+                              />
+                            ))}
+
+                            <span className="ml-1 text-sm font-semibold">
+                              {review.rating}/5
+                            </span>
+                          </div>
+                        </div>
+
+                        {review.comment ? (
+                          <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground">
+                            {review.comment}
+                          </p>
+                        ) : (
+                          <p className="mt-3 text-sm italic text-muted-foreground">
+                            No written comment provided.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </section>
 
       {/* Service areas */}
       <div className="rounded-2xl border bg-card p-6 sm:p-7">

@@ -24,6 +24,13 @@ type CustomerJob = {
   } | null;
 };
 
+type CustomerReview = {
+  id: string;
+  job_id: string;
+  rating: number;
+  comment: string | null;
+};
+
 const STATUS_LABELS: Record<string, string> = {
   assigned: "Assigned",
   in_progress: "In Progress",
@@ -91,6 +98,28 @@ export default async function CustomerJobsPage() {
   }
 
   const jobs = (data ?? []) as CustomerJob[];
+
+  const jobIds = jobs.map((job) => job.id);
+
+  let reviews: CustomerReview[] = [];
+
+  if (jobIds.length > 0) {
+    const { data: reviewData, error: reviewError } = await supabase
+      .from("reviews")
+      .select("id, job_id, rating, comment")
+      .eq("customer_id", user.id)
+      .in("job_id", jobIds);
+
+    if (reviewError) {
+      console.error("Load customer reviews error:", reviewError);
+    } else {
+      reviews = (reviewData ?? []) as CustomerReview[];
+    }
+  }
+
+  const reviewsByJobId = new Map(
+    reviews.map((review) => [review.job_id, review]),
+  );
 
   const activeJobs = jobs.filter(
     (job) => job.status === "assigned" || job.status === "in_progress",
@@ -186,7 +215,7 @@ export default async function CustomerJobsPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted-foreground">
               Keep track of your service request and job details.
             </p>
@@ -196,6 +225,37 @@ export default async function CustomerJobsPage() {
                 View Job Details
               </Link>
             </Button>
+          </div> */}
+
+          <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted-foreground">
+              {job.status === "completed"
+                ? reviewsByJobId.has(job.id)
+                  ? "Thank you for sharing your experience."
+                  : "How was your experience with this service provider?"
+                : "Keep track of your service request and job details."}
+            </p>
+
+            <div className="flex flex-col gap-2 sm:flex-row">
+              {job.status === "completed" && (
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl sm:w-auto"
+                >
+                  <Link href={`/dashboard/customer/jobs/${job.id}/review`}>
+                    {reviewsByJobId.has(job.id)
+                      ? "View Your Review"
+                      : "Rate Worker"}
+                  </Link>
+                </Button>
+              )}
+
+              <Button className="w-full rounded-xl px-5 shadow-sm transition-all hover:shadow-md sm:w-auto">
+                <Link href={`/dashboard/customer/requests/${job.request_id}`}>
+                  View Job Details
+                </Link>
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

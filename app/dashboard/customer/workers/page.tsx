@@ -56,6 +56,35 @@ export default async function CustomerWorkersPage() {
 
   const workerList = workers ?? [];
 
+  const workerIds = workerList.map((worker) => worker.id);
+
+  const { data: reviews, error: reviewsError } =
+    workerIds.length > 0
+      ? await supabase
+          .from("reviews")
+          .select("worker_id, rating")
+          .in("worker_id", workerIds)
+          .eq("is_visible", true)
+      : { data: [], error: null };
+
+  if (reviewsError) {
+    console.error("Failed to load worker ratings:", reviewsError);
+  }
+
+  const ratingByWorker = new Map<string, { total: number; count: number }>();
+
+  for (const review of reviews ?? []) {
+    const current = ratingByWorker.get(review.worker_id) ?? {
+      total: 0,
+      count: 0,
+    };
+
+    current.total += review.rating;
+    current.count += 1;
+
+    ratingByWorker.set(review.worker_id, current);
+  }
+
   return (
     <div className="space-y-8 pb-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
@@ -140,6 +169,12 @@ export default async function CustomerWorkersPage() {
                 })
                 .filter(Boolean) ?? [];
 
+            const ratingSummary = ratingByWorker.get(worker.id);
+            const averageRating = ratingSummary
+              ? ratingSummary.total / ratingSummary.count
+              : null;
+            const reviewCount = ratingSummary?.count ?? 0;
+
             return (
               <div
                 key={worker.id}
@@ -175,10 +210,38 @@ export default async function CustomerWorkersPage() {
                       </div>
                     </div>
 
-                    <div className="flex shrink-0 items-center gap-1 rounded-full border bg-background/80 px-2.5 py-1.5 text-xs font-medium text-muted-foreground">
+                    {/* <div className="flex shrink-0 items-center gap-1 rounded-full border bg-background/80 px-2.5 py-1.5 text-xs font-medium text-muted-foreground">
                       <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                       New
-                    </div>
+                    </div> */}
+
+                    {/* <div
+                      className="flex shrink-0 items-center gap-1.5 rounded-full border bg-background/80 px-2.5 py-1.5 text-xs font-medium"
+                      aria-label={
+                        averageRating === null
+                          ? "No reviews yet"
+                          : `${averageRating.toFixed(1)} out of 5 stars, ${reviewCount} reviews`
+                      }
+                    >
+                      <Star
+                        className={`h-3.5 w-3.5 ${
+                          averageRating !== null
+                            ? "fill-amber-400 text-amber-400"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+
+                      {averageRating !== null ? (
+                        <>
+                          <span>{averageRating.toFixed(1)}</span>
+                          <span className="text-muted-foreground">
+                            ({reviewCount})
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground">New</span>
+                      )}
+                    </div> */}
                   </div>
                 </div>
 
@@ -266,6 +329,40 @@ export default async function CustomerWorkersPage() {
                           </p>
                         </div>
                       )}
+
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-1.5 text-sm">
+                        <Star
+                          className={`h-4 w-4 ${
+                            averageRating !== null
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+
+                        {averageRating !== null ? (
+                          <>
+                            <span className="font-semibold">
+                              {averageRating.toFixed(1)}
+                            </span>
+                            <span className="text-muted-foreground">
+                              ({reviewCount})
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-muted-foreground">
+                            No reviews yet
+                          </span>
+                        )}
+                      </div>
+
+                      <Link
+                        href={`/dashboard/customer/workers/${worker.id}#reviews`}
+                        className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                      >
+                        Read reviews
+                      </Link>
+                    </div>
 
                     {/* Action */}
                     <Link
