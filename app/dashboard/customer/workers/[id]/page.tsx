@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import ReportReviewForm from "./report-review-form";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -24,6 +25,12 @@ export default async function CustomerWorkerProfilePage({ params }: PageProps) {
   const { id } = await params;
 
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const currentUserId = user?.id ?? null;
 
   const { data: worker, error } = await supabase
     .from("worker_profiles")
@@ -581,6 +588,12 @@ export default async function CustomerWorkerProfilePage({ params }: PageProps) {
                             No written comment provided.
                           </p>
                         )}
+
+                        {currentUserId &&
+                          currentUserId !== review.customer_id &&
+                          currentUserId !== worker.user_id && (
+                            <ReportReviewForm reviewId={review.id} />
+                          )}
                       </div>
                     </div>
                   </article>

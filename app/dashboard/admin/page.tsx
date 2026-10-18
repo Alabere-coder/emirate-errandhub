@@ -13,6 +13,7 @@ import {
   Settings,
   ShieldCheck,
   ShoppingBag,
+  Star,
   Users,
   Wrench,
 } from "lucide-react";
@@ -142,6 +143,12 @@ const quickActions = [
     description: "Monitor service requests and assigned jobs.",
     href: "/dashboard/admin/requests",
     icon: ClipboardList,
+  },
+  {
+    title: "Moderate reviews",
+    description: "Review customer feedback and manage inappropriate reviews.",
+    href: "/dashboard/admin/reviews",
+    icon: Star,
   },
 ];
 

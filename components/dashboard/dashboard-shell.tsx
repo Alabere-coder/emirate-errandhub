@@ -23,6 +23,8 @@ import {
   X,
   Sparkles,
   ChevronRight,
+  Star,
+  StarCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
@@ -122,6 +124,17 @@ const navigation: Record<UserRole, NavItem[]> = {
       href: "/dashboard/admin/jobs",
       icon: ClipboardList,
     },
+    {
+      label: "Reviews",
+      href: "/dashboard/admin/reviews",
+      icon: Star,
+    },
+    {
+      label: "review-reports",
+      href: "/dashboard/admin/review-reports",
+      icon: StarCheck,
+    },
+
     { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
   ],
 };
