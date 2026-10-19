@@ -17,6 +17,7 @@ export default async function AdminRequestsPage() {
     servicesResult,
     workerProfilesResult,
     quotesResult,
+    paymentsResult,
   ] = await Promise.all([
     supabase
       .from("service_requests")
@@ -28,8 +29,11 @@ export default async function AdminRequestsPage() {
 
     supabase
       .from("jobs")
+      // .select(
+      //   "id, request_id, customer_id, worker_id, agreed_amount, currency, scheduled_at, started_at, completed_at, status, created_at",
+      // )
       .select(
-        "id, request_id, customer_id, worker_id, agreed_amount, currency, scheduled_at, started_at, completed_at, status, created_at",
+        "id, request_id, customer_id, worker_id, agreed_amount, currency, scheduled_at, started_at, completed_at, status, customer_confirmed_at, earnings_release_approved_at, created_at",
       )
       .order("created_at", { ascending: false })
       .limit(500),
@@ -53,6 +57,11 @@ export default async function AdminRequestsPage() {
       )
       .order("created_at", { ascending: false })
       .limit(1000),
+
+    supabase
+      .from("payments")
+      .select("id, job_id, status, amount, currency, paid_at")
+      .limit(500),
   ]);
 
   if (requestsResult.error) {
@@ -99,11 +108,32 @@ export default async function AdminRequestsPage() {
     throw new Error("Unable to load quotations.");
   }
 
+  if (paymentsResult.error) {
+    console.error("Admin payments query failed:", paymentsResult.error.message);
+
+    throw new Error("Unable to load payment information.");
+  }
+
   const profiles = profilesResult.data ?? [];
   const categories = categoriesResult.data ?? [];
   const services = servicesResult.data ?? [];
   const workerProfiles = workerProfilesResult.data ?? [];
   const quoteRecords = quotesResult.data ?? [];
+
+  const paymentRecords = paymentsResult.data ?? [];
+
+  const paymentMap = new Map(
+    paymentRecords.map((payment) => [
+      payment.job_id,
+      {
+        id: payment.id,
+        status: payment.status,
+        amount: Number(payment.amount),
+        currency: payment.currency,
+        paid_at: payment.paid_at,
+      },
+    ]),
+  );
 
   // Profiles are indexed by the Supabase Auth user ID.
   const profileMap = new Map(
@@ -182,11 +212,17 @@ export default async function AdminRequestsPage() {
 
     const workerProfile = worker ? profileMap.get(worker.user_id) : undefined;
 
+    const payment = paymentMap.get(job.id);
+
     return {
       ...job,
-      customerName: profileMap.get(job.customer_id)?.name || "Unknown customer",
+      paymentStatus: payment?.status ?? "no_payment",
+      paymentAmount: payment?.amount ?? null,
+      paymentCurrency: payment?.currency ?? null,
+      paymentPaidAt: payment?.paid_at ?? null,
+      customerName: profileMap.get(job.customer_id)?.name ?? "Unknown customer",
       workerName:
-        workerProfile?.name ||
+        workerProfile?.name ??
         (job.worker_id ? "Unknown worker" : "Not assigned"),
       workerPhone: workerProfile?.phone ?? null,
       requestTitle:

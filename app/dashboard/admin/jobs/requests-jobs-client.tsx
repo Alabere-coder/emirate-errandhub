@@ -22,6 +22,7 @@ import RequestQuotesList, {
 } from "./component/request-quotes-list";
 
 import ReassignProviderForm from "./component/reassign-provider-form";
+import ApproveEarningsButton from "@/components/dashboard/admin/approve-earnings-button";
 
 type RequestRecord = {
   id: string;
@@ -46,6 +47,24 @@ type RequestRecord = {
   serviceName: string;
 };
 
+// type JobRecord = {
+//   id: string;
+//   request_id: string;
+//   customer_id: string;
+//   worker_id: string | null;
+//   agreed_amount: number | null;
+//   currency: string | null;
+//   scheduled_at: string | null;
+//   started_at: string | null;
+//   completed_at: string | null;
+//   status: string;
+//   created_at: string;
+//   customerName: string;
+//   workerName: string;
+//   workerPhone: string | null;
+//   requestTitle: string;
+// };
+
 type JobRecord = {
   id: string;
   request_id: string;
@@ -58,6 +77,15 @@ type JobRecord = {
   completed_at: string | null;
   status: string;
   created_at: string;
+
+  customer_confirmed_at: string | null;
+  earnings_release_approved_at: string | null;
+
+  paymentStatus: string;
+  paymentAmount: number | null;
+  paymentCurrency: string | null;
+  paymentPaidAt: string | null;
+
   customerName: string;
   workerName: string;
   workerPhone: string | null;
@@ -105,7 +133,16 @@ function readableStatus(status: string) {
 function statusClass(status: string) {
   const normalized = status.toLowerCase();
 
-  if (["completed", "approved", "verified", "paid"].includes(normalized)) {
+  if (
+    [
+      "completed",
+      "approved",
+      "verified",
+      "paid",
+      "confirmed",
+      "released",
+    ].includes(normalized)
+  ) {
     return "bg-emerald-50 text-emerald-700 ring-emerald-600/20";
   }
 
@@ -529,14 +566,6 @@ export function RequestsJobsClient({
                                 quotes={quotes}
                               />
 
-                              {/* {!["completed", "cancelled", "rejected"].includes(
-                                request.status.toLowerCase(),
-                              ) && (
-                                <ProviderAssignmentForm
-                                  requestId={request.id}
-                                  providers={providers}
-                                />
-                              )} */}
                               {(() => {
                                 const requestStatus =
                                   request.status.toLowerCase();
@@ -705,6 +734,115 @@ export function RequestsJobsClient({
                                 {formatDate(job.completed_at)}
                               </p>
                             </div>
+                          </div>
+
+                          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
+                            <div className="flex items-center gap-2">
+                              <BriefcaseBusiness className="size-5 text-emerald-700" />
+                              <h3 className="font-semibold text-slate-900">
+                                Payment &amp; Earnings Release
+                              </h3>
+                            </div>
+
+                            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                  Customer confirmation
+                                </p>
+                                <div className="mt-2">
+                                  <StatusBadge
+                                    status={
+                                      job.customer_confirmed_at
+                                        ? "confirmed"
+                                        : "awaiting_confirmation"
+                                    }
+                                  />
+                                </div>
+                                {job.customer_confirmed_at && (
+                                  <p className="mt-2 text-xs text-slate-500">
+                                    {formatDate(job.customer_confirmed_at)}
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                  Payment status
+                                </p>
+                                <div className="mt-2">
+                                  <StatusBadge status={job.paymentStatus} />
+                                </div>
+                                {job.paymentAmount !== null && (
+                                  <p className="mt-2 text-sm text-slate-600">
+                                    {formatMoney(
+                                      job.paymentAmount,
+                                      job.paymentCurrency,
+                                    )}
+                                  </p>
+                                )}
+                                {job.paymentPaidAt && (
+                                  <p className="mt-1 text-xs text-slate-500">
+                                    Paid: {formatDate(job.paymentPaidAt)}
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                  Earnings release
+                                </p>
+                                <div className="mt-2">
+                                  <StatusBadge
+                                    status={
+                                      job.earnings_release_approved_at
+                                        ? "released"
+                                        : "awaiting_admin_approval"
+                                    }
+                                  />
+                                </div>
+                                {job.earnings_release_approved_at && (
+                                  <p className="mt-2 text-xs text-slate-500">
+                                    Released:{" "}
+                                    {formatDate(
+                                      job.earnings_release_approved_at,
+                                    )}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {job.earnings_release_approved_at ? (
+                              <p className="mt-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">
+                                Earnings have already been released. No further
+                                approval is needed.
+                              </p>
+                            ) : job.status.toLowerCase() !== "completed" ? (
+                              <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+                                Earnings cannot be released until the job is
+                                completed.
+                              </p>
+                            ) : !job.customer_confirmed_at ? (
+                              <p className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+                                Waiting for the customer to confirm that the
+                                work is complete.
+                              </p>
+                            ) : job.paymentStatus.toLowerCase() !== "paid" ? (
+                              <p className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+                                Payment must be verified as paid before earnings
+                                can be released.
+                              </p>
+                            ) : (
+                              <div className="mt-5 border-t border-slate-100 pt-5">
+                                <p className="mb-3 text-sm text-slate-600">
+                                  All displayed prerequisites are satisfied.
+                                  Approving this action will calculate the
+                                  platform commission and record the worker's
+                                  earnings through the secure database function.
+                                </p>
+
+                                <ApproveEarningsButton jobId={job.id} />
+                              </div>
+                            )}
                           </div>
                         </td>
                       </tr>
