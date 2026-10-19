@@ -10,6 +10,7 @@ import {
   Wallet,
   Trash2,
   Pencil,
+  CheckCircle2,
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
@@ -32,6 +33,7 @@ import {
   type JobMediaGalleryItem,
 } from "@/components/dashboard/jobs/job-media-gallery";
 import { DeleteServiceRequestButton } from "@/components/dashboard/customer/requests/delete-service-request-button";
+import { ConfirmJobCompletionButton } from "@/components/dashboard/customer/requests/confirm-job-completion-button";
 
 type RequestDetailsPageProps = {
   params: Promise<{
@@ -311,6 +313,7 @@ export default async function CustomerRequestDetailsPage({
     scheduled_at,
     started_at,
     completed_at,
+    customer_confirmed_at,
     created_at,
     updated_at,
     worker_profiles (
@@ -826,6 +829,27 @@ export default async function CustomerRequestDetailsPage({
                     startedAt={job.started_at}
                     completedAt={job.completed_at}
                   />
+
+                  {job.status === "completed" && (
+                    <div className="mt-5 border-t border-slate-100 pt-5">
+                      {job.customer_confirmed_at ? (
+                        <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-green-800">
+                            <CheckCircle2 className="h-5 w-5" />
+                            Completion confirmed
+                          </div>
+
+                          <p className="mt-1 text-sm leading-6 text-green-700">
+                            You have confirmed this job. Earnings release
+                            remains subject to payment verification and
+                            administrator approval.
+                          </p>
+                        </div>
+                      ) : (
+                        <ConfirmJobCompletionButton jobId={job.id} />
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 

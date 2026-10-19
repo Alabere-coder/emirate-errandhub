@@ -123,310 +123,47 @@ export async function acceptQuote(
   const quoteId = formData.get("quote_id");
 
   if (typeof quoteId !== "string" || !quoteId) {
+    return { error: "Quotation is required." };
+  }
+
+  const { data: jobId, error } = await supabase.rpc("accept_service_quote", {
+    p_quote_id: quoteId,
+  });
+
+  if (error || !jobId) {
+    console.error("Accept quote transaction error:", error);
+
     return {
-      error: "Quotation is required.",
+      error: error?.message?.includes("not authorized")
+        ? "You are not authorized to accept this quotation."
+        : error?.message?.includes("certificate")
+          ? "The service provider does not have the required approved certificate."
+          : error?.message?.includes("unverified or unavailable")
+            ? "The service provider is unverified or unavailable."
+            : "Unable to accept this quotation. Please refresh and try again.",
     };
   }
 
-  /*
-   * Get the quotation and verify that the request
-   * belongs to the currently authenticated customer.
-   */
-  const { data: quote, error: quoteError } = await supabase
-    .from("quotes")
-    .select(
-      `
-      id,
-      request_id,
-      worker_id,
-      amount,
-      currency,
-      status,
-      service_requests!inner (
-        id,
-        customer_id,
-        status,
-        category_id
-      )
-    `,
-    )
-    .eq("id", quoteId)
-    .maybeSingle();
-
-  if (quoteError) {
-    console.error("Accept quote lookup error:", quoteError);
-
-    return {
-      error: "Unable to verify the quotation.",
-    };
-  }
-
-  if (!quote) {
-    return {
-      error: "Quotation not found.",
-    };
-  }
-
-  const request = Array.isArray(quote.service_requests)
-    ? quote.service_requests[0]
-    : quote.service_requests;
-
-  if (!request || request.customer_id !== user.id) {
-    return {
-      error: "You are not authorized to accept this quotation.",
-    };
-  }
-
-  if (quote.status !== "pending") {
-    return {
-      error: "This quotation has already been processed.",
-    };
-  }
-
-  if (request.status === "completed" || request.status === "cancelled") {
-    return {
-      error: "This service request is no longer available.",
-    };
-  }
-
-  /*
-   * Make sure another job has not already been created
-   * for this request.
-   */
-  const { data: existingJob, error: existingJobError } = await supabase
+  // The database has completed all acceptance writes atomically.
+  // Look up the request ID for page revalidation.
+  const { data: job, error: jobLookupError } = await supabase
     .from("jobs")
-    .select("id")
-    .eq("request_id", request.id)
+    .select("request_id")
+    .eq("id", jobId)
+    .eq("customer_id", user.id)
     .maybeSingle();
 
-  if (existingJobError) {
-    console.error("Existing job lookup error:", existingJobError);
+  if (jobLookupError || !job) {
+    console.error("Accepted job lookup error:", jobLookupError);
 
     return {
-      error: "Unable to verify the current job status.",
+      success:
+        "Quotation accepted and job created. Refresh the page to see the assignment.",
     };
   }
 
-  if (existingJob) {
-    return {
-      error: "A job has already been created for this request.",
-    };
-  }
-
-  /*
-   * Make sure the worker profile still exists.
-   *
-   * quotes.worker_id points to worker_profiles.id,
-   * not profiles.id.
-   */
-  const { data: workerProfile, error: workerProfileError } = await supabase
-    .from("worker_profiles")
-    .select("id, user_id, verification_status")
-    .eq("id", quote.worker_id)
-    .maybeSingle();
-
-  if (workerProfileError) {
-    console.error("Worker profile lookup error:", workerProfileError);
-
-    return {
-      error: "Unable to verify the assigned service provider.",
-    };
-  }
-
-  if (!workerProfile) {
-    return {
-      error: "The assigned service provider could not be found.",
-    };
-  }
-
-  if (workerProfile.verification_status !== "verified") {
-    return {
-      error:
-        "This service provider is not currently verified and cannot be assigned to a job.",
-    };
-  }
-
-  const eligibility = await checkWorkerEligibility(
-    supabase,
-    workerProfile.id,
-    request.category_id,
-  );
-
-  if (!eligibility.allowed) {
-    return {
-      error:
-        eligibility.error ??
-        "This service provider is not eligible for this request.",
-    };
-  }
-
-  /*
-   * Accept the selected quotation.
-   */
-  const { error: acceptError } = await supabase
-    .from("quotes")
-    .update({
-      status: "accepted",
-    })
-    .eq("id", quote.id)
-    .eq("status", "pending");
-
-  if (acceptError) {
-    console.error("Accept quote error:", acceptError);
-
-    return {
-      error: "Unable to accept the quotation.",
-    };
-  }
-
-  /*
-   * Reject all other pending quotations
-   * for the same request.
-   */
-  const { error: rejectOthersError } = await supabase
-    .from("quotes")
-    .update({
-      status: "rejected",
-    })
-    .eq("request_id", request.id)
-    .eq("status", "pending")
-    .neq("id", quote.id);
-
-  if (rejectOthersError) {
-    console.error("Reject other quotes error:", rejectOthersError);
-
-    return {
-      error:
-        "The quotation was accepted, but the other quotations could not be updated.",
-    };
-  }
-
-  /*
-   * Create the actual job.
-   */
-  const { data: job, error: jobError } = await supabase
-    .from("jobs")
-    .insert({
-      quote_id: quote.id,
-      request_id: request.id,
-      customer_id: user.id,
-      worker_id: quote.worker_id,
-      agreed_amount: quote.amount,
-      currency: quote.currency,
-      status: "assigned",
-    })
-    .select("id, customer_id, worker_id, request_id")
-    .single();
-
-  if (jobError || !job) {
-    console.error("Create job error:", jobError);
-
-    return {
-      error: "The quotation was accepted, but the job could not be created.",
-    };
-  }
-
-  const { error: historyError } = await supabase
-    .from("job_status_history")
-    .insert({
-      job_id: job.id,
-      status: "assigned",
-      note: "Job assigned to worker.",
-      changed_by: user.id,
-    });
-
-  if (historyError) {
-    console.error("Create assigned job status history error:", historyError);
-  }
-
-  /*
-   * Create the conversation for this job.
-   *
-   * conversations.job_id points to the newly created job.
-   * conversations.request_id also keeps the request relationship.
-   */
-  const { data: conversation, error: conversationError } = await supabase
-    .from("conversations")
-    .insert({
-      job_id: job.id,
-      request_id: request.id,
-    })
-    .select("id")
-    .single();
-
-  if (conversationError || !conversation) {
-    console.error("Create conversation error:", conversationError);
-
-    return {
-      error:
-        "The job was created, but the job conversation could not be created.",
-    };
-  }
-
-  /*
-   * Add the customer and worker to the conversation.
-   *
-   * IMPORTANT:
-   *
-   * customer_id = profiles.id
-   *
-   * workerProfile.user_id = profiles.id
-   *
-   * quote.worker_id is worker_profiles.id,
-   * so it must NOT be inserted directly as user_id.
-   */
-  const { error: participantsError } = await supabase
-    .from("conversation_participants")
-    .insert([
-      {
-        conversation_id: conversation.id,
-        user_id: job.customer_id,
-      },
-      {
-        conversation_id: conversation.id,
-        user_id: workerProfile.user_id,
-      },
-    ]);
-
-  if (participantsError) {
-    console.error("Create conversation participants error:", participantsError);
-
-    return {
-      error:
-        "The job was created, but the conversation participants could not be added.",
-    };
-  }
-
-  /*
-   * Update the request status.
-   */
-  const { error: requestUpdateError } = await supabase
-    .from("service_requests")
-    .update({
-      status: "assigned",
-    })
-    .eq("id", request.id)
-    .eq("customer_id", user.id);
-
-  if (requestUpdateError) {
-    console.error("Update request status error:", requestUpdateError);
-
-    return {
-      error:
-        "The job and conversation were created, but the request status could not be updated.",
-    };
-  }
-
-  /*
-   * Refresh customer pages.
-   */
-  revalidatePath(`/dashboard/customer/requests/${request.id}`);
-
+  revalidatePath(`/dashboard/customer/requests/${job.request_id}`);
   revalidatePath("/dashboard/customer/requests");
-
-  /*
-   * Refresh worker pages.
-   */
   revalidatePath("/dashboard/worker/jobs");
   revalidatePath("/dashboard/worker/jobs/my");
 
@@ -434,3 +171,325 @@ export async function acceptQuote(
     success: "Quotation accepted. The service provider has been assigned.",
   };
 }
+
+// export async function acceptQuote(
+//   _previousState: QuoteActionState,
+//   formData: FormData,
+// ): Promise<QuoteActionState> {
+//   const { user } = await requireRole(["customer"]);
+//   const supabase = await createClient();
+
+//   const quoteId = formData.get("quote_id");
+
+//   if (typeof quoteId !== "string" || !quoteId) {
+//     return {
+//       error: "Quotation is required.",
+//     };
+//   }
+
+//   /*
+//    * Get the quotation and verify that the request
+//    * belongs to the currently authenticated customer.
+//    */
+//   const { data: quote, error: quoteError } = await supabase
+//     .from("quotes")
+//     .select(
+//       `
+//       id,
+//       request_id,
+//       worker_id,
+//       amount,
+//       currency,
+//       status,
+//       service_requests!inner (
+//         id,
+//         customer_id,
+//         status,
+//         category_id
+//       )
+//     `,
+//     )
+//     .eq("id", quoteId)
+//     .maybeSingle();
+
+//   if (quoteError) {
+//     console.error("Accept quote lookup error:", quoteError);
+
+//     return {
+//       error: "Unable to verify the quotation.",
+//     };
+//   }
+
+//   if (!quote) {
+//     return {
+//       error: "Quotation not found.",
+//     };
+//   }
+
+//   const request = Array.isArray(quote.service_requests)
+//     ? quote.service_requests[0]
+//     : quote.service_requests;
+
+//   if (!request || request.customer_id !== user.id) {
+//     return {
+//       error: "You are not authorized to accept this quotation.",
+//     };
+//   }
+
+//   if (quote.status !== "pending") {
+//     return {
+//       error: "This quotation has already been processed.",
+//     };
+//   }
+
+//   if (request.status === "completed" || request.status === "cancelled") {
+//     return {
+//       error: "This service request is no longer available.",
+//     };
+//   }
+
+//   /*
+//    * Make sure another job has not already been created
+//    * for this request.
+//    */
+//   const { data: existingJob, error: existingJobError } = await supabase
+//     .from("jobs")
+//     .select("id")
+//     .eq("request_id", request.id)
+//     .maybeSingle();
+
+//   if (existingJobError) {
+//     console.error("Existing job lookup error:", existingJobError);
+
+//     return {
+//       error: "Unable to verify the current job status.",
+//     };
+//   }
+
+//   if (existingJob) {
+//     return {
+//       error: "A job has already been created for this request.",
+//     };
+//   }
+
+//   /*
+//    * Make sure the worker profile still exists.
+//    *
+//    * quotes.worker_id points to worker_profiles.id,
+//    * not profiles.id.
+//    */
+//   const { data: workerProfile, error: workerProfileError } = await supabase
+//     .from("worker_profiles")
+//     .select("id, user_id, verification_status")
+//     .eq("id", quote.worker_id)
+//     .maybeSingle();
+
+//   if (workerProfileError) {
+//     console.error("Worker profile lookup error:", workerProfileError);
+
+//     return {
+//       error: "Unable to verify the assigned service provider.",
+//     };
+//   }
+
+//   if (!workerProfile) {
+//     return {
+//       error: "The assigned service provider could not be found.",
+//     };
+//   }
+
+//   if (workerProfile.verification_status !== "verified") {
+//     return {
+//       error:
+//         "This service provider is not currently verified and cannot be assigned to a job.",
+//     };
+//   }
+
+//   const eligibility = await checkWorkerEligibility(
+//     supabase,
+//     workerProfile.id,
+//     request.category_id,
+//   );
+
+//   if (!eligibility.allowed) {
+//     return {
+//       error:
+//         eligibility.error ??
+//         "This service provider is not eligible for this request.",
+//     };
+//   }
+
+//   /*
+//    * Accept the selected quotation.
+//    */
+//   const { error: acceptError } = await supabase
+//     .from("quotes")
+//     .update({
+//       status: "accepted",
+//     })
+//     .eq("id", quote.id)
+//     .eq("status", "pending");
+
+//   if (acceptError) {
+//     console.error("Accept quote error:", acceptError);
+
+//     return {
+//       error: "Unable to accept the quotation.",
+//     };
+//   }
+
+//   /*
+//    * Reject all other pending quotations
+//    * for the same request.
+//    */
+//   const { error: rejectOthersError } = await supabase
+//     .from("quotes")
+//     .update({
+//       status: "rejected",
+//     })
+//     .eq("request_id", request.id)
+//     .eq("status", "pending")
+//     .neq("id", quote.id);
+
+//   if (rejectOthersError) {
+//     console.error("Reject other quotes error:", rejectOthersError);
+
+//     return {
+//       error:
+//         "The quotation was accepted, but the other quotations could not be updated.",
+//     };
+//   }
+
+//   /*
+//    * Create the actual job.
+//    */
+//   const { data: job, error: jobError } = await supabase
+//     .from("jobs")
+//     .insert({
+//       quote_id: quote.id,
+//       request_id: request.id,
+//       customer_id: user.id,
+//       worker_id: quote.worker_id,
+//       agreed_amount: quote.amount,
+//       currency: quote.currency,
+//       status: "assigned",
+//     })
+//     .select("id, customer_id, worker_id, request_id")
+//     .single();
+
+//   if (jobError || !job) {
+//     console.error("Create job error:", jobError);
+
+//     return {
+//       error: "The quotation was accepted, but the job could not be created.",
+//     };
+//   }
+
+//   const { error: historyError } = await supabase
+//     .from("job_status_history")
+//     .insert({
+//       job_id: job.id,
+//       status: "assigned",
+//       note: "Job assigned to worker.",
+//       changed_by: user.id,
+//     });
+
+//   if (historyError) {
+//     console.error("Create assigned job status history error:", historyError);
+//   }
+
+//   /*
+//    * Create the conversation for this job.
+//    *
+//    * conversations.job_id points to the newly created job.
+//    * conversations.request_id also keeps the request relationship.
+//    */
+//   const { data: conversation, error: conversationError } = await supabase
+//     .from("conversations")
+//     .insert({
+//       job_id: job.id,
+//       request_id: request.id,
+//     })
+//     .select("id")
+//     .single();
+
+//   if (conversationError || !conversation) {
+//     console.error("Create conversation error:", conversationError);
+
+//     return {
+//       error:
+//         "The job was created, but the job conversation could not be created.",
+//     };
+//   }
+
+//   /*
+//    * Add the customer and worker to the conversation.
+//    *
+//    * IMPORTANT:
+//    *
+//    * customer_id = profiles.id
+//    *
+//    * workerProfile.user_id = profiles.id
+//    *
+//    * quote.worker_id is worker_profiles.id,
+//    * so it must NOT be inserted directly as user_id.
+//    */
+//   const { error: participantsError } = await supabase
+//     .from("conversation_participants")
+//     .insert([
+//       {
+//         conversation_id: conversation.id,
+//         user_id: job.customer_id,
+//       },
+//       {
+//         conversation_id: conversation.id,
+//         user_id: workerProfile.user_id,
+//       },
+//     ]);
+
+//   if (participantsError) {
+//     console.error("Create conversation participants error:", participantsError);
+
+//     return {
+//       error:
+//         "The job was created, but the conversation participants could not be added.",
+//     };
+//   }
+
+//   /*
+//    * Update the request status.
+//    */
+//   const { error: requestUpdateError } = await supabase
+//     .from("service_requests")
+//     .update({
+//       status: "assigned",
+//     })
+//     .eq("id", request.id)
+//     .eq("customer_id", user.id);
+
+//   if (requestUpdateError) {
+//     console.error("Update request status error:", requestUpdateError);
+
+//     return {
+//       error:
+//         "The job and conversation were created, but the request status could not be updated.",
+//     };
+//   }
+
+//   /*
+//    * Refresh customer pages.
+//    */
+//   revalidatePath(`/dashboard/customer/requests/${request.id}`);
+
+//   revalidatePath("/dashboard/customer/requests");
+
+//   /*
+//    * Refresh worker pages.
+//    */
+//   revalidatePath("/dashboard/worker/jobs");
+//   revalidatePath("/dashboard/worker/jobs/my");
+
+//   return {
+//     success: "Quotation accepted. The service provider has been assigned.",
+//   };
+// }

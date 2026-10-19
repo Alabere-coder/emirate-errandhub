@@ -31,12 +31,22 @@ export default async function ServicePage({ params }: ServicePageProps) {
   // Get the top-level category.
   const category = await getCategoryBySlug(categorySlug);
 
+  console.log("SERVICE PAGE - category:", {
+    categorySlug,
+    category,
+  });
+
   if (!category || category.parent_id) {
     notFound();
   }
 
   // Get the subcategory and verify its parent.
   const subcategory = await getCategoryBySlug(subcategorySlug);
+
+  console.log("SERVICE PAGE - subcategory:", {
+    subcategorySlug,
+    subcategory,
+  });
 
   if (
     !subcategory ||
@@ -54,6 +64,13 @@ export default async function ServicePage({ params }: ServicePageProps) {
     .eq("category_id", subcategory.id)
     .eq("is_active", true)
     .maybeSingle();
+
+  console.log("SERVICE PAGE - service:", {
+    serviceSlug,
+    subcategoryId: subcategory.id,
+    service,
+    error,
+  });
 
   if (error) {
     console.error("Error loading service:", error);
