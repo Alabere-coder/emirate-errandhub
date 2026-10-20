@@ -30,7 +30,6 @@ export async function requestWithdrawal(formData: FormData) {
     redirect("/dashboard/worker/earnings?withdrawal=profile-error");
   }
 
-  // The withdrawal must use the worker's saved default payout account.
   const { data: payoutAccount, error: accountError } = await supabase
     .from("worker_payout_accounts")
     .select("id")
@@ -42,8 +41,6 @@ export async function requestWithdrawal(formData: FormData) {
     redirect("/dashboard/worker/earnings?withdrawal=no-default-account");
   }
 
-  // The existing database RPC validates the balance, account ownership,
-  // and creates the pending withdrawal.
   const { error: withdrawalError } = await supabase.rpc(
     "request_worker_withdrawal",
     {
@@ -53,12 +50,31 @@ export async function requestWithdrawal(formData: FormData) {
   );
 
   if (withdrawalError) {
-    console.error("Withdrawal request failed:", withdrawalError);
+    // Keep detailed diagnostics in the server logs, not in the URL.
+    console.error("Withdrawal request failed:", {
+      code: withdrawalError.code,
+      message: withdrawalError.message,
+    });
+
+    const message = withdrawalError.message.toLowerCase();
+
+    if (
+      message.includes("insufficient available balance") ||
+      message.includes("available balance")
+    ) {
+      redirect("/dashboard/worker/earnings?withdrawal=insufficient-balance");
+    }
+
+    if (message.includes("payout account")) {
+      redirect("/dashboard/worker/earnings?withdrawal=no-default-account");
+    }
+
     redirect("/dashboard/worker/earnings?withdrawal=request-failed");
   }
 
   revalidatePath("/dashboard/worker/earnings");
   revalidatePath("/dashboard/worker/payout-account");
+  revalidatePath("/dashboard/admin/withdrawals");
 
   redirect("/dashboard/worker/earnings?withdrawal=submitted");
 }

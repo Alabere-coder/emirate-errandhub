@@ -146,6 +146,12 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: StarCheck,
     },
 
+    {
+      label: "Withdrawals",
+      href: "/dashboard/admin/withdrawals",
+      icon: WalletCards,
+    },
+
     { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
   ],
 };

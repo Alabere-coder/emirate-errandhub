@@ -32,6 +32,7 @@ type WorkerWithdrawal = {
   status: string;
   bank_name: string | null;
   account_number: string | null;
+  provider_reference: string | null;
   created_at: string;
   processed_at: string | null;
   failure_reason: string | null;
@@ -153,9 +154,11 @@ export default async function WorkerEarningsPage({
   // Fetch withdrawal history.
   const { data: withdrawalRows, error: withdrawalsError } = await supabase
     .from("withdrawals")
+
     .select(
-      "id, amount, currency, status, bank_name, account_number, created_at, processed_at, failure_reason",
+      "id, amount, currency, status, bank_name, account_number, provider_reference, created_at, processed_at, failure_reason",
     )
+
     .eq("worker_id", workerProfile.id)
     .order("created_at", { ascending: false });
 
@@ -366,6 +369,13 @@ export default async function WorkerEarningsPage({
               </p>
             )}
 
+            {withdrawal === "insufficient-balance" && (
+              <p role="alert" className="text-sm text-red-600">
+                Your available balance is too low for this withdrawal. Refresh
+                your earnings and try again.
+              </p>
+            )}
+
             {withdrawal === "profile-error" && (
               <p role="alert" className="text-sm text-destructive">
                 Your worker profile could not be verified. Please try again
@@ -531,11 +541,52 @@ export default async function WorkerEarningsPage({
                         </p>
                       )}
 
-                    {item.processed_at && (
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        Processed: {formatDate(item.processed_at)}
-                      </p>
+                    {item.status.toLowerCase() === "paid" && (
+                      <div className="mt-3 space-y-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+                        <p className="font-semibold">Payment completed</p>
+
+                        {item.provider_reference && (
+                          <p className="break-all">
+                            <span className="font-medium">
+                              Transfer reference:{" "}
+                            </span>
+                            {item.provider_reference}
+                          </p>
+                        )}
+
+                        {item.processed_at && (
+                          <p>
+                            <span className="font-medium">Processed on: </span>
+                            {formatDate(item.processed_at)}
+                          </p>
+                        )}
+                      </div>
                     )}
+
+                    {item.status.toLowerCase() === "failed" && (
+                      <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+                        <p className="font-semibold">Withdrawal failed</p>
+
+                        {item.failure_reason && (
+                          <p className="mt-1">{item.failure_reason}</p>
+                        )}
+
+                        {item.processed_at && (
+                          <p className="mt-2">
+                            Processed on: {formatDate(item.processed_at)}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {["pending", "processing"].includes(
+                      item.status.toLowerCase(),
+                    ) &&
+                      item.processed_at && (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          Processed: {formatDate(item.processed_at)}
+                        </p>
+                      )}
                   </div>
                 ))}
               </div>
