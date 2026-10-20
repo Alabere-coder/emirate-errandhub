@@ -34,6 +34,7 @@ import {
 } from "@/components/dashboard/jobs/job-media-gallery";
 import { DeleteServiceRequestButton } from "@/components/dashboard/customer/requests/delete-service-request-button";
 import { ConfirmJobCompletionButton } from "@/components/dashboard/customer/requests/confirm-job-completion-button";
+import { PayJobButton } from "@/components/dashboard/customer/payments/pay-job-button";
 
 type RequestDetailsPageProps = {
   params: Promise<{
@@ -829,6 +830,23 @@ export default async function CustomerRequestDetailsPage({
                     startedAt={job.started_at}
                     completedAt={job.completed_at}
                   />
+
+                  {(job.status === "assigned" ||
+                    job.status === "completed") && (
+                    <div className="mt-5 border-t border-slate-100 pt-5">
+                      <h3 className="font-semibold text-slate-900">
+                        Job Payment
+                      </h3>
+
+                      <p className="mt-1 mb-4 text-sm leading-6 text-slate-500">
+                        {job.status === "completed"
+                          ? "This job is complete, but payment has not been recorded. Complete payment to finalize the job's payment record."
+                          : "Complete the required upfront payment before your service provider starts the job."}
+                      </p>
+
+                      <PayJobButton jobId={job.id} />
+                    </div>
+                  )}
 
                   {job.status === "completed" && (
                     <div className="mt-5 border-t border-slate-100 pt-5">

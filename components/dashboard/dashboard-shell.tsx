@@ -25,6 +25,7 @@ import {
   ChevronRight,
   Star,
   StarCheck,
+  WalletCards,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
@@ -98,6 +99,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: FileCheck,
     },
     { label: "Earnings", href: "/dashboard/worker/earnings", icon: Wallet },
+    {
+      label: "Payout-account",
+      href: "/dashboard/worker/payout-account",
+      icon: WalletCards,
+    },
     { label: "Portfolio", href: "/dashboard/worker/portfolio", icon: Images },
     {
       label: "My Reviews",

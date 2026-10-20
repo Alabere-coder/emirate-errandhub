@@ -9,18 +9,27 @@ export type JobActionState = {
   success?: string;
 };
 
+function isValidJobId(value: FormDataEntryValue | null): value is string {
+  return (
+    typeof value === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      value,
+    )
+  );
+}
+
 export async function startJob(
   _previousState: JobActionState,
   formData: FormData,
 ): Promise<JobActionState> {
   try {
-    const { user } = await requireRole(["worker"]);
+    await requireRole(["worker"]);
     const supabase = await createClient();
 
     const jobId = formData.get("job_id");
 
-    if (typeof jobId !== "string" || !jobId) {
-      return { error: "Job ID is required." };
+    if (!isValidJobId(jobId)) {
+      return { error: "A valid job ID is required." };
     }
 
     const { error } = await supabase.rpc("start_assigned_job", {
@@ -29,10 +38,27 @@ export async function startJob(
 
     if (error) {
       console.error("Start job RPC error:", error);
+
+      const message = error.message.toLowerCase();
+
+      if (
+        message.includes("payment") ||
+        message.includes("deposit") ||
+        message.includes("balance")
+      ) {
+        return {
+          error: error.message,
+        };
+      }
+
+      if (message.includes("no longer available")) {
+        return {
+          error: "This job is no longer available to start.",
+        };
+      }
+
       return {
-        error: error.message.includes("no longer available")
-          ? "This job is no longer available to start."
-          : "Unable to start this job. Please refresh and try again.",
+        error: "Unable to start this job. Please refresh and try again.",
       };
     }
 
@@ -51,13 +77,13 @@ export async function completeJob(
   formData: FormData,
 ): Promise<JobActionState> {
   try {
-    const { user } = await requireRole(["worker"]);
+    await requireRole(["worker"]);
     const supabase = await createClient();
 
     const jobId = formData.get("job_id");
 
-    if (typeof jobId !== "string" || !jobId) {
-      return { error: "Job ID is required." };
+    if (!isValidJobId(jobId)) {
+      return { error: "A valid job ID is required." };
     }
 
     // Fetch the request ID for page revalidation.
