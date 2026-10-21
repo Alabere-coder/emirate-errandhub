@@ -26,6 +26,7 @@ import {
   Star,
   StarCheck,
   WalletCards,
+  Phone,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
@@ -79,6 +80,17 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: FileCheck,
     },
     {
+      label: "Documents",
+      href: "/dashboard/worker/documents",
+      icon: FileCheck,
+    },
+    {
+      label: "Phone-verification",
+      href: "/dashboard/worker/phone-verification",
+      icon: Phone,
+    },
+
+    {
       label: "Service Categories",
       href: "/dashboard/worker/categories",
       icon: BriefcaseBusiness,
@@ -93,11 +105,7 @@ const navigation: Record<UserRole, NavItem[]> = {
       href: "/dashboard/worker/availability",
       icon: Clock3,
     },
-    {
-      label: "Documents",
-      href: "/dashboard/worker/documents",
-      icon: FileCheck,
-    },
+
     { label: "Earnings", href: "/dashboard/worker/earnings", icon: Wallet },
     {
       label: "Payout-account",
