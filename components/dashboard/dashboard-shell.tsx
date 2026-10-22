@@ -27,6 +27,8 @@ import {
   StarCheck,
   WalletCards,
   Phone,
+  ShieldAlert,
+  FaceAngry,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
@@ -62,6 +64,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       label: "Jobs",
       href: "/dashboard/customer/jobs",
       icon: BriefcaseBusiness,
+    },
+    {
+      label: "Disputes",
+      href: "/dashboard/disputes",
+      icon: FaceAngry,
     },
     { label: "Addresses", href: "/dashboard/customer/addresses", icon: MapPin },
     { label: "Profile", href: "/dashboard/customer/profile", icon: UserRound },
@@ -118,6 +125,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       href: "/dashboard/worker/reviews",
       icon: Star,
     },
+    {
+      label: "Disputes",
+      href: "/dashboard/disputes",
+      icon: FaceAngry,
+    },
     { label: "Profile", href: "/dashboard/worker/profile", icon: UserRound },
   ],
   admin: [
@@ -149,9 +161,15 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: Star,
     },
     {
-      label: "review-reports",
+      label: "Review-reports",
       href: "/dashboard/admin/review-reports",
       icon: StarCheck,
+    },
+
+    {
+      label: "Disputes",
+      href: "/dashboard/admin/disputes",
+      icon: ShieldAlert,
     },
 
     {

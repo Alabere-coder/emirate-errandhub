@@ -570,12 +570,31 @@ export default async function WorkerJobDetailPage({
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>Job Actions</CardTitle>
             </CardHeader>
             <CardContent>
               <JobStatusActions jobId={job.id} status={job.status} />
+            </CardContent>
+          </Card> */}
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Job Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <JobStatusActions jobId={job.id} status={job.status} />
+
+              <Button variant="outline" className="w-full">
+                <Link
+                  href={`/dashboard/disputes/new?jobId=${job.id}`}
+                  className="flex"
+                >
+                  <AlertTriangle className="mr-2 h-4 w-4" />
+                  Open a dispute
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 

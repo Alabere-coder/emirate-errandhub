@@ -236,6 +236,26 @@ export default async function CustomerJobsPage() {
                 : "Keep track of your service request and job details."}
             </p>
 
+            {/* <div className="flex flex-col gap-2 sm:flex-row">
+              {job.status === "completed" && (
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl sm:w-auto"
+                >
+                  <Link href={`/dashboard/customer/jobs/${job.id}/review`}>
+                    {reviewsByJobId.has(job.id)
+                      ? "View Your Review"
+                      : "Rate Worker"}
+                  </Link>
+                </Button>
+              )}
+
+              <Button className="w-full rounded-xl px-5 shadow-sm transition-all hover:shadow-md sm:w-auto">
+                <Link href={`/dashboard/customer/requests/${job.request_id}`}>
+                  View Job Details
+                </Link>
+              </Button>
+            </div> */}
             <div className="flex flex-col gap-2 sm:flex-row">
               {job.status === "completed" && (
                 <Button
@@ -249,6 +269,12 @@ export default async function CustomerJobsPage() {
                   </Link>
                 </Button>
               )}
+
+              <Button variant="outline" className="w-full rounded-xl sm:w-auto">
+                <Link href={`/dashboard/disputes/new?jobId=${job.id}`}>
+                  Open a dispute
+                </Link>
+              </Button>
 
               <Button className="w-full rounded-xl px-5 shadow-sm transition-all hover:shadow-md sm:w-auto">
                 <Link href={`/dashboard/customer/requests/${job.request_id}`}>

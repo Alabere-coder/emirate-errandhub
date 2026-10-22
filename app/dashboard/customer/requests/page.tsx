@@ -534,16 +534,20 @@ export default async function CustomerRequestsPage() {
 
                       <Button
                         variant="outline"
-                        className="min-h-10 rounded-xl border-slate-300 font-semibold transition-colors hover:border-teal-600 hover:bg-teal-50 hover:text-teal-800"
+                        className="w-full rounded-xl sm:w-auto"
                       >
-                        <Link
-                          href={`/dashboard/customer/requests/${request.id}`}
-                          className="flex items-center gap-1"
-                        >
-                          View request
-                          <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                        <Link href="/dashboard/customer/jobs">
+                          View jobs to open a dispute
                         </Link>
                       </Button>
+
+                      <Link
+                        href={`/dashboard/customer/requests/${request.id}`}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+                      >
+                        View request
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>
