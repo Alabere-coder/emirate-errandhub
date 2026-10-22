@@ -29,6 +29,7 @@ import {
   Phone,
   ShieldAlert,
   FaceAngry,
+  Headphones,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
@@ -170,6 +171,12 @@ const navigation: Record<UserRole, NavItem[]> = {
       label: "Disputes",
       href: "/dashboard/admin/disputes",
       icon: ShieldAlert,
+    },
+
+    {
+      label: "Supports",
+      href: "/dashboard/admin/support",
+      icon: Headphones,
     },
 
     {
