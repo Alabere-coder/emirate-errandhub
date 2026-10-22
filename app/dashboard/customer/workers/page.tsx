@@ -9,11 +9,24 @@ import {
   Star,
   Users,
 } from "lucide-react";
+import { FavoriteWorkerButton } from "../favorites/favorite-worker-button";
 
 export default async function CustomerWorkersPage() {
   await requireRole(["customer"]);
 
   const supabase = await createClient();
+
+  const { data: favoriteRows, error: favoritesError } = await supabase
+    .from("favorite_workers")
+    .select("worker_id");
+
+  if (favoritesError) {
+    console.error("Failed to load favorite workers:", favoritesError);
+  }
+
+  const favoriteWorkerIds = new Set(
+    (favoriteRows ?? []).map((favorite) => favorite.worker_id),
+  );
 
   const { data: workers, error } = await supabase
     .from("worker_profiles")
@@ -242,6 +255,10 @@ export default async function CustomerWorkersPage() {
                         <span className="text-muted-foreground">New</span>
                       )}
                     </div> */}
+                    <FavoriteWorkerButton
+                      workerId={worker.id}
+                      initiallyFavorited={favoriteWorkerIds.has(worker.id)}
+                    />
                   </div>
                 </div>
 
