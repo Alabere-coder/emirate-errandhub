@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "../notifications/create-notification";
 import { checkWorkerEligibility } from "@/lib/actions/worker-eligibility";
 
 export type QuoteActionState = {
@@ -146,9 +147,24 @@ export async function acceptQuote(
 
   // The database has completed all acceptance writes atomically.
   // Look up the request ID for page revalidation.
+  // const { data: job, error: jobLookupError } = await supabase
+  //   .from("jobs")
+  //   .select("request_id")
+  //   .eq("id", jobId)
+  //   .eq("customer_id", user.id)
+  //   .maybeSingle();
+
   const { data: job, error: jobLookupError } = await supabase
     .from("jobs")
-    .select("request_id")
+    .select(
+      `
+    request_id,
+    worker_id,
+    worker_profiles (
+      user_id
+    )
+  `,
+    )
     .eq("id", jobId)
     .eq("customer_id", user.id)
     .maybeSingle();
@@ -160,6 +176,24 @@ export async function acceptQuote(
       success:
         "Quotation accepted and job created. Refresh the page to see the assignment.",
     };
+  }
+
+  const workerProfile = job.worker_profiles;
+
+  const workerUserId = Array.isArray(workerProfile)
+    ? workerProfile[0]?.user_id
+    : workerProfile?.user_id;
+
+  if (workerUserId) {
+    await createNotification({
+      userId: workerUserId,
+      type: "job_assigned",
+      title: "New job assigned",
+      message:
+        "A customer has accepted your quotation. You can now view your assigned job.",
+      link: `/dashboard/worker/jobs/my/${jobId}`,
+      preference: "job_updates",
+    });
   }
 
   revalidatePath(`/dashboard/customer/requests/${job.request_id}`);

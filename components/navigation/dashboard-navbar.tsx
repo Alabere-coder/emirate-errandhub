@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Menu, Bell } from "lucide-react";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 type UserRole = "customer" | "worker" | "admin";
 
@@ -52,13 +53,15 @@ export function DashboardNavbar({
       </div>
 
       <div className="ml-3 flex shrink-0 items-center gap-2 sm:gap-3">
-        <Link
+        {/* <Link
           href="/notifications"
           aria-label="Notifications"
           className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
         >
           <Bell className="h-4.5 w-4.5" />
-        </Link>
+        </Link> */}
+
+        <NotificationBell />
 
         <div className="hidden h-8 w-px bg-slate-200 sm:block" />
 

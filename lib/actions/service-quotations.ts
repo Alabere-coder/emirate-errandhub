@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
 import { checkWorkerEligibility } from "@/lib/actions/worker-eligibility";
+import { createNotification } from "../notifications/create-notification";
 
 export type ServiceQuotationActionState = {
   error?: string;
@@ -107,7 +108,7 @@ export async function createServiceQuotation(
    */
   const { data: request, error: requestError } = await supabase
     .from("service_requests")
-    .select("id, category_id, status")
+    .select("id, category_id, status, customer_id")
     .eq("id", serviceRequestId)
     .maybeSingle();
 
@@ -206,6 +207,16 @@ export async function createServiceQuotation(
       error: "Unable to submit your quotation. Please try again.",
     };
   }
+
+  await createNotification({
+    userId: request.customer_id,
+    type: "quotation_received",
+    title: "New quotation received",
+    message:
+      "A service provider has submitted a quotation for your request. Review it to decide whether to accept or reject it.",
+    link: `/dashboard/customer/requests/${serviceRequestId}`,
+    preference: "job_updates",
+  });
 
   revalidatePath(`/dashboard/worker/jobs/${serviceRequestId}`);
 

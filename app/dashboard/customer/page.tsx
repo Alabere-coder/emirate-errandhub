@@ -13,6 +13,12 @@ import {
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
+import { getUserLocalizationPreferences } from "@/lib/localization/get-preferences";
+import {
+  formatDate,
+  formatDateTime,
+  formatCurrency,
+} from "@/lib/localization/format";
 
 const requestStatusLabels: Record<string, string> = {
   pending: "Pending",
@@ -49,26 +55,10 @@ function getStatusStyle(status: string) {
   );
 }
 
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString("en-NG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function formatDateTime(date: string) {
-  return new Date(date).toLocaleString("en-NG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 export default async function CustomerDashboardPage() {
   const { profile, supabase } = await requireRole(["customer"]);
+
+  const preferences = await getUserLocalizationPreferences();
 
   const firstName = profile.first_name || "there";
 
@@ -339,7 +329,7 @@ export default async function CustomerDashboardPage() {
                         {job.scheduled_at && (
                           <p className="mt-3 flex items-center gap-2 text-sm text-slate-500">
                             <CalendarDays className="h-4 w-4 shrink-0" />
-                            {formatDateTime(job.scheduled_at)}
+                            {formatDateTime(job.scheduled_at, preferences)}
                           </p>
                         )}
 
@@ -419,7 +409,7 @@ export default async function CustomerDashboardPage() {
                           {request.title}
                         </h3>
                         <p className="mt-1 text-xs text-slate-500">
-                          Created {formatDate(request.created_at)}
+                          Created {formatDate(request.created_at, preferences)}
                         </p>
                       </div>
                     </div>

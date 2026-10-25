@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "../notifications/create-notification";
 
 export type JobActionState = {
   error?: string;
@@ -32,9 +33,49 @@ export async function startJob(
       return { error: "A valid job ID is required." };
     }
 
+    // const { error } = await supabase.rpc("start_assigned_job", {
+    //   p_job_id: jobId,
+    // });
     const { error } = await supabase.rpc("start_assigned_job", {
       p_job_id: jobId,
     });
+
+    if (!error) {
+      const { data: job, error: lookupError } = await supabase
+        .from("jobs")
+        .select(
+          `
+      id,
+      request_id,
+      service_requests (
+        customer_id
+      )
+    `,
+        )
+        .eq("id", jobId)
+        .maybeSingle();
+
+      if (lookupError) {
+        console.error("Start job notification lookup error:", lookupError);
+      } else if (job) {
+        const request = job.service_requests;
+
+        const customerId = Array.isArray(request)
+          ? request[0]?.customer_id
+          : request?.customer_id;
+
+        if (customerId) {
+          await createNotification({
+            userId: customerId,
+            type: "job_started",
+            title: "Your job has started",
+            message: "Your service provider has started working on your job.",
+            link: `/dashboard/customer/jobs`,
+            preference: "job_updates",
+          });
+        }
+      }
+    }
 
     if (error) {
       console.error("Start job RPC error:", error);
@@ -104,6 +145,44 @@ export async function completeJob(
     const { error } = await supabase.rpc("complete_in_progress_job", {
       p_job_id: jobId,
     });
+
+    const { data: jobDetails, error: notificationLookupError } = await supabase
+      .from("jobs")
+      .select(
+        `
+    id,
+    service_requests (
+      customer_id
+    )
+  `,
+      )
+      .eq("id", jobId)
+      .maybeSingle();
+
+    if (notificationLookupError) {
+      console.error(
+        "Complete job notification lookup error:",
+        notificationLookupError,
+      );
+    } else if (jobDetails) {
+      const request = jobDetails.service_requests;
+
+      const customerId = Array.isArray(request)
+        ? request[0]?.customer_id
+        : request?.customer_id;
+
+      if (customerId) {
+        await createNotification({
+          userId: customerId,
+          type: "job_completed",
+          title: "Job completed",
+          message:
+            "Your service provider has marked your job as completed. You can now review the service.",
+          link: `/dashboard/customer/jobs`,
+          preference: "job_updates",
+        });
+      }
+    }
 
     if (error) {
       console.error("Complete job RPC error:", error);

@@ -6,6 +6,7 @@ import {
   initializePaystackTransaction,
   verifyPaystackTransaction,
 } from "@/lib/payments/paystack";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 export type InitializePaymentResult = {
   error?: string;
@@ -726,6 +727,22 @@ export async function verifyJobPayment(
       };
     }
 
+    // Notify the customer only on the first successful verification.
+    if (transaction.status === "pending" && !transaction.verified_at) {
+      const remainingBalance = roundNaira(fullJobAmount - totalVerified);
+
+      await createNotification({
+        userId: payment.customer_id,
+        type: "payment_successful",
+        title: "Payment received successfully",
+        message: result.payment_complete
+          ? `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your job is now fully paid.`
+          : `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your remaining balance is ${expectedCurrency} ${remainingBalance.toFixed(2)}.`,
+        link: "/dashboard/customer/jobs",
+        preference: "payment_notifications",
+      });
+    }
+
     if (result.payment_complete) {
       return { success: "Your job has been paid in full." };
     }
@@ -746,256 +763,3 @@ export async function verifyJobPayment(
     };
   }
 }
-
-// export async function verifyJobPayment(
-//   reference: string,
-// ): Promise<VerifyPaymentResult> {
-//   try {
-//     if (
-//       typeof reference !== "string" ||
-//       !/^EH-[a-f0-9]{32}$/i.test(reference)
-//     ) {
-//       return { error: "The payment reference is invalid." };
-//     }
-
-//     const supabase = await createClient();
-
-//     const {
-//       data: { user },
-//       error: authError,
-//     } = await supabase.auth.getUser();
-
-//     if (authError || !user) {
-//       return {
-//         error: "Please sign in to verify your payment.",
-//       };
-//     }
-
-//     const { data: profile } = await supabase
-//       .from("profiles")
-//       .select("role, is_active")
-//       .eq("id", user.id)
-//       .maybeSingle();
-
-//     if (
-//       !profile ||
-//       profile.role !== "customer" ||
-//       profile.is_active === false
-//     ) {
-//       return { error: "An active customer account is required." };
-//     }
-
-//     const admin = createAdminClient();
-
-//     const { data: transaction, error: transactionError } = await admin
-//       .from("payment_transactions")
-//       .select(
-//         "id, payment_id, amount, currency, status, provider, provider_reference, verified_at",
-//       )
-//       .eq("provider_reference", reference)
-//       .maybeSingle();
-
-//     if (transactionError || !transaction) {
-//       console.error("Payment transaction lookup failed:", transactionError);
-//       return { error: "We couldn't find this payment attempt." };
-//     }
-
-//     if (
-//       transaction.provider !== "paystack" ||
-//       transaction.provider_reference !== reference
-//     ) {
-//       return { error: "The payment reference does not match." };
-//     }
-
-//     const { data: payment, error: paymentError } = await admin
-//       .from("payments")
-//       .select("id, job_id, customer_id, amount, currency, status")
-//       .eq("id", transaction.payment_id)
-//       .maybeSingle();
-
-//     if (paymentError || !payment || payment.customer_id !== user.id) {
-//       return {
-//         error: "This payment does not belong to your account.",
-//       };
-//     }
-
-//     if (
-//       transaction.status !== "pending" &&
-//       transaction.status !== "successful"
-//     ) {
-//       return {
-//         error:
-//           "This payment attempt cannot be verified. Please contact support if you were charged.",
-//       };
-//     }
-
-//     // Always verify against Paystack's API, never the callback URL alone.
-//     const verified = await verifyPaystackTransaction(reference);
-
-//     if (verified.reference !== reference || verified.status !== "success") {
-//       return {
-//         error:
-//           verified.status === "failed"
-//             ? "Paystack reports that this payment failed. If you were charged, contact support."
-//             : "Paystack has not confirmed this payment yet. Please try again shortly.",
-//       };
-//     }
-
-//     const expectedKobo = Math.round(Number(transaction.amount) * 100);
-//     const expectedCurrency = transaction.currency.toUpperCase();
-
-//     if (
-//       !Number.isSafeInteger(expectedKobo) ||
-//       expectedKobo <= 0 ||
-//       verified.amount !== expectedKobo ||
-//       verified.currency.toUpperCase() !== expectedCurrency ||
-//       payment.currency.toUpperCase() !== expectedCurrency
-//     ) {
-//       console.error("Paystack verification mismatch:", {
-//         reference,
-//         expectedKobo,
-//         receivedAmount: verified.amount,
-//         expectedCurrency,
-//         receivedCurrency: verified.currency,
-//       });
-
-//       return {
-//         error:
-//           "The verified payment details don't match our records. Please contact support.",
-//       };
-//     }
-
-//     if (transaction.status !== "successful" || !transaction.verified_at) {
-//       const { data: updatedRows, error: updateError } = await admin
-//         .from("payment_transactions")
-//         .update({
-//           status: "successful",
-//           verified_at: new Date().toISOString(),
-//           metadata: {
-//             verified_by: "paystack_api",
-//             paystack_transaction_id: verified.id,
-//             paystack_channel: verified.channel,
-//             paystack_paid_at: verified.paid_at,
-//             gateway_response: verified.gateway_response,
-//           },
-//         })
-//         .eq("id", transaction.id)
-//         .eq("status", "pending")
-//         .select("id");
-
-//       if (updateError) {
-//         console.error("Verified transaction update failed:", updateError);
-//         return {
-//           error:
-//             "Payment was confirmed by Paystack, but we couldn't update our records. Please contact support before paying again.",
-//         };
-//       }
-
-//       // If another request changed the record first, re-read it.
-//       if (!updatedRows?.length) {
-//         const { data: latest } = await admin
-//           .from("payment_transactions")
-//           .select("status, verified_at")
-//           .eq("id", transaction.id)
-//           .maybeSingle();
-
-//         if (latest?.status !== "successful" || !latest.verified_at) {
-//           return {
-//             error:
-//               "We couldn't safely finalize this payment. Please contact support.",
-//           };
-//         }
-//       }
-//     }
-
-//     const { data: paidTransactions, error: paidTransactionsError } = await admin
-//       .from("payment_transactions")
-//       .select("amount, currency")
-//       .eq("payment_id", payment.id)
-//       //   .eq("status", "paid")
-//       .eq("status", "successful")
-//       .not("verified_at", "is", null);
-
-//     if (paidTransactionsError) {
-//       console.error(
-//         "Paid transaction reconciliation failed:",
-//         paidTransactionsError,
-//       );
-//       return {
-//         error:
-//           "Your payment was verified, but the final payment status could not be calculated. Please contact support.",
-//       };
-//     }
-
-//     let totalVerified = 0;
-
-//     for (const item of paidTransactions ?? []) {
-//       if (item.currency.toUpperCase() !== expectedCurrency) {
-//         return {
-//           error:
-//             "Payment records have a currency mismatch. Please contact support.",
-//         };
-//       }
-
-//       totalVerified =
-//         Math.round(
-//           (totalVerified + Number(item.amount) + Number.EPSILON) * 100,
-//         ) / 100;
-//     }
-
-//     const fullJobAmount = Number(payment.amount);
-
-//     if (
-//       !Number.isFinite(fullJobAmount) ||
-//       fullJobAmount <= 0 ||
-//       !Number.isFinite(totalVerified) ||
-//       totalVerified > fullJobAmount
-//     ) {
-//       console.error("Payment total needs reconciliation:", {
-//         jobId: payment.job_id,
-//         totalVerified,
-//         fullJobAmount,
-//       });
-
-//       return {
-//         error:
-//           "Your payment needs a reconciliation check. Please contact support.",
-//       };
-//     }
-
-//     if (totalVerified === fullJobAmount) {
-//       const { error: summaryError } = await admin
-//         .from("payments")
-//         .update({
-//           status: "paid",
-//           provider: "paystack",
-//           provider_reference: reference,
-//           paid_at: verified.paid_at ?? new Date().toISOString(),
-//         })
-//         .eq("id", payment.id)
-//         .eq("customer_id", user.id);
-
-//       if (summaryError) {
-//         console.error("Payment summary update failed:", summaryError);
-//         return {
-//           error:
-//             "Your payment was verified, but the final payment status could not be saved. Please contact support.",
-//         };
-//       }
-
-//       return { success: "Your job has been paid in full." };
-//     }
-
-//     // A verified deposit or partial payment must not mark the full job paid.
-//     return {
-//       success: `Payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} verified. Your remaining balance is ${expectedCurrency} ${(fullJobAmount - totalVerified).toFixed(2)}.`,
-//     };
-//   } catch (error) {
-//     console.error("Verify job payment error:", error);
-
-//     return {
-//       error:
-//         "Unable to verify the payment right now. Please try again shortly.",
-//     };
-//   }
-// }

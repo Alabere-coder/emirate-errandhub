@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -42,7 +43,7 @@ export async function sendAdminSupportReply(
 
   const { data: ticket, error: ticketError } = await supabase
     .from("support_tickets")
-    .select("id, status")
+    .select("id, status, user_id, subject")
     .eq("id", ticketId)
     .maybeSingle();
 
@@ -77,6 +78,14 @@ export async function sendAdminSupportReply(
     console.error("Failed to update ticket timestamp:", updateError);
   }
 
+  await createNotification({
+    userId: ticket.user_id,
+    type: "support_admin_reply",
+    title: "Support has replied to your ticket",
+    message: `Our support team has replied to "${ticket.subject}". Open your ticket to view the response.`,
+    link: `/dashboard/support/${ticket.id}`,
+  });
+
   revalidatePath(`/dashboard/admin/support/${ticketId}`);
   revalidatePath("/dashboard/admin/support");
   revalidatePath(`/dashboard/support/${ticketId}`);
@@ -105,7 +114,7 @@ export async function updateSupportTicketStatus(
 
   const { data: ticket, error: ticketError } = await supabase
     .from("support_tickets")
-    .select("id, status")
+    .select("id, status, user_id, subject")
     .eq("id", ticketId)
     .maybeSingle();
 
@@ -134,6 +143,16 @@ export async function updateSupportTicketStatus(
   if (error) {
     console.error("Failed to update support ticket status:", error);
     return { error: "Could not update ticket status." };
+  }
+
+  if (ticket.status !== status) {
+    await createNotification({
+      userId: ticket.user_id,
+      type: "support_status_updated",
+      title: "Your support ticket status has changed",
+      message: `Your ticket "${ticket.subject}" is now ${status.replace(/_/g, " ")}.`,
+      link: `/dashboard/support/${ticket.id}`,
+    });
   }
 
   revalidatePath(`/dashboard/admin/support/${ticketId}`);

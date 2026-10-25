@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 const VALID_CATEGORIES = [
   "account",
@@ -54,6 +55,15 @@ export async function createSupportTicket(formData: FormData): Promise<void> {
     console.error("Failed to create support ticket:", error);
     throw new Error("We couldn't submit your ticket. Please try again.");
   }
+
+  await createNotification({
+    userId: user.id,
+    type: "support_ticket_created",
+    title: "New support ticket",
+    message: `A new support ticket has been submitted: ${subject}`,
+    link: `/dashboard/admin/support/${ticket.id}`,
+    adminOnly: true,
+  });
 
   revalidatePath("/dashboard/support");
   revalidatePath("/dashboard/admin/support");
@@ -116,6 +126,15 @@ export async function sendSupportTicketMessage(
       error: "We couldn't send your reply. Please try again.",
     };
   }
+
+  await createNotification({
+    userId: user.id,
+    type: "support_ticket_reply",
+    title: "New support ticket reply",
+    message: `A customer or worker has replied to support ticket ${ticket.id}.`,
+    link: `/dashboard/admin/support/${ticket.id}`,
+    adminOnly: true,
+  });
 
   revalidatePath(`/dashboard/support/${ticketId}`);
   revalidatePath("/dashboard/support");

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "../../../lib/notifications/create-notification";
 
 export type DisputeActionState = {
   error?: string;
@@ -40,8 +41,8 @@ export async function createDispute(
   _previousState: DisputeActionState,
   formData: FormData,
 ): Promise<DisputeActionState> {
+  const { user } = await requireRole(["customer", "worker"]);
   try {
-    const { user } = await requireRole(["customer", "worker"]);
     const supabase = await createClient();
 
     const jobId = formData.get("job_id");
@@ -237,6 +238,42 @@ export async function createDispute(
           disputeId: dispute.id,
         };
       }
+    }
+
+    // Notify the other participant in the job.
+    let recipientUserId: string | null = null;
+
+    if (job.customer_id === user.id) {
+      // Customer opened the dispute: notify the worker.
+      const { data: worker, error: workerLookupError } = await supabase
+        .from("worker_profiles")
+        .select("user_id")
+        .eq("id", job.worker_id)
+        .maybeSingle();
+
+      if (workerLookupError) {
+        console.error(
+          "Dispute notification worker lookup error:",
+          workerLookupError,
+        );
+      } else {
+        recipientUserId = worker?.user_id ?? null;
+      }
+    } else {
+      // Worker opened the dispute: notify the customer.
+      recipientUserId = job.customer_id;
+    }
+
+    if (recipientUserId) {
+      await createNotification({
+        userId: recipientUserId,
+        type: "dispute_opened",
+        title: "A dispute has been opened",
+        message:
+          "A dispute has been opened for a job you're involved in. Review the dispute for more details.",
+        link: "/dashboard/disputes",
+        preference: "job_updates",
+      });
     }
 
     revalidatePath("/dashboard/customer/jobs");

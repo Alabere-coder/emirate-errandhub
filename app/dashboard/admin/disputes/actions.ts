@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/require-role";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createNotification } from "@/lib/notifications/create-notification";
 
 type DisputeActionResult = {
   success?: string;
@@ -61,9 +62,24 @@ export async function updateDisputeStatus(
 
     const supabase = createAdminClient();
 
+    // const { data: dispute, error: lookupError } = await supabase
+    //   .from("disputes")
+    //   .select("id, status")
+    //   .eq("id", disputeId)
+    //   .maybeSingle();
     const { data: dispute, error: lookupError } = await supabase
       .from("disputes")
-      .select("id, status")
+      .select(
+        `
+    id,
+    status,
+    job_id,
+    jobs (
+      customer_id,
+      worker_id
+    )
+  `,
+      )
       .eq("id", disputeId)
       .maybeSingle();
 
@@ -112,6 +128,58 @@ export async function updateDisputeStatus(
       return {
         error: "The dispute may have changed. Refresh the page and try again.",
       };
+    }
+
+    const job = Array.isArray(dispute.jobs) ? dispute.jobs[0] : dispute.jobs;
+
+    if (job) {
+      const { data: workerProfile, error: workerError } = await supabase
+        .from("worker_profiles")
+        .select("user_id")
+        .eq("id", job.worker_id)
+        .maybeSingle();
+
+      if (workerError) {
+        console.error(
+          "Dispute notification worker lookup failed:",
+          workerError,
+        );
+      }
+
+      const participants = [job.customer_id, workerProfile?.user_id].filter(
+        (id): id is string => typeof id === "string",
+      );
+
+      const notificationDetails = {
+        under_review: {
+          title: "Your dispute is under review",
+          message:
+            "An administrator is reviewing the dispute associated with your job.",
+        },
+        resolved: {
+          title: "Your dispute has been resolved",
+          message:
+            "An administrator has resolved the dispute associated with your job. Review the dispute for the decision details.",
+        },
+        rejected: {
+          title: "Your dispute has been rejected",
+          message:
+            "An administrator has rejected the dispute associated with your job. Review the dispute for the decision details.",
+        },
+      }[decision];
+
+      await Promise.all(
+        [...new Set(participants)].map((participantId) =>
+          createNotification({
+            userId: participantId,
+            type: `dispute_${decision}`,
+            title: notificationDetails.title,
+            message: notificationDetails.message,
+            link: "/dashboard/disputes",
+            preference: "job_updates",
+          }),
+        ),
+      );
     }
 
     revalidatePath("/dashboard/admin/disputes");
