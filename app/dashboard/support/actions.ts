@@ -20,6 +20,26 @@ const VALID_CATEGORIES = [
 export async function createSupportTicket(formData: FormData): Promise<void> {
   const { user } = await requireRole(["customer", "worker"]);
 
+  const supabase = await createClient();
+
+  const { data: senderProfile, error: senderError } = await supabase
+    .from("profiles")
+    .select("first_name, last_name, role")
+    .eq("id", user.id)
+    .single();
+
+  if (senderError || !senderProfile) {
+    console.error("Failed to load support ticket sender:", senderError);
+    throw new Error("Could not identify your account. Please try again.");
+  }
+
+  const senderName =
+    [senderProfile.first_name, senderProfile.last_name]
+      .filter(Boolean)
+      .join(" ") || "Unknown user";
+
+  const senderRole = senderProfile.role === "worker" ? "Worker" : "Customer";
+
   const category = String(formData.get("category") ?? "").trim();
   const subject = String(formData.get("subject") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -38,7 +58,7 @@ export async function createSupportTicket(formData: FormData): Promise<void> {
     throw new Error("Description must be between 20 and 5,000 characters.");
   }
 
-  const supabase = await createClient();
+  // const supabase = await createClient();
 
   const { data: ticket, error } = await supabase
     .from("support_tickets")
@@ -59,8 +79,10 @@ export async function createSupportTicket(formData: FormData): Promise<void> {
   await createNotification({
     userId: user.id,
     type: "support_ticket_created",
-    title: "New support ticket",
-    message: `A new support ticket has been submitted: ${subject}`,
+
+    title: `New support ticket from ${senderRole}`,
+    message: `${senderRole} ${senderName} submitted a support ticket: "${subject}".`,
+
     link: `/dashboard/admin/support/${ticket.id}`,
     adminOnly: true,
   });
@@ -95,9 +117,15 @@ export async function sendSupportTicketMessage(
 
   const supabase = await createClient();
 
+  // const { data: ticket, error: ticketError } = await supabase
+  //   .from("support_tickets")
+  //   .select("id, status")
+  //   .eq("id", ticketId)
+  //   .eq("user_id", user.id)
+  //   .maybeSingle();
   const { data: ticket, error: ticketError } = await supabase
     .from("support_tickets")
-    .select("id, status")
+    .select("id, status, subject")
     .eq("id", ticketId)
     .eq("user_id", user.id)
     .maybeSingle();
@@ -120,6 +148,24 @@ export async function sendSupportTicketMessage(
     message,
   });
 
+  const { data: senderProfile, error: senderError } = await supabase
+    .from("profiles")
+    .select("first_name, last_name, role")
+    .eq("id", user.id)
+    .single();
+
+  if (senderError || !senderProfile) {
+    console.error("Failed to load support sender profile:", senderError);
+    return { error: "Could not identify your account. Please try again." };
+  }
+
+  const senderName =
+    [senderProfile.first_name, senderProfile.last_name]
+      .filter(Boolean)
+      .join(" ") || "Unknown user";
+
+  const senderRole = senderProfile.role === "worker" ? "Worker" : "Customer";
+
   if (error) {
     console.error("Failed to send support reply:", error);
     return {
@@ -130,8 +176,10 @@ export async function sendSupportTicketMessage(
   await createNotification({
     userId: user.id,
     type: "support_ticket_reply",
-    title: "New support ticket reply",
-    message: `A customer or worker has replied to support ticket ${ticket.id}.`,
+
+    title: `${senderRole} replied to a support ticket`,
+    message: `${senderRole} ${senderName} replied to ticket "${ticket.subject}" (${ticket.id}).`,
+
     link: `/dashboard/admin/support/${ticket.id}`,
     adminOnly: true,
   });

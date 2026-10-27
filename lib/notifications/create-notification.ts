@@ -12,6 +12,11 @@ type CreateNotificationInput = {
     | "job_updates"
     | "message_notifications"
     | "payment_notifications";
+  adminTitle?: string;
+  adminMessage?: string;
+  adminOnly?: boolean;
+  notifyAdmins?: boolean;
+  excludeUserIds?: string[];
 };
 
 export async function createNotification({
@@ -21,11 +26,16 @@ export async function createNotification({
   message,
   link = null,
   preference,
+  adminTitle,
+  adminMessage,
   adminOnly = false,
-}: CreateNotificationInput & { adminOnly?: boolean }) {
+  notifyAdmins = true,
+  excludeUserIds = [],
+}: CreateNotificationInput) {
   try {
     const admin = createAdminClient();
 
+    // Find all active administrators.
     const { data: admins, error: adminsError } = await admin
       .from("profiles")
       .select("id")
@@ -33,25 +43,35 @@ export async function createNotification({
       .eq("is_active", true);
 
     if (adminsError) {
-      console.error("Admin notification recipients lookup error:", adminsError);
-      return;
+      console.error("Admin recipients lookup error:", adminsError);
     }
 
-    const adminIds = (admins ?? []).map((adminUser) => adminUser.id);
+    const adminIds = (admins ?? []).map((item) => item.id);
+    const adminIdSet = new Set(adminIds);
 
+    // Include the original recipient unless this is an admin-only alert.
     const recipientIds = adminOnly
       ? [...new Set(adminIds)]
-      : [...new Set([userId, ...adminIds])];
+      : notifyAdmins
+        ? [...new Set([userId, ...adminIds])]
+        : [userId];
 
     if (recipientIds.length === 0) return;
 
+    const excludedIds = new Set(excludeUserIds);
+
+    const filteredRecipientIds = recipientIds.filter(
+      (recipientId) => !excludedIds.has(recipientId),
+    );
+
+    // Check each recipient's notification preferences.
     if (preference) {
       const { data: settings, error: settingsError } = await admin
         .from("notification_settings")
         .select(
           "user_id, job_updates, message_notifications, payment_notifications",
         )
-        .in("user_id", recipientIds);
+        .in("user_id", filteredRecipientIds);
 
       if (settingsError) {
         console.error("Notification settings lookup error:", settingsError);
@@ -62,28 +82,34 @@ export async function createNotification({
         (settings ?? []).map((setting) => [setting.user_id, setting]),
       );
 
-      const allowedRecipients = recipientIds.filter((recipientId) => {
+      const allowedRecipients = filteredRecipientIds.filter((recipientId) => {
         const recipientSettings = settingsByUser.get(recipientId);
 
+        // No settings record means notifications are enabled by default.
         if (!recipientSettings) return true;
 
         return recipientSettings[preference] !== false;
       });
 
-      recipientIds.length = 0;
-      recipientIds.push(...allowedRecipients);
+      filteredRecipientIds.length = 0;
+      filteredRecipientIds.push(...allowedRecipients);
     }
 
-    if (recipientIds.length === 0) return;
+    if (filteredRecipientIds.length === 0) return;
 
-    const notifications = recipientIds.map((recipientId) => ({
-      user_id: recipientId,
-      type,
-      title,
-      message,
-      link,
-      is_read: false,
-    }));
+    // Give administrators separate wording where provided.
+    const notifications = filteredRecipientIds.map((recipientId) => {
+      const isAdmin = adminIdSet.has(recipientId);
+
+      return {
+        user_id: recipientId,
+        type,
+        title: isAdmin ? (adminTitle ?? title) : title,
+        message: isAdmin ? (adminMessage ?? message) : message,
+        link,
+        is_read: false,
+      };
+    });
 
     const { error: insertError } = await admin
       .from("notifications")
@@ -97,6 +123,22 @@ export async function createNotification({
   }
 }
 
+// import "server-only";
+
+// import { createAdminClient } from "@/lib/supabase/admin";
+
+// type CreateNotificationInput = {
+//   userId: string;
+//   type: string;
+//   title: string;
+//   message: string;
+//   link?: string | null;
+//   preference?:
+//     | "job_updates"
+//     | "message_notifications"
+//     | "payment_notifications";
+// };
+
 // export async function createNotification({
 //   userId,
 //   type,
@@ -104,11 +146,11 @@ export async function createNotification({
 //   message,
 //   link = null,
 //   preference,
-// }: CreateNotificationInput) {
+//   adminOnly = false,
+// }: CreateNotificationInput & { adminOnly?: boolean }) {
 //   try {
 //     const admin = createAdminClient();
 
-//     // Find every active administrator.
 //     const { data: admins, error: adminsError } = await admin
 //       .from("profiles")
 //       .select("id")
@@ -117,15 +159,17 @@ export async function createNotification({
 
 //     if (adminsError) {
 //       console.error("Admin notification recipients lookup error:", adminsError);
+//       return;
 //     }
 
-//     // Include the original recipient and all active administrators.
-//     // Set removes duplicates when the original recipient is an admin.
-//     const recipientIds = [
-//       ...new Set([userId, ...(admins ?? []).map((adminUser) => adminUser.id)]),
-//     ];
+//     const adminIds = (admins ?? []).map((adminUser) => adminUser.id);
 
-//     // Check each recipient's notification preferences.
+//     const recipientIds = adminOnly
+//       ? [...new Set(adminIds)]
+//       : [...new Set([userId, ...adminIds])];
+
+//     if (recipientIds.length === 0) return;
+
 //     if (preference) {
 //       const { data: settings, error: settingsError } = await admin
 //         .from("notification_settings")
@@ -146,7 +190,6 @@ export async function createNotification({
 //       const allowedRecipients = recipientIds.filter((recipientId) => {
 //         const recipientSettings = settingsByUser.get(recipientId);
 
-//         // No settings record means notifications are enabled by default.
 //         if (!recipientSettings) return true;
 
 //         return recipientSettings[preference] !== false;
@@ -158,7 +201,6 @@ export async function createNotification({
 
 //     if (recipientIds.length === 0) return;
 
-//     // Insert one notification per recipient.
 //     const notifications = recipientIds.map((recipientId) => ({
 //       user_id: recipientId,
 //       type,

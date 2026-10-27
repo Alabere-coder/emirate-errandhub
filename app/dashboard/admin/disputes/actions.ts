@@ -28,6 +28,26 @@ export async function updateDisputeStatus(
   try {
     const { user } = await requireRole(["admin"]);
 
+    const supabase = createAdminClient();
+
+    const { data: adminProfile, error: adminProfileError } = await supabase
+      .from("profiles")
+      .select("first_name, last_name")
+      .eq("id", user.id)
+      .single();
+
+    if (adminProfileError || !adminProfile) {
+      console.error("Failed to load admin profile:", adminProfileError);
+      return {
+        error: "Could not identify the administrator handling this dispute.",
+      };
+    }
+
+    const adminName =
+      [adminProfile.first_name, adminProfile.last_name]
+        .filter(Boolean)
+        .join(" ") || "An administrator";
+
     const disputeId = formData.get("dispute_id");
     const decision = formData.get("decision");
     const resolution = formData.get("resolution");
@@ -60,13 +80,8 @@ export async function updateDisputeStatus(
       };
     }
 
-    const supabase = createAdminClient();
+    // const supabase = createAdminClient();
 
-    // const { data: dispute, error: lookupError } = await supabase
-    //   .from("disputes")
-    //   .select("id, status")
-    //   .eq("id", disputeId)
-    //   .maybeSingle();
     const { data: dispute, error: lookupError } = await supabase
       .from("disputes")
       .select(
@@ -153,18 +168,15 @@ export async function updateDisputeStatus(
       const notificationDetails = {
         under_review: {
           title: "Your dispute is under review",
-          message:
-            "An administrator is reviewing the dispute associated with your job.",
+          message: `Admin ${adminName} is reviewing the dispute associated with job ${dispute.job_id}.`,
         },
         resolved: {
           title: "Your dispute has been resolved",
-          message:
-            "An administrator has resolved the dispute associated with your job. Review the dispute for the decision details.",
+          message: `Admin ${adminName} has resolved the dispute associated with job ${dispute.job_id}. Decision: ${resolution.trim()}`,
         },
         rejected: {
           title: "Your dispute has been rejected",
-          message:
-            "An administrator has rejected the dispute associated with your job. Review the dispute for the decision details.",
+          message: `Admin ${adminName} has rejected the dispute associated with job ${dispute.job_id}. Reason: ${resolution.trim()}`,
         },
       }[decision];
 
@@ -180,6 +192,18 @@ export async function updateDisputeStatus(
           }),
         ),
       );
+
+      await createNotification({
+        userId: user.id,
+        type: `dispute_${decision}_admin`,
+        title: `Dispute ${decision.replace(/_/g, " ")}`,
+        message: `Admin ${adminName} changed dispute ${dispute.id} to ${decision.replace(/_/g, " ")}. Job reference: ${dispute.job_id}. Decision note: ${resolution.trim()}.`,
+        adminTitle: `Dispute ${decision.replace(/_/g, " ")} by administrator`,
+        adminMessage: `Admin ${adminName} changed dispute ${dispute.id} to ${decision.replace(/_/g, " ")}. Job reference: ${dispute.job_id}. Decision note: ${resolution.trim()}.`,
+        link: `/dashboard/admin/disputes/${dispute.id}`,
+        adminOnly: true,
+        excludeUserIds: [user.id],
+      });
     }
 
     revalidatePath("/dashboard/admin/disputes");

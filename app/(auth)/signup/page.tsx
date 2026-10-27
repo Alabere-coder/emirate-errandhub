@@ -60,37 +60,14 @@ export default function SignupPage() {
       />
 
       {/* Brand */}
-      {/* <header className="mx-auto flex w-full max-w-6xl items-center justify-between">
-        <Link
-          href="/"
-          className="group inline-flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-4"
-        >
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-lg shadow-emerald-900/15 transition group-hover:scale-105">
-            <Zap className="h-6 w-6 fill-current" />
-          </span>
-          <span className="text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">
-            Emirate <span className="text-emerald-700">ErrandHub</span>
-          </span>
-        </Link>
-
-        <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
-          <ShieldCheck className="h-4 w-4 text-emerald-700" />
-          <span>Get started in minutes</span>
-        </div>
-      </header> */}
 
       {/* Navigation */}
-      <div className="mx-auto w-full max-w-6xl">
-        <PublicNavbar variant="auth" />
-      </div>
+
+      <PublicNavbar />
 
       {/* Main content */}
       <div className="mx-auto my-auto w-full max-w-5xl py-12 sm:py-16">
         <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-xs font-semibold tracking-wide text-emerald-800 shadow-sm sm:text-sm">
-            YOUR EVERYDAY TASKS, SIMPLIFIED
-          </span>
-
           <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
             How would you like to
             <span className="mt-1 block text-emerald-700">use ErrandHub?</span>

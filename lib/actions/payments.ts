@@ -731,13 +731,36 @@ export async function verifyJobPayment(
     if (transaction.status === "pending" && !transaction.verified_at) {
       const remainingBalance = roundNaira(fullJobAmount - totalVerified);
 
+      // await createNotification({
+      //   userId: payment.customer_id,
+      //   type: "payment_successful",
+      //   title: "Payment received successfully",
+      //   message: result.payment_complete
+      //     ? `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your job is now fully paid.`
+      //     : `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your remaining balance is ${expectedCurrency} ${remainingBalance.toFixed(2)}.`,
+      //   link: "/dashboard/customer/jobs",
+      //   preference: "payment_notifications",
+      // });
+
       await createNotification({
         userId: payment.customer_id,
         type: "payment_successful",
+
+        // Customer notification
         title: "Payment received successfully",
         message: result.payment_complete
           ? `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your job is now fully paid.`
           : `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your remaining balance is ${expectedCurrency} ${remainingBalance.toFixed(2)}.`,
+
+        // Administrator notification
+        adminTitle: result.payment_complete
+          ? "Customer payment completed"
+          : "Customer payment received",
+
+        adminMessage: result.payment_complete
+          ? `A customer payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Job ${payment.job_id} is now fully paid.`
+          : `A customer payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified for job ${payment.job_id}. Remaining balance: ${expectedCurrency} ${roundNaira(fullJobAmount - totalVerified).toFixed(2)}.`,
+
         link: "/dashboard/customer/jobs",
         preference: "payment_notifications",
       });

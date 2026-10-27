@@ -28,6 +28,24 @@ export async function sendAdminSupportReply(
 ): Promise<ActionState> {
   const { user } = await requireRole(["admin"]);
 
+  const supabase = createAdminClient();
+
+  const { data: adminProfile, error: adminProfileError } = await supabase
+    .from("profiles")
+    .select("first_name, last_name")
+    .eq("id", user.id)
+    .single();
+
+  if (adminProfileError || !adminProfile) {
+    console.error("Failed to load admin profile:", adminProfileError);
+    return { error: "Could not identify the responding administrator." };
+  }
+
+  const adminName =
+    [adminProfile.first_name, adminProfile.last_name]
+      .filter(Boolean)
+      .join(" ") || "An administrator";
+
   const ticketId = String(formData.get("ticketId") ?? "").trim();
   const message = String(formData.get("message") ?? "").trim();
 
@@ -39,7 +57,7 @@ export async function sendAdminSupportReply(
     return { error: "Reply must be between 1 and 5,000 characters." };
   }
 
-  const supabase = createAdminClient();
+  // const supabase = createAdminClient();
 
   const { data: ticket, error: ticketError } = await supabase
     .from("support_tickets")
@@ -78,11 +96,26 @@ export async function sendAdminSupportReply(
     console.error("Failed to update ticket timestamp:", updateError);
   }
 
+  // await createNotification({
+  //   userId: ticket.user_id,
+  //   type: "support_admin_reply",
+  //   title: "Support has replied to your ticket",
+  //   message: `Our support team has replied to "${ticket.subject}". Open your ticket to view the response.`,
+  //   link: `/dashboard/support/${ticket.id}`,
+  // });
   await createNotification({
     userId: ticket.user_id,
     type: "support_admin_reply",
+
+    // Customer or worker notification
     title: "Support has replied to your ticket",
     message: `Our support team has replied to "${ticket.subject}". Open your ticket to view the response.`,
+
+    // Administrator notification
+    adminTitle: "Support ticket response sent",
+    // adminMessage: `An administrator has replied to support ticket "${ticket.subject}" (${ticket.id}).`,
+    adminMessage: `Admin ${adminName} replied to support ticket "${ticket.subject}" (${ticket.id}).`,
+
     link: `/dashboard/support/${ticket.id}`,
   });
 
@@ -146,13 +179,29 @@ export async function updateSupportTicketStatus(
   }
 
   if (ticket.status !== status) {
-    await createNotification({
-      userId: ticket.user_id,
-      type: "support_status_updated",
-      title: "Your support ticket status has changed",
-      message: `Your ticket "${ticket.subject}" is now ${status.replace(/_/g, " ")}.`,
-      link: `/dashboard/support/${ticket.id}`,
-    });
+    // await createNotification({
+    //   userId: ticket.user_id,
+    //   type: "support_status_updated",
+    //   title: "Your support ticket status has changed",
+    //   message: `Your ticket "${ticket.subject}" is now ${status.replace(/_/g, " ")}.`,
+    //   link: `/dashboard/support/${ticket.id}`,
+    // });
+    if (ticket.status !== status) {
+      await createNotification({
+        userId: ticket.user_id,
+        type: "support_status_updated",
+
+        // Customer or worker notification
+        title: "Your support ticket status has changed",
+        message: `Your ticket "${ticket.subject}" is now ${status.replace(/_/g, " ")}.`,
+
+        // Administrator notification
+        adminTitle: "Support ticket status updated",
+        adminMessage: `Support ticket "${ticket.subject}" (${ticket.id}) was changed from ${ticket.status.replace(/_/g, " ")} to ${status.replace(/_/g, " ")}.`,
+
+        link: `/dashboard/support/${ticket.id}`,
+      });
+    }
   }
 
   revalidatePath(`/dashboard/admin/support/${ticketId}`);

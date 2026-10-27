@@ -120,48 +120,12 @@ export default function WorkerSignupPage() {
       />
 
       {/* Brand header */}
-      {/* <header className="mx-auto flex w-full max-w-6xl items-center justify-between">
-        <Link
-          href="/"
-          className="group inline-flex items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-4"
-        >
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-md shadow-emerald-900/15 transition group-hover:scale-105">
-            <Zap className="h-5 w-5 fill-current" />
-          </span>
-          <span className="text-lg font-extrabold tracking-tight text-slate-900">
-            Emirate <span className="text-emerald-700">ErrandHub</span>
-          </span>
-        </Link>
 
-        <Link
-          href="/login"
-          className="text-sm font-semibold text-slate-600 transition hover:text-emerald-800"
-        >
-          Sign in
-        </Link>
-      </header> */}
       <PublicNavbar />
 
       {/* Signup form */}
       <div className="mx-auto w-full max-w-2xl py-10 sm:py-14">
-        <Link
-          href="/signup"
-          className="mb-7 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-emerald-800"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to account selection
-        </Link>
-
         <div className="mb-8 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-100 bg-white text-emerald-700 shadow-sm shadow-emerald-900/5">
-            <BriefcaseBusiness className="h-8 w-8" strokeWidth={1.7} />
-          </div>
-
-          <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-emerald-800">
-            <Sparkles className="h-3.5 w-3.5" />
-            SERVICE PROVIDER REGISTRATION
-          </span>
-
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
             Grow your business with{" "}
             <span className="text-emerald-700">ErrandHub</span>

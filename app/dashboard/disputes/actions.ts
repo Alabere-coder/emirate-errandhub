@@ -42,6 +42,29 @@ export async function createDispute(
   formData: FormData,
 ): Promise<DisputeActionState> {
   const { user } = await requireRole(["customer", "worker"]);
+
+  const supabase = await createClient();
+
+  const { data: openerProfile, error: openerError } = await supabase
+    .from("profiles")
+    .select("first_name, last_name, role")
+    .eq("id", user.id)
+    .single();
+
+  if (openerError || !openerProfile) {
+    console.error("Failed to load dispute opener profile:", openerError);
+    return {
+      error: "Could not identify your account. Please try again.",
+    };
+  }
+
+  const openerName =
+    [openerProfile.first_name, openerProfile.last_name]
+      .filter(Boolean)
+      .join(" ") || "Unknown user";
+
+  const openerRole = openerProfile.role === "worker" ? "Worker" : "Customer";
+
   try {
     const supabase = await createClient();
 
@@ -265,14 +288,26 @@ export async function createDispute(
     }
 
     if (recipientUserId) {
+      // await createNotification({
+      //   userId: recipientUserId,
+      //   type: "dispute_opened",
+      //   title: "A dispute has been opened",
+      //   message:
+      //     "A dispute has been opened for a job you're involved in. Review the dispute for more details.",
+      //   link: "/dashboard/disputes",
+      //   preference: "job_updates",
+      // });
+
+      // Notify administrators about the new dispute.
       await createNotification({
-        userId: recipientUserId,
-        type: "dispute_opened",
-        title: "A dispute has been opened",
-        message:
-          "A dispute has been opened for a job you're involved in. Review the dispute for more details.",
-        link: "/dashboard/disputes",
-        preference: "job_updates",
+        userId: user.id,
+        type: "dispute_opened_admin",
+        title: `New dispute opened by ${openerRole}`,
+        message: `${openerRole} ${openerName} opened a dispute. Reason: ${reason.trim()}. Job reference: ${job.id}. Dispute reference: ${dispute.id}.`,
+        adminTitle: `New dispute opened by ${openerRole}`,
+        adminMessage: `${openerRole} ${openerName} opened a dispute. Reason: ${reason.trim()}. Job reference: ${job.id}. Dispute reference: ${dispute.id}.`,
+        link: `/dashboard/admin/disputes/${dispute.id}`,
+        adminOnly: true,
       });
     }
 
