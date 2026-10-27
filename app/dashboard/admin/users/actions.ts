@@ -50,6 +50,13 @@ export async function setUserActive(
     };
   }
 
+  if (target.role === "super_admin" && adminProfile.role !== "super_admin") {
+    return {
+      success: false,
+      message: "You are not authorized to modify a Super Admin account.",
+    };
+  }
+
   if (!nextIsActive && target.role === "admin" && target.is_active) {
     const { data: activeAdmins, error: adminsError } = await adminClient
       .from("profiles")

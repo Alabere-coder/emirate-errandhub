@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 
-type UserRole = "customer" | "worker" | "admin";
+type UserRole = "customer" | "worker" | "admin" | "super_admin";
 type Theme = "light" | "dark" | "system";
 
 type AccountDropdownProps = {
@@ -50,6 +50,8 @@ function getRoleLabel(role: UserRole) {
       return "Service Provider";
     case "admin":
       return "Administrator";
+    case "super_admin":
+      return "Super Administrator";
   }
 }
 

@@ -35,7 +35,7 @@ import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
 import { DashboardNavbar } from "../navigation/dashboard-navbar";
 
-type UserRole = "customer" | "worker" | "admin";
+type UserRole = "customer" | "worker" | "admin" | "super_admin";
 
 type NavItem = {
   label: string;
@@ -187,6 +187,63 @@ const navigation: Record<UserRole, NavItem[]> = {
 
     { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
   ],
+  super_admin: [
+    ...[
+      { label: "Overview", href: "/dashboard/admin", icon: Home },
+      { label: "Users", href: "/dashboard/admin/users", icon: UserRound },
+      {
+        label: "Services",
+        href: "/dashboard/admin/services",
+        icon: BriefcaseBusiness,
+      },
+      {
+        label: "Worker Verification",
+        href: "/dashboard/admin/worker-verification",
+        icon: ShieldCheck,
+      },
+      {
+        label: "Worker Applications",
+        href: "/dashboard/admin/worker-applications",
+        icon: FileCheck,
+      },
+      {
+        label: "Requests & Jobs",
+        href: "/dashboard/admin/jobs",
+        icon: ClipboardList,
+      },
+      {
+        label: "Reviews",
+        href: "/dashboard/admin/reviews",
+        icon: Star,
+      },
+      {
+        label: "Review-reports",
+        href: "/dashboard/admin/review-reports",
+        icon: StarCheck,
+      },
+      {
+        label: "Disputes",
+        href: "/dashboard/admin/disputes",
+        icon: ShieldAlert,
+      },
+      {
+        label: "Supports",
+        href: "/dashboard/admin/support",
+        icon: Headphones,
+      },
+      {
+        label: "Withdrawals",
+        href: "/dashboard/admin/withdrawals",
+        icon: WalletCards,
+      },
+      { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
+    ],
+    {
+      label: "Admin Management",
+      href: "/dashboard/admin/management",
+      icon: Users,
+    },
+  ],
 };
 
 function getRoleLabel(role: UserRole) {
@@ -197,6 +254,8 @@ function getRoleLabel(role: UserRole) {
       return "Service Provider";
     case "admin":
       return "Administrator";
+    case "super_admin":
+      return "Super Administrator";
   }
 }
 

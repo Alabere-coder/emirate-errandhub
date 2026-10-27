@@ -13,7 +13,7 @@ import {
   FileText,
   ExternalLink,
 } from "lucide-react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth/require-role";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { UserStatusControl } from "../_components/user-status-control";
@@ -45,7 +45,7 @@ function roleLabel(role: string) {
 }
 
 export default async function AdminUserDetailsPage({ params }: Props) {
-  await requireRole(["admin"]);
+  const { profile: currentProfile } = await requireRole(["admin"]);
 
   const { id } = await params;
 
@@ -81,6 +81,11 @@ export default async function AdminUserDetailsPage({ params }: Props) {
 
   if (!authResult.user || !profile) {
     notFound();
+  }
+
+  if (profile.role === "super_admin" && currentProfile.role !== "super_admin") {
+    // notFound();
+    redirect("/access-denied");
   }
 
   const isWorker = profile.role === "worker";

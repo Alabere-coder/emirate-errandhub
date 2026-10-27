@@ -13,6 +13,7 @@ export default async function DashboardPage() {
       redirect("/dashboard/worker");
 
     case "admin":
+    case "super_admin":
       redirect("/dashboard/admin");
 
     default:

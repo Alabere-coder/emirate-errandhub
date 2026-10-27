@@ -1,5 +1,6 @@
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { requireAuth } from "@/lib/auth/require-auth";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
@@ -7,6 +8,13 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { profile } = await requireAuth();
+
+  if (
+    profile.must_change_password &&
+    (profile.role === "admin" || profile.role === "super_admin")
+  ) {
+    redirect("/change-password");
+  }
 
   return (
     <DashboardShell

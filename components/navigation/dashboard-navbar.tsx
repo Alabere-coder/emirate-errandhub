@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Menu, Bell } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 
-type UserRole = "customer" | "worker" | "admin";
+type UserRole = "customer" | "worker" | "admin" | "super_admin";
 
 type DashboardNavbarProps = {
   role: UserRole;
@@ -21,6 +21,8 @@ function getRoleLabel(role: UserRole) {
       return "Service Provider";
     case "admin":
       return "Administrator";
+    case "super_admin":
+      return "Super Administrator";
   }
 }
 
