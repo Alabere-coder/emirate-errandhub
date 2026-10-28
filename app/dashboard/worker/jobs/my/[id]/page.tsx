@@ -570,15 +570,6 @@ export default async function WorkerJobDetailPage({
             </CardContent>
           </Card>
 
-          {/* <Card>
-            <CardHeader>
-              <CardTitle>Job Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <JobStatusActions jobId={job.id} status={job.status} />
-            </CardContent>
-          </Card> */}
-
           <Card>
             <CardHeader>
               <CardTitle>Job Actions</CardTitle>

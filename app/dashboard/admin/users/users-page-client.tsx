@@ -39,6 +39,8 @@ function roleLabel(role: string) {
       return "Service provider";
     case "admin":
       return "Administrator";
+    case "super_admin":
+      return "Super Administrator";
     default:
       return role;
   }

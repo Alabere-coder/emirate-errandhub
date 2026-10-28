@@ -25,9 +25,9 @@ export async function updateDisputeStatus(
   _previousState: DisputeActionResult,
   formData: FormData,
 ): Promise<DisputeActionResult> {
-  try {
-    const { user } = await requireRole(["admin"]);
+  const { user } = await requireRole(["admin"]);
 
+  try {
     const supabase = createAdminClient();
 
     const { data: adminProfile, error: adminProfileError } = await supabase

@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth/require-auth";
 
@@ -44,7 +45,9 @@ export async function changePassword(
     return { error: passwordError.message };
   }
 
-  const { error: profileError } = await supabase
+  const adminClient = createAdminClient();
+
+  const { error: profileError } = await adminClient
     .from("profiles")
     .update({ must_change_password: false })
     .eq("id", profile.id);
