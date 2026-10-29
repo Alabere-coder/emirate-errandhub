@@ -346,13 +346,10 @@ export function DashboardShell({
       >
         <div className="flex h-19 shrink-0 items-center justify-between border-b border-slate-100 px-5">
           <Link
-            href="/dashboard"
+            href="/"
             className="group flex min-w-0 items-center gap-3"
             onClick={() => setMobileOpen(false)}
           >
-            {/* <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-900/15 transition group-hover:bg-emerald-800">
-              <BriefcaseBusiness className="h-5 w-5" />
-            </span> */}
             <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-emerald-50">
               {platformLogoUrl ? (
                 <Image

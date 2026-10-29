@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -12,7 +12,9 @@ import {
   X,
   Zap,
 } from "lucide-react";
+
 import { usePublicBranding } from "@/components/providers/public-branding-provider";
+import { createClient } from "@/lib/supabase/client";
 
 type PublicNavbarProps = {
   variant?: "default" | "auth";
@@ -33,8 +35,38 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
     usePublicBranding();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const isAuthPage = variant === "auth";
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const checkAuth = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setIsLoggedIn(Boolean(user));
+      setAuthLoading(false);
+    };
+
+    checkAuth();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(Boolean(session?.user));
+      setAuthLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
@@ -45,9 +77,9 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
         {/* Brand */}
         <Link
           href="/"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={closeMobileMenu}
           className="flex shrink-0 items-center gap-2.5"
-          aria-label="Emirate ErrandHub home"
+          aria-label={`${platformName} home`}
         >
           <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-50">
             {platformLogoUrl ? (
@@ -65,14 +97,12 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
           </span>
 
           <span className="flex flex-col">
-            <span className="flex flex-col">
-              <span className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
-                {platformName}
-              </span>
+            <span className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
+              {platformName}
+            </span>
 
-              <span className="hidden text-[10px] font-medium tracking-[0.16em] text-slate-500 sm:block">
-                {platformDescription}
-              </span>
+            <span className="hidden text-[10px] font-medium tracking-[0.16em] text-slate-500 sm:block">
+              {platformDescription}
             </span>
           </span>
         </Link>
@@ -94,20 +124,33 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
 
         {/* Desktop actions */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/login"
-            className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 hover:text-emerald-700"
-          >
-            Log in
-          </Link>
+          {!authLoading &&
+            (isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
+              >
+                Go to Dashboard
+                <ArrowRight size={16} />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 hover:text-emerald-700"
+                >
+                  Log in
+                </Link>
 
-          <Link
-            href="/signup"
-            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
-          >
-            Get started
-            <ArrowRight size={16} />
-          </Link>
+                <Link
+                  href="/signup"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
+                >
+                  Get started
+                  <ArrowRight size={16} />
+                </Link>
+              </>
+            ))}
         </div>
 
         {/* Mobile menu button */}
@@ -138,7 +181,7 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
                   <Link
                     key={link.href}
                     href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                     className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700"
                   >
                     <Icon size={18} />
@@ -147,24 +190,41 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
                 );
               })}
 
-            <div className="my-2 border-t border-slate-100" />
+            {!authLoading && (
+              <>
+                <div className="my-2 border-t border-slate-100" />
 
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-            >
-              Log in
-            </Link>
+                {isLoggedIn ? (
+                  <Link
+                    href="/dashboard"
+                    onClick={closeMobileMenu}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-2  text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+                  >
+                    Go to Dashboard
+                    <ArrowRight size={16} />
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={closeMobileMenu}
+                      className="rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                    >
+                      Log in
+                    </Link>
 
-            <Link
-              href="/signup"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
-            >
-              Get started
-              <ArrowRight size={16} />
-            </Link>
+                    <Link
+                      href="/signup"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+                    >
+                      Get started
+                      <ArrowRight size={16} />
+                    </Link>
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}
