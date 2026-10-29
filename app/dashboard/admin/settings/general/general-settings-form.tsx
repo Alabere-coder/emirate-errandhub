@@ -12,6 +12,7 @@ type GeneralSettingsFormProps = {
   platformDescription: string;
   supportEmail: string;
   supportPhone: string;
+  isMaintenanceMode: boolean;
   canEdit: boolean;
 };
 
@@ -20,6 +21,7 @@ export default function GeneralSettingsForm({
   platformDescription,
   supportEmail,
   supportPhone,
+  isMaintenanceMode,
   canEdit,
 }: GeneralSettingsFormProps) {
   const [state, formAction, pending] = useActionState(
@@ -91,6 +93,29 @@ export default function GeneralSettingsForm({
           disabled={!canEdit || pending}
           placeholder="+234..."
           className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+        />
+      </div>
+
+      <div className="flex items-start justify-between gap-4 rounded-lg border p-4">
+        <div className="space-y-1">
+          <label htmlFor="maintenanceMode" className="text-sm font-semibold">
+            Maintenance Mode
+          </label>
+
+          <p className="text-sm text-muted-foreground">
+            Temporarily restrict platform access for customers and workers while
+            maintenance is underway. Administrators can still access the
+            platform.
+          </p>
+        </div>
+
+        <input
+          id="maintenanceMode"
+          name="maintenanceMode"
+          type="checkbox"
+          defaultChecked={isMaintenanceMode}
+          disabled={!canEdit || pending}
+          className="mt-1 size-5 shrink-0 accent-emerald-700"
         />
       </div>
 

@@ -24,6 +24,8 @@ export async function updateGeneralSettings(
     .toLowerCase();
   const supportPhone = String(formData.get("supportPhone") ?? "").trim();
 
+  const maintenanceMode = formData.get("maintenanceMode") === "on";
+
   if (!platformName) {
     return { error: "Platform name is required." };
   }
@@ -62,6 +64,7 @@ export async function updateGeneralSettings(
     platform_description: platformDescription || null,
     support_email: supportEmail || null,
     support_phone: supportPhone || null,
+    is_maintenance_mode: maintenanceMode,
     updated_at: new Date().toISOString(),
   };
 

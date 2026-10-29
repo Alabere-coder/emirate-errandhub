@@ -12,6 +12,7 @@ import {
 
 import CommissionForm from "./commission/commission-form";
 import GeneralSettingsForm from "./general/general-settings-form";
+import PlatformLogoUpload from "./general/platform-logo-upload";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export default async function AdminSettingsPage() {
     supabase
       .from("platform_settings")
       .select(
-        "platform_name, platform_description, support_email, support_phone",
+        "platform_name, platform_description, support_email, support_phone, is_maintenance_mode, platform_logo_url",
       )
       .limit(1)
       .maybeSingle(),
@@ -77,6 +78,11 @@ export default async function AdminSettingsPage() {
         </CardHeader>
 
         <CardContent>
+          <PlatformLogoUpload
+            initialLogoUrl={platform?.platform_logo_url ?? ""}
+            canEdit={currentUser.profile.role === "super_admin"}
+          />
+
           <GeneralSettingsForm
             platformName={platform?.platform_name ?? "Emirate ErrandHub"}
             platformDescription={
@@ -84,6 +90,7 @@ export default async function AdminSettingsPage() {
             }
             supportEmail={platform?.support_email ?? ""}
             supportPhone={platform?.support_phone ?? ""}
+            isMaintenanceMode={platform?.is_maintenance_mode ?? false}
             canEdit={currentUser.profile.role === "super_admin"}
           />
         </CardContent>

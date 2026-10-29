@@ -50,6 +50,9 @@ type DashboardShellProps = {
   firstName: string;
   lastName: string;
   avatarUrl?: string | null;
+  platformLogoUrl?: string | null;
+  platformName?: string;
+  platformDescription?: string;
   children: React.ReactNode;
 };
 
@@ -282,6 +285,9 @@ export function DashboardShell({
   firstName,
   lastName,
   avatarUrl,
+  platformLogoUrl,
+  platformName = "Emirate ErrandHub",
+  platformDescription = "Services made easier.",
   children,
 }: DashboardShellProps) {
   const pathname = usePathname();
@@ -344,15 +350,31 @@ export function DashboardShell({
             className="group flex min-w-0 items-center gap-3"
             onClick={() => setMobileOpen(false)}
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-900/15 transition group-hover:bg-emerald-800">
+            {/* <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-900/15 transition group-hover:bg-emerald-800">
               <BriefcaseBusiness className="h-5 w-5" />
+            </span> */}
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-emerald-50">
+              {platformLogoUrl ? (
+                <Image
+                  src={platformLogoUrl}
+                  alt="Emirate ErrandHub logo"
+                  width={40}
+                  height={40}
+                  unoptimized
+                  className="h-full w-full object-contain"
+                />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-900/15 transition group-hover:bg-emerald-800">
+                  <BriefcaseBusiness className="h-5 w-5" />
+                </span>
+              )}
             </span>
             <span className="min-w-0">
               <span className="block truncate text-[15px] font-bold tracking-tight text-slate-900">
-                Emirate ErrandHub
+                {platformName}
               </span>
               <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.17em] text-slate-400">
-                Services made easier
+                {platformDescription}
               </span>
             </span>
           </Link>

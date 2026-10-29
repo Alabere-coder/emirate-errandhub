@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import {
   ArrowRight,
@@ -11,6 +12,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { usePublicBranding } from "@/components/providers/public-branding-provider";
 
 type PublicNavbarProps = {
   variant?: "default" | "auth";
@@ -27,6 +29,9 @@ const navLinks = [
 ];
 
 export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
+  const { platformName, platformDescription, platformLogoUrl } =
+    usePublicBranding();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isAuthPage = variant === "auth";
@@ -44,16 +49,30 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
           className="flex shrink-0 items-center gap-2.5"
           aria-label="Emirate ErrandHub home"
         >
-          <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm shadow-emerald-600/20">
-            <Zap size={22} fill="currentColor" />
+          <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-50">
+            {platformLogoUrl ? (
+              <Image
+                src={platformLogoUrl}
+                alt={`${platformName} logo`}
+                width={40}
+                height={40}
+                unoptimized
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <Zap size={22} fill="currentColor" className="text-emerald-600" />
+            )}
           </span>
 
           <span className="flex flex-col">
-            <span className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
-              Emirate <span className="text-emerald-600">ErrandHub</span>
-            </span>
-            <span className="hidden text-[10px] font-medium tracking-[0.16em] text-slate-500 sm:block">
-              EVERYDAY HELP, MADE EASY
+            <span className="flex flex-col">
+              <span className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
+                {platformName}
+              </span>
+
+              <span className="hidden text-[10px] font-medium tracking-[0.16em] text-slate-500 sm:block">
+                {platformDescription}
+              </span>
             </span>
           </span>
         </Link>
