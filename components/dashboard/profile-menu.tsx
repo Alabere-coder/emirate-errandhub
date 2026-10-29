@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -40,6 +41,7 @@ type AccountDropdownProps = {
   role: UserRole;
   firstName: string;
   lastName: string;
+  avatarUrl?: string | null;
 };
 
 function getRoleLabel(role: UserRole) {
@@ -59,6 +61,7 @@ export function AccountDropdown({
   role,
   firstName,
   lastName,
+  avatarUrl,
 }: AccountDropdownProps) {
   const router = useRouter();
 
@@ -75,7 +78,7 @@ export function AccountDropdown({
       ? "/dashboard/customer/profile"
       : role === "worker"
         ? "/dashboard/worker/profile"
-        : "/dashboard/admin/settings";
+        : "/dashboard/admin/profile";
 
   const settingsHref =
     role === "admin" ? "/dashboard/admin/settings" : profileHref;
@@ -152,8 +155,19 @@ export function AccountDropdown({
           className="flex h-10 items-center gap-2 rounded-xl px-2 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-100"
           aria-label="Open account menu"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-800 text-xs font-bold text-white">
-            {initials}
+          <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-emerald-800 text-xs font-bold text-white">
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt={`${firstName} ${lastName}`}
+                fill
+                sizes="32px"
+                unoptimized
+                className="object-cover"
+              />
+            ) : (
+              initials
+            )}
           </span>
         </PopoverTrigger>
 
@@ -165,8 +179,19 @@ export function AccountDropdown({
         >
           <PopoverHeader className="rounded-xl bg-slate-50 p-3">
             <PopoverTitle className="flex items-center gap-3 text-sm">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-800 text-sm font-bold text-white">
-                {initials}
+              <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-800 text-sm font-bold text-white">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={`${firstName} ${lastName}`}
+                    fill
+                    sizes="44px"
+                    unoptimized
+                    className="object-cover"
+                  />
+                ) : (
+                  initials
+                )}
               </span>
 
               <span className="min-w-0">

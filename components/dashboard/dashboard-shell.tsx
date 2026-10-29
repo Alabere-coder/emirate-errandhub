@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Bell,
@@ -30,6 +31,7 @@ import {
   ShieldAlert,
   FaceAngry,
   Headphones,
+  User,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
@@ -47,6 +49,7 @@ type DashboardShellProps = {
   role: UserRole;
   firstName: string;
   lastName: string;
+  avatarUrl?: string | null;
   children: React.ReactNode;
 };
 
@@ -185,6 +188,12 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: WalletCards,
     },
 
+    {
+      label: "Profile",
+      href: "/dashboard/admin/profile",
+      icon: User,
+    },
+
     { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
   ],
   super_admin: [
@@ -236,6 +245,11 @@ const navigation: Record<UserRole, NavItem[]> = {
         href: "/dashboard/admin/withdrawals",
         icon: WalletCards,
       },
+      {
+        label: "Profile",
+        href: "/dashboard/admin/profile",
+        icon: User,
+      },
       { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
     ],
     {
@@ -267,6 +281,7 @@ export function DashboardShell({
   role,
   firstName,
   lastName,
+  avatarUrl,
   children,
 }: DashboardShellProps) {
   const pathname = usePathname();
@@ -354,8 +369,19 @@ export function DashboardShell({
 
         <div className="mx-4 mt-5 rounded-2xl border border-slate-100 bg-slate-50/90 p-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-emerald-700 to-emerald-900 text-sm font-bold text-white ring-4 ring-white">
-              {initials || "U"}
+            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-linear-to-br from-emerald-700 to-emerald-900 text-sm font-bold text-white ring-4 ring-white">
+              {(role === "admin" || role === "super_admin") && avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={`${firstName} ${lastName}`}
+                  fill
+                  unoptimized
+                  sizes="44px"
+                  className="object-cover"
+                />
+              ) : (
+                initials || "U"
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-slate-900">
@@ -428,6 +454,7 @@ export function DashboardShell({
             role={role}
             firstName={firstName}
             lastName={lastName}
+            avatarUrl={avatarUrl}
           />
         </DashboardNavbar>
 
