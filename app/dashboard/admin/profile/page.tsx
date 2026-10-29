@@ -63,7 +63,7 @@ export default async function AdminProfilePage() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[460px_1fr]">
         <div className="space-y-6">
           <Card className="overflow-hidden border-0 shadow-sm">
             <div className="h-28 bg-linear-to-r from-emerald-700 via-emerald-600 to-teal-500" />

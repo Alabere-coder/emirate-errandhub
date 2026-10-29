@@ -1,4 +1,5 @@
 import { requireRole } from "@/lib/auth/require-role";
+import { getCurrentUser } from "@/lib/auth/get-user";
 import { createClient } from "@/lib/supabase/server";
 
 import {
@@ -10,22 +11,47 @@ import {
 } from "@/components/ui/card";
 
 import CommissionForm from "./commission/commission-form";
+import GeneralSettingsForm from "./general/general-settings-form";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
   await requireRole(["admin"]);
 
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    throw new Error("Unable to load the current admin account.");
+  }
+
   const supabase = await createClient();
 
-  const { data: settings, error } = await supabase
-    .from("commission_settings")
-    .select("commission_type, commission_value, name, updated_at")
-    .eq("is_active", true)
-    .maybeSingle();
+  const [
+    { data: settings, error: settingsError },
+    { data: platform, error: platformError },
+  ] = await Promise.all([
+    supabase
+      .from("commission_settings")
+      .select("commission_type, commission_value, name, updated_at")
+      .eq("is_active", true)
+      .maybeSingle(),
+    supabase
+      .from("platform_settings")
+      .select(
+        "platform_name, platform_description, support_email, support_phone",
+      )
+      .limit(1)
+      .maybeSingle(),
+  ]);
 
-  if (error) {
-    console.error("Failed to load commission settings:", error);
+  if (settingsError) {
+    console.error("Failed to load commission settings:", settingsError);
+    throw new Error("Unable to load platform commission settings.");
+  }
 
-    throw new Error("Unable to load platform settings.");
+  if (platformError) {
+    console.error("Failed to load general settings:", platformError);
+    throw new Error("Unable to load general platform settings.");
   }
 
   const currentType =
@@ -37,7 +63,6 @@ export default async function AdminSettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Platform Settings</h1>
-
         <p className="text-muted-foreground">
           Manage platform-wide configuration for Emirate ErrandHub.
         </p>
@@ -45,8 +70,28 @@ export default async function AdminSettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Platform Commission</CardTitle>
+          <CardTitle>General Settings</CardTitle>
+          <CardDescription>
+            Manage the platform identity and public support contact details.
+          </CardDescription>
+        </CardHeader>
 
+        <CardContent>
+          <GeneralSettingsForm
+            platformName={platform?.platform_name ?? "Emirate ErrandHub"}
+            platformDescription={
+              platform?.platform_description ?? "Services made easier."
+            }
+            supportEmail={platform?.support_email ?? ""}
+            supportPhone={platform?.support_phone ?? ""}
+            canEdit={currentUser.profile.role === "super_admin"}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Platform Commission</CardTitle>
           <CardDescription>
             Configure the commission deducted from completed jobs before worker
             earnings become available.
