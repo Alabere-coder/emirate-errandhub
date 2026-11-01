@@ -32,6 +32,8 @@ import {
   FaceAngry,
   Headphones,
   User,
+  CreditCard,
+  ReceiptTurkishLira,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
@@ -71,6 +73,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       label: "Jobs",
       href: "/dashboard/customer/jobs",
       icon: BriefcaseBusiness,
+    },
+    {
+      label: "Payments History",
+      href: "/dashboard/customer/payments",
+      icon: CreditCard,
     },
     {
       label: "Disputes",
@@ -192,6 +199,12 @@ const navigation: Record<UserRole, NavItem[]> = {
     },
 
     {
+      label: "Refunds",
+      href: "/dashboard/admin/refunds",
+      icon: ReceiptTurkishLira,
+    },
+
+    {
       label: "Profile",
       href: "/dashboard/admin/profile",
       icon: User,
@@ -247,6 +260,11 @@ const navigation: Record<UserRole, NavItem[]> = {
         label: "Withdrawals",
         href: "/dashboard/admin/withdrawals",
         icon: WalletCards,
+      },
+      {
+        label: "Refunds",
+        href: "/dashboard/admin/refunds",
+        icon: ReceiptTurkishLira,
       },
       {
         label: "Profile",

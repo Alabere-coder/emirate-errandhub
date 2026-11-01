@@ -13,6 +13,7 @@ import {
 import CommissionForm from "./commission/commission-form";
 import GeneralSettingsForm from "./general/general-settings-form";
 import PlatformLogoUpload from "./general/platform-logo-upload";
+import PaymentGatewayForm from "./payment-gateway/payment-gateway-form";
 
 export const dynamic = "force-dynamic";
 
@@ -27,21 +28,47 @@ export default async function AdminSettingsPage() {
 
   const supabase = await createClient();
 
+  // const [
+  //   { data: settings, error: settingsError },
+  //   { data: platform, error: platformError },
+  // ] = await Promise.all([
+  //   supabase
+  //     .from("commission_settings")
+  //     .select("commission_type, commission_value, name, updated_at")
+  //     .eq("is_active", true)
+  //     .maybeSingle(),
+  //   supabase
+  //     .from("platform_settings")
+  //     .select(
+  //       "platform_name, platform_description, support_email, support_phone, is_maintenance_mode, platform_logo_url",
+  //     )
+  //     .limit(1)
+  //     .maybeSingle(),
+  // ]);
+
   const [
     { data: settings, error: settingsError },
     { data: platform, error: platformError },
+    { data: gateway, error: gatewayError },
   ] = await Promise.all([
     supabase
       .from("commission_settings")
       .select("commission_type, commission_value, name, updated_at")
       .eq("is_active", true)
       .maybeSingle(),
+
     supabase
       .from("platform_settings")
       .select(
         "platform_name, platform_description, support_email, support_phone, is_maintenance_mode, platform_logo_url",
       )
       .limit(1)
+      .maybeSingle(),
+
+    supabase
+      .from("payment_gateway_settings")
+      .select("provider, environment, is_enabled")
+      .eq("singleton", true)
       .maybeSingle(),
   ]);
 
@@ -53,6 +80,11 @@ export default async function AdminSettingsPage() {
   if (platformError) {
     console.error("Failed to load general settings:", platformError);
     throw new Error("Unable to load general platform settings.");
+  }
+
+  if (gatewayError) {
+    console.error("Failed to load payment gateway settings:", gatewayError);
+    throw new Error("Unable to load payment gateway settings.");
   }
 
   const currentType =
@@ -124,6 +156,28 @@ export default async function AdminSettingsPage() {
           <CommissionForm
             currentType={currentType}
             currentValue={currentValue}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Payment Gateway</CardTitle>
+          <CardDescription>
+            Configure the payment provider and environment used by the platform.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <PaymentGatewayForm
+            initialProvider={
+              gateway?.provider === "flutterwave" ? "flutterwave" : "paystack"
+            }
+            initialEnvironment={
+              gateway?.environment === "live" ? "live" : "test"
+            }
+            initialIsEnabled={gateway?.is_enabled ?? false}
+            canEdit={currentUser.profile.role === "super_admin"}
           />
         </CardContent>
       </Card>

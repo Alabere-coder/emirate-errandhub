@@ -240,6 +240,50 @@ export async function initializeJobPayment(
       appUrl,
     ).toString();
 
+    // Check the current payment gateway settings before creating a new charge.
+    const { data: gatewaySettings, error: gatewaySettingsError } = await admin
+      .from("payment_gateway_settings")
+      .select("provider, environment, is_enabled")
+      .eq("singleton", true)
+      .maybeSingle();
+
+    if (gatewaySettingsError) {
+      console.error(
+        "Payment gateway settings lookup failed:",
+        gatewaySettingsError,
+      );
+
+      return {
+        error: "Unable to verify payment configuration. Please try again.",
+      };
+    }
+
+    if (!gatewaySettings) {
+      return {
+        error:
+          "Payment gateway has not been configured. Please contact support.",
+      };
+    }
+
+    if (!gatewaySettings.is_enabled) {
+      return {
+        error:
+          "Online payments are temporarily unavailable. Please try again later.",
+      };
+    }
+
+    if (gatewaySettings.provider !== "paystack") {
+      return {
+        error: "The selected payment provider is not yet supported.",
+      };
+    }
+
+    if (gatewaySettings.environment !== "test") {
+      return {
+        error: "Live payments are not configured yet. Please contact support.",
+      };
+    }
+
     // Reuse or safely resolve an existing pending Paystack attempt.
     const { data: pendingTransaction, error: pendingLookupError } = await admin
       .from("payment_transactions")
@@ -263,26 +307,6 @@ export async function initializeJobPayment(
         !Array.isArray(pendingTransaction.metadata)
           ? pendingTransaction.metadata
           : {};
-
-      const authorizationUrl = metadata.authorization_url;
-
-      // Reuse the existing checkout instead of creating another charge.
-      if (typeof authorizationUrl === "string" && authorizationUrl) {
-        if (
-          Number(pendingTransaction.amount) !== amountDue ||
-          pendingTransaction.currency.toUpperCase() !== currency
-        ) {
-          return {
-            error:
-              "An earlier payment attempt still needs to be resolved. Please contact support before starting another payment.",
-          };
-        }
-
-        return {
-          authorizationUrl,
-          reference: pendingTransaction.provider_reference!,
-        };
-      }
 
       // No saved checkout URL: verify the reference before retrying.
       const pendingReference = pendingTransaction.provider_reference;
@@ -313,6 +337,19 @@ export async function initializeJobPayment(
         return {
           error:
             "The payment reference could not be confirmed. Please contact support.",
+        };
+      }
+
+      if (
+        !Number.isFinite(Number(pendingTransaction.amount)) ||
+        Number(pendingTransaction.amount) <= 0 ||
+        verification.amount !== toKobo(Number(pendingTransaction.amount)) ||
+        verification.currency.toUpperCase() !==
+          pendingTransaction.currency.toUpperCase()
+      ) {
+        return {
+          error:
+            "The earlier payment details could not be confirmed. Please contact support.",
         };
       }
 
@@ -367,6 +404,31 @@ export async function initializeJobPayment(
         verification.status !== "failed" &&
         verification.status !== "abandoned"
       ) {
+        if (
+          verification.status === "ongoing" &&
+          typeof metadata.authorization_url === "string"
+        ) {
+          const savedCheckoutUrl = metadata.authorization_url;
+
+          try {
+            const checkoutUrl = new URL(savedCheckoutUrl);
+
+            if (
+              checkoutUrl.protocol === "https:" &&
+              checkoutUrl.hostname === "checkout.paystack.com" &&
+              Number(pendingTransaction.amount) === amountDue &&
+              pendingTransaction.currency.toUpperCase() === currency
+            ) {
+              return {
+                authorizationUrl: savedCheckoutUrl,
+                reference: pendingReference,
+              };
+            }
+          } catch {
+            // Invalid saved checkout URL. Do not reuse it.
+          }
+        }
+
         return {
           error:
             "Your earlier payment is still being processed. Please wait before trying again.",
@@ -730,17 +792,6 @@ export async function verifyJobPayment(
     // Notify the customer only on the first successful verification.
     if (transaction.status === "pending" && !transaction.verified_at) {
       const remainingBalance = roundNaira(fullJobAmount - totalVerified);
-
-      // await createNotification({
-      //   userId: payment.customer_id,
-      //   type: "payment_successful",
-      //   title: "Payment received successfully",
-      //   message: result.payment_complete
-      //     ? `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your job is now fully paid.`
-      //     : `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your remaining balance is ${expectedCurrency} ${remainingBalance.toFixed(2)}.`,
-      //   link: "/dashboard/customer/jobs",
-      //   preference: "payment_notifications",
-      // });
 
       await createNotification({
         userId: payment.customer_id,
