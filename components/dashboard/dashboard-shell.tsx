@@ -86,6 +86,7 @@ const navigation: Record<UserRole, NavItem[]> = {
     },
     { label: "Addresses", href: "/dashboard/customer/addresses", icon: MapPin },
     { label: "Profile", href: "/dashboard/customer/profile", icon: UserRound },
+    { label: "Settings", href: "/dashboard/customer/settings", icon: Settings },
   ],
   worker: [
     { label: "Overview", href: "/dashboard/worker", icon: Home },
@@ -145,6 +146,7 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: FaceAngry,
     },
     { label: "Profile", href: "/dashboard/worker/profile", icon: UserRound },
+    { label: "Settings", href: "/dashboard/worker/settings", icon: Settings },
   ],
   admin: [
     { label: "Overview", href: "/dashboard/admin", icon: Home },

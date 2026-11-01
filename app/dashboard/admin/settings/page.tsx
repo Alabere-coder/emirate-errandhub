@@ -14,8 +14,26 @@ import CommissionForm from "./commission/commission-form";
 import GeneralSettingsForm from "./general/general-settings-form";
 import PlatformLogoUpload from "./general/platform-logo-upload";
 import PaymentGatewayForm from "./payment-gateway/payment-gateway-form";
+import NotificationSettingsForm from "./notifications/notification-settings-form";
+import type { PlatformNotificationSettings } from "./notifications/actions";
 
 export const dynamic = "force-dynamic";
+
+const defaultNotificationSettings: PlatformNotificationSettings = {
+  default_email_notifications: true,
+  default_push_notifications: true,
+  default_sms_notifications: true,
+  default_job_updates: true,
+  default_message_notifications: true,
+  default_payment_notifications: true,
+  default_marketing_notifications: false,
+  admin_email_notifications: true,
+  admin_push_notifications: true,
+  admin_sms_notifications: true,
+  admin_job_updates: true,
+  admin_message_notifications: true,
+  admin_payment_notifications: true,
+};
 
 export default async function AdminSettingsPage() {
   await requireRole(["admin"]);
@@ -28,28 +46,11 @@ export default async function AdminSettingsPage() {
 
   const supabase = await createClient();
 
-  // const [
-  //   { data: settings, error: settingsError },
-  //   { data: platform, error: platformError },
-  // ] = await Promise.all([
-  //   supabase
-  //     .from("commission_settings")
-  //     .select("commission_type, commission_value, name, updated_at")
-  //     .eq("is_active", true)
-  //     .maybeSingle(),
-  //   supabase
-  //     .from("platform_settings")
-  //     .select(
-  //       "platform_name, platform_description, support_email, support_phone, is_maintenance_mode, platform_logo_url",
-  //     )
-  //     .limit(1)
-  //     .maybeSingle(),
-  // ]);
-
   const [
     { data: settings, error: settingsError },
     { data: platform, error: platformError },
     { data: gateway, error: gatewayError },
+    { data: notificationSettings, error: notificationSettingsError },
   ] = await Promise.all([
     supabase
       .from("commission_settings")
@@ -70,6 +71,12 @@ export default async function AdminSettingsPage() {
       .select("provider, environment, is_enabled")
       .eq("singleton", true)
       .maybeSingle(),
+
+    supabase
+      .from("platform_notification_settings")
+      .select("*")
+      .eq("id", "00000000-0000-0000-0000-000000000001")
+      .maybeSingle(),
   ]);
 
   if (settingsError) {
@@ -85,6 +92,14 @@ export default async function AdminSettingsPage() {
   if (gatewayError) {
     console.error("Failed to load payment gateway settings:", gatewayError);
     throw new Error("Unable to load payment gateway settings.");
+  }
+
+  if (notificationSettingsError) {
+    console.error(
+      "Failed to load notification settings:",
+      notificationSettingsError,
+    );
+    throw new Error("Unable to load notification settings.");
   }
 
   const currentType =
@@ -177,6 +192,24 @@ export default async function AdminSettingsPage() {
               gateway?.environment === "live" ? "live" : "test"
             }
             initialIsEnabled={gateway?.is_enabled ?? false}
+            canEdit={currentUser.profile.role === "super_admin"}
+          />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Notification Settings</CardTitle>
+          <CardDescription>
+            Manage default notification preferences for new users and
+            notification alerts for platform administrators.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <NotificationSettingsForm
+            initialSettings={
+              notificationSettings ?? defaultNotificationSettings
+            }
             canEdit={currentUser.profile.role === "super_admin"}
           />
         </CardContent>

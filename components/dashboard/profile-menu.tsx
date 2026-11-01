@@ -81,7 +81,13 @@ export function AccountDropdown({
         : "/dashboard/admin/profile";
 
   const settingsHref =
-    role === "admin" ? "/dashboard/admin/settings" : profileHref;
+    role === "admin" || role === "super_admin"
+      ? "/dashboard/admin/settings"
+      : role === "worker"
+        ? "/dashboard/worker/settings"
+        : role === "customer"
+          ? "/dashboard/customer/settings"
+          : profileHref;
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("errandhub-theme");
