@@ -6,7 +6,8 @@ import {
   initializePaystackTransaction,
   verifyPaystackTransaction,
 } from "@/lib/payments/paystack";
-import { createNotification } from "@/lib/notifications/create-notification";
+// import { createNotification } from "@/lib/notifications/create-notification";
+import { deliverPaymentNotifications } from "@/lib/notifications/payment-notification-delivery";
 
 export type InitializePaymentResult = {
   error?: string;
@@ -22,8 +23,160 @@ function roundNaira(amount: number): number {
   return Math.round((amount + Number.EPSILON) * 100) / 100;
 }
 
+export type JobPaymentSummary = {
+  error?: string;
+  paymentPlan?: "full" | "deposit_balance";
+  totalAmount?: number;
+  amountAlreadyPaid?: number;
+  remainingAmount?: number;
+  depositAmount?: number;
+  depositPaid?: boolean;
+};
+
+export async function getJobPaymentSummary(
+  jobId: string,
+): Promise<JobPaymentSummary> {
+  try {
+    if (
+      typeof jobId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        jobId,
+      )
+    ) {
+      return { error: "A valid job is required." };
+    }
+
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { error: "Please sign in to view payment details." };
+    }
+
+    const { data: job, error: jobError } = await supabase
+      .from("jobs")
+      .select(
+        "id, customer_id, agreed_amount, currency, payment_plan, deposit_percentage, upfront_amount",
+      )
+      .eq("id", jobId)
+      .eq("customer_id", user.id)
+      .maybeSingle();
+
+    if (jobError || !job) {
+      return { error: "We couldn't find this job in your account." };
+    }
+
+    const totalAmount = Number(job.agreed_amount);
+    const currency = String(job.currency || "").toUpperCase();
+
+    if (
+      !Number.isFinite(totalAmount) ||
+      totalAmount <= 0 ||
+      currency !== "NGN"
+    ) {
+      return { error: "This job has an invalid payment amount." };
+    }
+
+    const admin = createAdminClient();
+
+    const { data: payment, error: paymentError } = await admin
+      .from("payments")
+      .select("id, customer_id, amount, currency")
+      .eq("job_id", job.id)
+      .maybeSingle();
+
+    if (paymentError) {
+      return { error: "Unable to load payment details." };
+    }
+
+    let amountAlreadyPaid = 0;
+
+    if (payment) {
+      if (
+        payment.customer_id !== user.id ||
+        Number(payment.amount) !== totalAmount ||
+        payment.currency.toUpperCase() !== currency
+      ) {
+        return { error: "The payment record needs review." };
+      }
+
+      const { data: transactions, error: transactionError } = await admin
+        .from("payment_transactions")
+        .select("amount, currency")
+        .eq("payment_id", payment.id)
+        .eq("status", "successful")
+        .not("verified_at", "is", null);
+
+      if (transactionError) {
+        return { error: "Unable to calculate your remaining balance." };
+      }
+
+      for (const transaction of transactions ?? []) {
+        if (transaction.currency.toUpperCase() !== currency) {
+          return { error: "A payment currency mismatch needs review." };
+        }
+
+        amountAlreadyPaid = roundNaira(
+          amountAlreadyPaid + Number(transaction.amount),
+        );
+      }
+    }
+
+    const remainingAmount = roundNaira(totalAmount - amountAlreadyPaid);
+
+    if (remainingAmount < 0) {
+      return { error: "The payment total needs review." };
+    }
+
+    if (job.payment_plan === "full") {
+      return {
+        paymentPlan: "full",
+        totalAmount,
+        amountAlreadyPaid,
+        remainingAmount,
+      };
+    }
+
+    if (job.payment_plan !== "deposit_balance") {
+      return { error: "This job has an unsupported payment plan." };
+    }
+
+    const depositAmount =
+      job.upfront_amount != null
+        ? roundNaira(Number(job.upfront_amount))
+        : roundNaira((totalAmount * Number(job.deposit_percentage)) / 100);
+
+    if (
+      !Number.isFinite(depositAmount) ||
+      depositAmount <= 0 ||
+      depositAmount >= totalAmount
+    ) {
+      return { error: "This job's deposit settings are invalid." };
+    }
+
+    return {
+      paymentPlan: "deposit_balance",
+      totalAmount,
+      amountAlreadyPaid,
+      remainingAmount,
+      depositAmount,
+      depositPaid: amountAlreadyPaid >= depositAmount,
+    };
+  } catch (error) {
+    console.error("Get job payment summary error:", error);
+    return { error: "Unable to load payment details." };
+  }
+}
+
+export type JobPaymentOption = "full" | "deposit" | "balance";
+
 export async function initializeJobPayment(
   jobId: string,
+  paymentOption: JobPaymentOption = "full",
 ): Promise<InitializePaymentResult> {
   try {
     if (
@@ -194,9 +347,39 @@ export async function initializeJobPayment(
       };
     }
 
+    // let amountDue = remainingAmount;
+
+    // const transactionType = "charge" as const;
+
+    // if (job.payment_plan === "deposit_balance") {
+    //   const depositAmount =
+    //     job.upfront_amount != null
+    //       ? roundNaira(Number(job.upfront_amount))
+    //       : roundNaira((totalAmount * Number(job.deposit_percentage)) / 100);
+
+    //   if (
+    //     !Number.isFinite(depositAmount) ||
+    //     depositAmount <= 0 ||
+    //     depositAmount >= totalAmount
+    //   ) {
+    //     return {
+    //       error:
+    //         "This job's deposit settings are invalid. Please contact support.",
+    //     };
+    //   }
+
+    //   if (amountAlreadyPaid < depositAmount) {
+    //     amountDue = roundNaira(depositAmount - amountAlreadyPaid);
+    //   } else {
+    //     amountDue = remainingAmount;
+    //   }
+    // } else if (job.payment_plan !== "full") {
+    //   return { error: "This job has an unsupported payment plan." };
+    // }
+
     let amountDue = remainingAmount;
 
-    const transactionType = "charge" as const;
+    let paymentPurpose: "full" | "deposit" | "balance" = "full";
 
     if (job.payment_plan === "deposit_balance") {
       const depositAmount =
@@ -215,14 +398,42 @@ export async function initializeJobPayment(
         };
       }
 
-      if (amountAlreadyPaid < depositAmount) {
+      if (paymentOption === "deposit") {
+        if (amountAlreadyPaid >= depositAmount) {
+          return { error: "Your required deposit has already been paid." };
+        }
+
         amountDue = roundNaira(depositAmount - amountAlreadyPaid);
-      } else {
+        paymentPurpose = "deposit";
+      } else if (paymentOption === "balance") {
+        if (amountAlreadyPaid < depositAmount) {
+          return {
+            error: "Please pay the required deposit before paying the balance.",
+          };
+        }
+
         amountDue = remainingAmount;
+        paymentPurpose = "balance";
+      } else if (paymentOption === "full") {
+        amountDue = remainingAmount;
+        paymentPurpose = "full";
+      } else {
+        return { error: "Invalid payment option." };
       }
-    } else if (job.payment_plan !== "full") {
+    } else if (job.payment_plan === "full") {
+      if (paymentOption !== "full") {
+        return {
+          error: "This job only supports full payment.",
+        };
+      }
+
+      amountDue = remainingAmount;
+      paymentPurpose = "full";
+    } else {
       return { error: "This job has an unsupported payment plan." };
     }
+
+    const transactionType = "charge" as const;
 
     if (amountDue <= 0 || toKobo(amountDue) <= 0) {
       return { error: "The calculated payment amount is invalid." };
@@ -365,9 +576,24 @@ export async function initializeJobPayment(
           };
         }
 
-        const { error: reconciliationError } = await admin.rpc(
-          "reconcile_paystack_payment",
-          {
+        // const { error: reconciliationError } = await admin.rpc(
+        //   "reconcile_paystack_payment",
+        //   {
+        //     p_transaction_id: pendingTransaction.id,
+        //     p_reference: pendingReference,
+        //     p_verified_at: verification.paid_at
+        //       ? new Date(verification.paid_at).toISOString()
+        //       : new Date().toISOString(),
+        //     p_metadata: {
+        //       paystack_status: verification.status,
+        //       gateway_response: verification.gateway_response,
+        //       channel: verification.channel,
+        //       verified_by: "initializeJobPayment",
+        //     },
+        //   },
+        // );
+        const { data: reconciliation, error: reconciliationError } =
+          await admin.rpc("reconcile_paystack_payment", {
             p_transaction_id: pendingTransaction.id,
             p_reference: pendingReference,
             p_verified_at: verification.paid_at
@@ -379,8 +605,66 @@ export async function initializeJobPayment(
               channel: verification.channel,
               verified_by: "initializeJobPayment",
             },
-          },
-        );
+          });
+
+        if (reconciliationError || !reconciliation) {
+          console.error(
+            "Existing payment reconciliation failed:",
+            reconciliationError,
+          );
+
+          return {
+            error:
+              "Your earlier payment may have succeeded, but confirmation is incomplete. Please contact support before paying again.",
+          };
+        }
+
+        const result = reconciliation as {
+          payment_complete?: boolean;
+          verified_total?: number | string;
+          full_amount?: number | string;
+        };
+
+        const verifiedTotal = Number(result.verified_total);
+        const fullAmount = Number(result.full_amount);
+
+        if (
+          typeof result.payment_complete !== "boolean" ||
+          !Number.isFinite(verifiedTotal) ||
+          !Number.isFinite(fullAmount) ||
+          fullAmount <= 0 ||
+          verifiedTotal < 0 ||
+          verifiedTotal > fullAmount
+        ) {
+          console.error(
+            "Unexpected existing payment reconciliation result:",
+            reconciliation,
+          );
+
+          return {
+            error:
+              "Your earlier payment was verified, but its final status needs review. Please contact support.",
+          };
+        }
+
+        try {
+          await deliverPaymentNotifications({
+            transactionId: pendingTransaction.id,
+            paymentComplete: result.payment_complete,
+            verifiedTotal,
+            fullAmount,
+          });
+        } catch (notificationError) {
+          console.error(
+            "Existing payment notification delivery failed:",
+            notificationError,
+          );
+        }
+
+        return {
+          error:
+            "Your earlier payment has been verified. Refresh your payment page to check the remaining balance before continuing.",
+        };
 
         if (reconciliationError) {
           console.error(
@@ -474,17 +758,7 @@ export async function initializeJobPayment(
         metadata: {
           job_id: job.id,
           customer_id: user.id,
-          payment_purpose:
-            job.payment_plan === "deposit_balance"
-              ? amountAlreadyPaid <
-                (job.upfront_amount != null
-                  ? roundNaira(Number(job.upfront_amount))
-                  : roundNaira(
-                      (totalAmount * Number(job.deposit_percentage)) / 100,
-                    ))
-                ? "deposit"
-                : "balance"
-              : "full",
+          payment_purpose: paymentPurpose,
         },
       })
       .select("id")
@@ -765,6 +1039,7 @@ export async function verifyJobPayment(
       payment_complete?: boolean;
       verified_total?: number | string;
       full_amount?: number | string;
+      first_verification?: boolean;
     };
 
     const totalVerified = Number(result.verified_total);
@@ -790,31 +1065,43 @@ export async function verifyJobPayment(
     }
 
     // Notify the customer only on the first successful verification.
-    if (transaction.status === "pending" && !transaction.verified_at) {
-      const remainingBalance = roundNaira(fullJobAmount - totalVerified);
+    // if (result.first_verification === true) {
+    //   const remainingBalance = roundNaira(fullJobAmount - totalVerified);
 
-      await createNotification({
-        userId: payment.customer_id,
-        type: "payment_successful",
+    //   await createNotification({
+    //     userId: payment.customer_id,
+    //     type: "payment_successful",
 
-        // Customer notification
-        title: "Payment received successfully",
-        message: result.payment_complete
-          ? `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your job is now fully paid.`
-          : `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your remaining balance is ${expectedCurrency} ${remainingBalance.toFixed(2)}.`,
+    //     // Customer notification
+    //     title: "Payment received successfully",
+    //     message: result.payment_complete
+    //       ? `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your job is now fully paid.`
+    //       : `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your remaining balance is ${expectedCurrency} ${remainingBalance.toFixed(2)}.`,
 
-        // Administrator notification
-        adminTitle: result.payment_complete
-          ? "Customer payment completed"
-          : "Customer payment received",
+    //     // Administrator notification
+    //     adminTitle: result.payment_complete
+    //       ? "Customer payment completed"
+    //       : "Customer payment received",
 
-        adminMessage: result.payment_complete
-          ? `A customer payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Job ${payment.job_id} is now fully paid.`
-          : `A customer payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified for job ${payment.job_id}. Remaining balance: ${expectedCurrency} ${roundNaira(fullJobAmount - totalVerified).toFixed(2)}.`,
+    //     adminMessage: result.payment_complete
+    //       ? `A customer payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Job ${payment.job_id} is now fully paid.`
+    //       : `A customer payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified for job ${payment.job_id}. Remaining balance: ${expectedCurrency} ${roundNaira(fullJobAmount - totalVerified).toFixed(2)}.`,
 
-        link: "/dashboard/customer/jobs",
-        preference: "payment_notifications",
+    //     link: "/dashboard/customer/jobs",
+    //     preference: "payment_notifications",
+    //   });
+    // }
+    // Create or resume payment notification deliveries after every
+    // successful reconciliation. The delivery table prevents duplicates.
+    try {
+      await deliverPaymentNotifications({
+        transactionId: transaction.id,
+        paymentComplete: result.payment_complete,
+        verifiedTotal: totalVerified,
+        fullAmount: fullJobAmount,
       });
+    } catch (notificationError) {
+      console.error("Payment notification delivery failed:", notificationError);
     }
 
     if (result.payment_complete) {

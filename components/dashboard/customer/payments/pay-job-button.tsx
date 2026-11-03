@@ -4,26 +4,100 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, LockKeyhole, Wallet } from "lucide-react";
 
-import { initializeJobPayment } from "@/lib/actions/payments";
+import {
+  initializeJobPayment,
+  type JobPaymentOption,
+  type JobPaymentSummary,
+} from "@/lib/actions/payments";
+
 import { Button } from "@/components/ui/button";
 
 type PayJobButtonProps = {
   jobId: string;
+  paymentSummary: JobPaymentSummary;
 };
 
-export function PayJobButton({ jobId }: PayJobButtonProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+const formatNaira = (amount: number) =>
+  new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    maximumFractionDigits: 2,
+  }).format(amount);
+
+export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const amountAlreadyPaid = paymentSummary.amountAlreadyPaid ?? 0;
+  const remainingAmount = paymentSummary.remainingAmount ?? 0;
+  const depositAmount = paymentSummary.depositAmount ?? 0;
+
+  const depositDue = Math.max(0, depositAmount - amountAlreadyPaid);
+
+  const paymentOptions: {
+    value: JobPaymentOption;
+    label: string;
+    description: string;
+    amount: number;
+  }[] =
+    paymentSummary.paymentPlan === "full"
+      ? [
+          {
+            value: "full",
+            label: "Pay in Full",
+            description: "Pay the remaining job amount.",
+            amount: remainingAmount,
+          },
+        ]
+      : paymentSummary.depositPaid
+        ? [
+            {
+              value: "balance",
+              label: "Pay Remaining Balance",
+              description: "Your required deposit has been paid.",
+              amount: remainingAmount,
+            },
+          ]
+        : [
+            {
+              value: "deposit",
+              label: "Pay Deposit",
+              description: "Pay the required upfront amount to proceed.",
+              amount: depositDue,
+            },
+            {
+              value: "full",
+              label: "Pay in Full",
+              description: "Settle the entire outstanding amount now.",
+              amount: remainingAmount,
+            },
+          ];
+
+  const [selectedOption, setSelectedOption] = useState<JobPaymentOption>(
+    paymentSummary.paymentPlan === "deposit_balance" &&
+      !paymentSummary.depositPaid
+      ? "deposit"
+      : paymentSummary.paymentPlan === "deposit_balance"
+        ? "balance"
+        : "full",
+  );
+
+  const selectedPayment = paymentOptions.find(
+    (option) => option.value === selectedOption,
+  );
+
   async function handlePayment() {
-    if (loading) return;
+    if (loading || !selectedPayment || selectedPayment.amount <= 0) {
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
     try {
-      const result = await initializeJobPayment(jobId);
+      const result = await initializeJobPayment(jobId, selectedOption);
 
       if (result.error) {
         setError(result.error);
@@ -43,12 +117,57 @@ export function PayJobButton({ jobId }: PayJobButtonProps) {
     }
   }
 
+  if (remainingAmount <= 0) {
+    return (
+      <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-700">
+        Payment complete. No outstanding balance remains.
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <div className="space-y-3">
+        {paymentOptions.map((option) => (
+          <label
+            key={option.value}
+            className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors ${
+              selectedOption === option.value
+                ? "border-teal-600 bg-teal-50"
+                : "border-slate-200 bg-white hover:border-teal-300"
+            }`}
+          >
+            <input
+              type="radio"
+              name={`payment-option-${jobId}`}
+              value={option.value}
+              checked={selectedOption === option.value}
+              onChange={() => setSelectedOption(option.value)}
+              disabled={loading}
+              className="mt-1 h-4 w-4 accent-teal-600"
+            />
+
+            <span className="min-w-0 flex-1">
+              <span className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-semibold text-slate-900">
+                  {option.label}
+                </span>
+                <span className="font-bold text-teal-700">
+                  {formatNaira(option.amount)}
+                </span>
+              </span>
+              <span className="mt-1 block text-sm text-slate-500">
+                {option.description}
+              </span>
+            </span>
+          </label>
+        ))}
+      </div>
+
       <Button
         type="button"
         onClick={handlePayment}
-        disabled={loading}
+        disabled={loading || !selectedPayment || selectedPayment.amount <= 0}
         className="w-full rounded-xl bg-teal-600 text-white hover:bg-teal-700"
       >
         {loading ? (
@@ -59,7 +178,7 @@ export function PayJobButton({ jobId }: PayJobButtonProps) {
         ) : (
           <>
             <Wallet className="mr-2 h-4 w-4" />
-            Pay for this Job
+            Continue to Paystack
           </>
         )}
       </Button>

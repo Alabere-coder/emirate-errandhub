@@ -35,6 +35,7 @@ import {
 import { DeleteServiceRequestButton } from "@/components/dashboard/customer/requests/delete-service-request-button";
 import { ConfirmJobCompletionButton } from "@/components/dashboard/customer/requests/confirm-job-completion-button";
 import { PayJobButton } from "@/components/dashboard/customer/payments/pay-job-button";
+import { getJobPaymentSummary } from "@/lib/actions/payments";
 
 type RequestDetailsPageProps = {
   params: Promise<{
@@ -311,6 +312,9 @@ export default async function CustomerRequestDetailsPage({
     agreed_amount,
     currency,
     status,
+    payment_plan,
+deposit_percentage,
+upfront_amount,
     scheduled_at,
     started_at,
     completed_at,
@@ -334,6 +338,15 @@ export default async function CustomerRequestDetailsPage({
 
   if (jobError) {
     console.error("Customer job lookup error:", jobError);
+  }
+
+  const paymentSummary =
+    job && (job.status === "assigned" || job.status === "completed")
+      ? await getJobPaymentSummary(job.id)
+      : null;
+
+  if (paymentSummary?.error) {
+    console.error("Customer payment summary error:", paymentSummary.error);
   }
 
   let jobMedia: JobMedia[] = [];
@@ -844,7 +857,12 @@ export default async function CustomerRequestDetailsPage({
                           : "Complete the required upfront payment before your service provider starts the job."}
                       </p>
 
-                      <PayJobButton jobId={job.id} />
+                      {paymentSummary && !paymentSummary.error && (
+                        <PayJobButton
+                          jobId={job.id}
+                          paymentSummary={paymentSummary}
+                        />
+                      )}
                     </div>
                   )}
 
