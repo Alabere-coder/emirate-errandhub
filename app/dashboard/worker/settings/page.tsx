@@ -3,6 +3,7 @@ import { Bell, Settings } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
 import { NotificationPreferencesForm } from "@/app/notifications/preferences/notification-preferences-form";
+import { PushNotificationToggle } from "@/components/dashboard/notifications/push-notification-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +62,20 @@ export default async function WorkerSettingsPage() {
           </h2>
         </div>
 
-        <NotificationPreferencesForm initialSettings={preferences} />
+        <div className="space-y-4">
+          <NotificationPreferencesForm initialSettings={preferences} />
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="font-semibold text-slate-900">This browser</h3>
+
+            <p className="mb-4 mt-1 text-sm text-slate-500">
+              Register this browser to receive push notifications, even when
+              Emirate ErrandHub is not open.
+            </p>
+
+            <PushNotificationToggle />
+          </div>
+        </div>
       </section>
     </div>
   );

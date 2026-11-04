@@ -2,6 +2,7 @@ import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendNotificationEmail } from "@/lib/email/send-notification-email";
+import { sendBrowserPushNotification } from "@/lib/notifications/send-browser-push";
 
 type PaymentNotificationInput = {
   transactionId: string;
@@ -20,6 +21,7 @@ type DeliveryRecord = {
   link: string | null;
   in_app_status: string;
   email_status: string;
+  push_status: string;
 };
 
 function roundNaira(value: number) {
@@ -185,6 +187,152 @@ async function processEmailDelivery(
   }
 }
 
+async function processPushDelivery(
+  admin: ReturnType<typeof createAdminClient>,
+  delivery: DeliveryRecord,
+) {
+  if (delivery.push_status === "sent" || delivery.push_status === "skipped") {
+    return;
+  }
+
+  const { data: claimed, error: claimError } = await admin.rpc(
+    "claim_payment_notification_push",
+    { p_delivery_id: delivery.id },
+  );
+
+  if (claimError) {
+    console.error("Payment push notification claim failed:", claimError);
+    return;
+  }
+
+  if (!claimed?.length) {
+    return;
+  }
+
+  // Respect the user's payment-notification category preference.
+  const { data: settings, error: settingsError } = await admin
+    .from("notification_settings")
+    .select("payment_notifications")
+    .eq("user_id", delivery.recipient_id)
+    .maybeSingle();
+
+  if (settingsError) {
+    console.error("Payment push preference lookup failed:", settingsError);
+
+    await admin
+      .from("payment_notification_deliveries")
+      .update({
+        push_status: "failed",
+        last_push_error: "Unable to check payment notification preferences.",
+      })
+      .eq("id", delivery.id)
+      .eq("push_status", "processing");
+
+    return;
+  }
+
+  if (settings?.payment_notifications === false) {
+    const { error } = await admin
+      .from("payment_notification_deliveries")
+      .update({
+        push_status: "skipped",
+        last_push_error: null,
+      })
+      .eq("id", delivery.id)
+      .eq("push_status", "processing");
+
+    if (error) {
+      console.error("Could not skip payment push notification:", error);
+    }
+
+    return;
+  }
+
+  try {
+    const result = await sendBrowserPushNotification(delivery.recipient_id, {
+      title: delivery.title,
+      body: delivery.message,
+      url: delivery.link || "/dashboard",
+      tag: `payment-${delivery.transaction_id}`,
+    });
+
+    if (result.status === "sent") {
+      const partialFailure =
+        result.failed > 0
+          ? `${result.failed} browser subscription(s) failed; ${result.sent} accepted.`
+          : null;
+
+      const { error } = await admin
+        .from("payment_notification_deliveries")
+        .update({
+          push_status: "sent",
+          push_sent_at: new Date().toISOString(),
+          last_push_error: partialFailure,
+        })
+        .eq("id", delivery.id)
+        .eq("push_status", "processing");
+
+      if (error) {
+        console.error("Payment push success status update failed:", error);
+      }
+
+      return;
+    }
+
+    if (result.status === "skipped") {
+      const { error } = await admin
+        .from("payment_notification_deliveries")
+        .update({
+          push_status: "skipped",
+          last_push_error: null,
+        })
+        .eq("id", delivery.id)
+        .eq("push_status", "processing");
+
+      if (error) {
+        console.error("Payment push skip status update failed:", error);
+      }
+
+      return;
+    }
+
+    const { error } = await admin
+      .from("payment_notification_deliveries")
+      .update({
+        push_status: "failed",
+        last_push_error:
+          result.error ||
+          `Push delivery failed. ${result.failed} subscription(s) failed.`,
+      })
+      .eq("id", delivery.id)
+      .eq("push_status", "processing");
+
+    if (error) {
+      console.error("Payment push failure status update failed:", error);
+    }
+  } catch (pushError) {
+    const message =
+      pushError instanceof Error
+        ? pushError.message
+        : "Unexpected push delivery error.";
+
+    console.error("Payment push delivery failed:", delivery.id, pushError);
+
+    const { error } = await admin
+      .from("payment_notification_deliveries")
+      .update({
+        push_status: "failed",
+        last_push_error: message,
+      })
+      .eq("id", delivery.id)
+      .eq("push_status", "processing");
+
+    if (error) {
+      console.error("Payment push failure status update failed:", error);
+    }
+  }
+}
+
 export async function deliverPaymentNotifications({
   transactionId,
   paymentComplete,
@@ -320,7 +468,7 @@ export async function deliverPaymentNotifications({
   const { data: deliveries, error: deliveriesError } = await admin
     .from("payment_notification_deliveries")
     .select(
-      "id, transaction_id, recipient_id, notification_type, title, message, link, in_app_status, email_status",
+      "id, transaction_id, recipient_id, notification_type, title, message, link, in_app_status, email_status, push_status",
     )
     .eq("transaction_id", transaction.id)
     .eq("notification_type", "payment_successful")
@@ -339,6 +487,7 @@ export async function deliverPaymentNotifications({
   for (const delivery of deliveries as DeliveryRecord[]) {
     await processInAppDelivery(admin, delivery);
     await processEmailDelivery(admin, delivery);
+    await processPushDelivery(admin, delivery);
   }
 }
 
@@ -350,7 +499,7 @@ export async function retryPendingPaymentNotificationEmails() {
   const { data: deliveries, error } = await admin
     .from("payment_notification_deliveries")
     .select(
-      "id, transaction_id, recipient_id, notification_type, title, message, link, in_app_status, email_status, email_claimed_at",
+      "id, transaction_id, recipient_id, notification_type, title, message, link, in_app_status, email_status, email_claimed_at, push_status",
     )
     .in("email_status", ["pending", "failed", "processing"])
     .order("created_at", { ascending: true })
@@ -373,6 +522,41 @@ export async function retryPendingPaymentNotificationEmails() {
       await processEmailDelivery(admin, delivery);
     } catch (retryError) {
       console.error("Payment email retry failed:", delivery.id, retryError);
+    }
+  }
+}
+
+export async function retryPendingPaymentNotificationPushes() {
+  const admin = createAdminClient();
+
+  const staleBefore = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+
+  const { data: deliveries, error } = await admin
+    .from("payment_notification_deliveries")
+    .select(
+      "id, transaction_id, recipient_id, notification_type, title, message, link, in_app_status, email_status, push_status, push_claimed_at",
+    )
+    .in("push_status", ["pending", "failed", "processing"])
+    .order("created_at", { ascending: true })
+    .limit(100);
+
+  if (error) {
+    console.error("Could not load payment pushes for retry:", error);
+    return;
+  }
+
+  for (const delivery of deliveries ?? []) {
+    if (
+      delivery.push_status === "processing" &&
+      (!delivery.push_claimed_at || delivery.push_claimed_at >= staleBefore)
+    ) {
+      continue;
+    }
+
+    try {
+      await processPushDelivery(admin, delivery as DeliveryRecord);
+    } catch (retryError) {
+      console.error("Payment push retry failed:", delivery.id, retryError);
     }
   }
 }

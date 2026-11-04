@@ -347,36 +347,6 @@ export async function initializeJobPayment(
       };
     }
 
-    // let amountDue = remainingAmount;
-
-    // const transactionType = "charge" as const;
-
-    // if (job.payment_plan === "deposit_balance") {
-    //   const depositAmount =
-    //     job.upfront_amount != null
-    //       ? roundNaira(Number(job.upfront_amount))
-    //       : roundNaira((totalAmount * Number(job.deposit_percentage)) / 100);
-
-    //   if (
-    //     !Number.isFinite(depositAmount) ||
-    //     depositAmount <= 0 ||
-    //     depositAmount >= totalAmount
-    //   ) {
-    //     return {
-    //       error:
-    //         "This job's deposit settings are invalid. Please contact support.",
-    //     };
-    //   }
-
-    //   if (amountAlreadyPaid < depositAmount) {
-    //     amountDue = roundNaira(depositAmount - amountAlreadyPaid);
-    //   } else {
-    //     amountDue = remainingAmount;
-    //   }
-    // } else if (job.payment_plan !== "full") {
-    //   return { error: "This job has an unsupported payment plan." };
-    // }
-
     let amountDue = remainingAmount;
 
     let paymentPurpose: "full" | "deposit" | "balance" = "full";
@@ -576,22 +546,6 @@ export async function initializeJobPayment(
           };
         }
 
-        // const { error: reconciliationError } = await admin.rpc(
-        //   "reconcile_paystack_payment",
-        //   {
-        //     p_transaction_id: pendingTransaction.id,
-        //     p_reference: pendingReference,
-        //     p_verified_at: verification.paid_at
-        //       ? new Date(verification.paid_at).toISOString()
-        //       : new Date().toISOString(),
-        //     p_metadata: {
-        //       paystack_status: verification.status,
-        //       gateway_response: verification.gateway_response,
-        //       channel: verification.channel,
-        //       verified_by: "initializeJobPayment",
-        //     },
-        //   },
-        // );
         const { data: reconciliation, error: reconciliationError } =
           await admin.rpc("reconcile_paystack_payment", {
             p_transaction_id: pendingTransaction.id,
@@ -1065,32 +1019,7 @@ export async function verifyJobPayment(
     }
 
     // Notify the customer only on the first successful verification.
-    // if (result.first_verification === true) {
-    //   const remainingBalance = roundNaira(fullJobAmount - totalVerified);
 
-    //   await createNotification({
-    //     userId: payment.customer_id,
-    //     type: "payment_successful",
-
-    //     // Customer notification
-    //     title: "Payment received successfully",
-    //     message: result.payment_complete
-    //       ? `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your job is now fully paid.`
-    //       : `Your payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Your remaining balance is ${expectedCurrency} ${remainingBalance.toFixed(2)}.`,
-
-    //     // Administrator notification
-    //     adminTitle: result.payment_complete
-    //       ? "Customer payment completed"
-    //       : "Customer payment received",
-
-    //     adminMessage: result.payment_complete
-    //       ? `A customer payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified. Job ${payment.job_id} is now fully paid.`
-    //       : `A customer payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} has been verified for job ${payment.job_id}. Remaining balance: ${expectedCurrency} ${roundNaira(fullJobAmount - totalVerified).toFixed(2)}.`,
-
-    //     link: "/dashboard/customer/jobs",
-    //     preference: "payment_notifications",
-    //   });
-    // }
     // Create or resume payment notification deliveries after every
     // successful reconciliation. The delivery table prevents duplicates.
     try {

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { retryPendingPaymentNotificationEmails } from "@/lib/notifications/payment-notification-delivery";
+import {
+  retryPendingPaymentNotificationEmails,
+  retryPendingPaymentNotificationPushes,
+} from "@/lib/notifications/payment-notification-delivery";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,10 +27,11 @@ export async function GET(request: Request) {
 
   try {
     await retryPendingPaymentNotificationEmails();
+    await retryPendingPaymentNotificationPushes();
 
     return NextResponse.json({
       success: true,
-      message: "Payment email retry process completed.",
+      message: "Payment email and browser push retry processes completed.",
     });
   } catch (error) {
     console.error("Payment notification retry endpoint failed:", error);
