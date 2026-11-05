@@ -34,6 +34,7 @@ import {
   User,
   CreditCard,
   ReceiptTurkishLira,
+  Megaphone,
 } from "lucide-react";
 import { useState } from "react";
 import { AccountDropdown } from "./profile-menu";
@@ -212,6 +213,12 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: User,
     },
 
+    {
+      label: "Marketing",
+      href: "/dashboard/admin/marketing",
+      icon: Megaphone,
+    },
+
     { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
   ],
   super_admin: [
@@ -274,7 +281,13 @@ const navigation: Record<UserRole, NavItem[]> = {
         icon: User,
       },
       { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
+      {
+        label: "Marketing",
+        href: "/dashboard/admin/marketing",
+        icon: Megaphone,
+      },
     ],
+
     {
       label: "Admin Management",
       href: "/dashboard/admin/management",
