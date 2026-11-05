@@ -19,6 +19,7 @@ import {
   formatDateTime,
   formatCurrency,
 } from "@/lib/localization/format";
+import { CampaignBanners } from "@/components/marketing/campaign-banners";
 
 const requestStatusLabels: Record<string, string> = {
   pending: "Pending",
@@ -169,6 +170,11 @@ export default async function CustomerDashboardPage() {
             </div>
           </div>
         </section>
+
+        {/* Customer marketing campaigns */}
+        <div className="mt-8">
+          <CampaignBanners placement="customer_dashboard" />
+        </div>
 
         {/* Quick navigation */}
         <section className="mt-8">

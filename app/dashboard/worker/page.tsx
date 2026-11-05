@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
+import { CampaignBanners } from "@/components/marketing/campaign-banners";
 
 const jobStatusLabels: Record<string, string> = {
   assigned: "Assigned",
@@ -255,6 +256,9 @@ export default async function WorkerDashboardPage() {
             </Link>
           </div>
         </section>
+
+        {/* Worker marketing campaigns */}
+        <CampaignBanners placement="worker_dashboard" />
 
         {/* Summary statistics */}
         <section>
