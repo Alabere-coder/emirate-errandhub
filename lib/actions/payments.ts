@@ -23,10 +23,30 @@ function roundNaira(amount: number): number {
   return Math.round((amount + Number.EPSILON) * 100) / 100;
 }
 
+// export type JobPaymentSummary = {
+//   error?: string;
+//   paymentPlan?: "full" | "deposit_balance";
+//   totalAmount?: number;
+//   amountAlreadyPaid?: number;
+//   remainingAmount?: number;
+//   depositAmount?: number;
+//   depositPaid?: boolean;
+// };
+
 export type JobPaymentSummary = {
   error?: string;
   paymentPlan?: "full" | "deposit_balance";
+
+  // Original worker quotation
+  originalAmount?: number;
+
+  // Discount applied by the platform
+  discountAmount?: number;
+  discountCode?: string;
+
+  // Amount the customer must pay
   totalAmount?: number;
+
   amountAlreadyPaid?: number;
   remainingAmount?: number;
   depositAmount?: number;
@@ -59,8 +79,11 @@ export async function getJobPaymentSummary(
 
     const { data: job, error: jobError } = await supabase
       .from("jobs")
+      // .select(
+      //   "id, customer_id, agreed_amount, currency, payment_plan, deposit_percentage, upfront_amount",
+      // )
       .select(
-        "id, customer_id, agreed_amount, currency, payment_plan, deposit_percentage, upfront_amount",
+        "id, customer_id, agreed_amount, customer_payable_amount, discount_code_id, discount_amount, currency, payment_plan, deposit_percentage, upfront_amount",
       )
       .eq("id", jobId)
       .eq("customer_id", user.id)
@@ -70,18 +93,47 @@ export async function getJobPaymentSummary(
       return { error: "We couldn't find this job in your account." };
     }
 
-    const totalAmount = Number(job.agreed_amount);
+    // const totalAmount = Number(job.agreed_amount);
+    // const currency = String(job.currency || "").toUpperCase();
+
+    // if (
+    //   !Number.isFinite(totalAmount) ||
+    //   totalAmount <= 0 ||
+    //   currency !== "NGN"
+    // ) {
+    //   return { error: "This job has an invalid payment amount." };
+    // }
+    const originalAmount = Number(job.agreed_amount);
+    const discountAmount = Number(job.discount_amount);
+    const totalAmount = Number(job.customer_payable_amount);
     const currency = String(job.currency || "").toUpperCase();
 
     if (
+      !Number.isFinite(originalAmount) ||
+      originalAmount <= 0 ||
+      !Number.isFinite(discountAmount) ||
+      discountAmount < 0 ||
       !Number.isFinite(totalAmount) ||
       totalAmount <= 0 ||
+      roundNaira(originalAmount - discountAmount) !== totalAmount ||
       currency !== "NGN"
     ) {
       return { error: "This job has an invalid payment amount." };
     }
 
     const admin = createAdminClient();
+
+    let discountCode: string | undefined;
+
+    if (job.discount_code_id) {
+      const { data: discount } = await admin
+        .from("discount_codes")
+        .select("code")
+        .eq("id", job.discount_code_id)
+        .maybeSingle();
+
+      discountCode = discount?.code ?? undefined;
+    }
 
     const { data: payment, error: paymentError } = await admin
       .from("payments")
@@ -135,6 +187,9 @@ export async function getJobPaymentSummary(
     if (job.payment_plan === "full") {
       return {
         paymentPlan: "full",
+        originalAmount,
+        discountAmount,
+        discountCode,
         totalAmount,
         amountAlreadyPaid,
         remainingAmount,
@@ -160,6 +215,9 @@ export async function getJobPaymentSummary(
 
     return {
       paymentPlan: "deposit_balance",
+      originalAmount,
+      discountAmount,
+      discountCode,
       totalAmount,
       amountAlreadyPaid,
       remainingAmount,
@@ -222,7 +280,7 @@ export async function initializeJobPayment(
     const { data: job, error: jobError } = await supabase
       .from("jobs")
       .select(
-        "id, customer_id, agreed_amount, currency, status, payment_plan, deposit_percentage, upfront_amount",
+        "id, customer_id, agreed_amount, customer_payable_amount, discount_code_id, discount_amount, currency, status, payment_plan, deposit_percentage, upfront_amount",
       )
       .eq("id", jobId)
       .eq("customer_id", user.id)
@@ -239,12 +297,19 @@ export async function initializeJobPayment(
       };
     }
 
-    const totalAmount = Number(job.agreed_amount);
+    const originalAmount = Number(job.agreed_amount);
+    const discountAmount = Number(job.discount_amount);
+    const totalAmount = Number(job.customer_payable_amount);
     const currency = String(job.currency || "").toUpperCase();
 
     if (
+      !Number.isFinite(originalAmount) ||
+      originalAmount <= 0 ||
+      !Number.isFinite(discountAmount) ||
+      discountAmount < 0 ||
       !Number.isFinite(totalAmount) ||
       totalAmount <= 0 ||
+      roundNaira(originalAmount - discountAmount) !== totalAmount ||
       currency !== "NGN"
     ) {
       return {
@@ -255,7 +320,7 @@ export async function initializeJobPayment(
 
     const admin = createAdminClient();
 
-    // Keep the payment summary at the full agreed job price.
+    // Keep the payment summary at the full customer payable amount.
     const { data: existingPayment, error: paymentLookupError } = await admin
       .from("payments")
       .select("id, customer_id, amount, currency, status")
@@ -347,11 +412,44 @@ export async function initializeJobPayment(
       };
     }
 
+    // Preserve an existing deposit plan after the customer has started paying.
+    if (paymentOption === "balance" && job.payment_plan !== "deposit_balance") {
+      return {
+        error: "A deposit payment plan is required before paying the balance.",
+      };
+    }
+
+    const hasDiscount = job.discount_code_id !== null || discountAmount > 0;
+
+    const selectedPaymentPlan = hasDiscount
+      ? "full"
+      : job.payment_plan === "deposit_balance"
+        ? "deposit_balance"
+        : paymentOption === "deposit"
+          ? "deposit_balance"
+          : "full";
+
+    // Save the plan securely before starting checkout.
+    const { error: planError } = await supabase.rpc("select_job_payment_plan", {
+      p_job_id: job.id,
+      p_payment_plan: selectedPaymentPlan,
+    });
+
+    if (planError) {
+      console.error("Payment plan selection failed:", planError);
+
+      return {
+        error:
+          planError.message ||
+          "Unable to save your payment plan. Please try again.",
+      };
+    }
+
     let amountDue = remainingAmount;
 
     let paymentPurpose: "full" | "deposit" | "balance" = "full";
 
-    if (job.payment_plan === "deposit_balance") {
+    if (selectedPaymentPlan === "deposit_balance") {
       const depositAmount =
         job.upfront_amount != null
           ? roundNaira(Number(job.upfront_amount))
@@ -390,7 +488,7 @@ export async function initializeJobPayment(
       } else {
         return { error: "Invalid payment option." };
       }
-    } else if (job.payment_plan === "full") {
+    } else if (selectedPaymentPlan === "full") {
       if (paymentOption !== "full") {
         return {
           error: "This job only supports full payment.",
@@ -911,25 +1009,39 @@ export async function verifyJobPayment(
       };
     }
 
+    if (transaction.status === "failed") {
+      return {
+        error:
+          "This payment attempt was not completed. You can safely start a new payment.",
+      };
+    }
+
     if (
       transaction.status !== "pending" &&
       transaction.status !== "successful"
     ) {
       return {
         error:
-          "This payment attempt cannot be verified. Please contact support if you were charged.",
+          "This payment attempt cannot be verified. Please contact support if you believe you were charged.",
       };
     }
 
     // Always verify against Paystack's API, never the callback URL alone.
     const verified = await verifyPaystackTransaction(reference);
 
-    if (verified.reference !== reference || verified.status !== "success") {
+    console.info("Paystack verification diagnostic:", {
+      reference,
+      status: verified.status,
+      amount: verified.amount,
+      currency: verified.currency,
+      paid_at: verified.paid_at,
+      channel: verified.channel,
+      gateway_response: verified.gateway_response,
+    });
+
+    if (verified.reference !== reference) {
       return {
-        error:
-          verified.status === "failed"
-            ? "Paystack reports that this payment failed. If you were charged, contact support."
-            : "Paystack has not confirmed this payment yet. Please try again shortly.",
+        error: "The verified payment reference does not match.",
       };
     }
 
@@ -956,6 +1068,78 @@ export async function verifyJobPayment(
           "The verified payment details don't match our records. Please contact support.",
       };
     }
+
+    // Paystack explicitly confirmed that this attempt was not completed.
+    if (verified.status === "failed" || verified.status === "abandoned") {
+      if (transaction.status === "pending") {
+        const { data: retiredTransaction, error: retireError } = await admin
+          .from("payment_transactions")
+          .update({ status: "failed" })
+          .eq("id", transaction.id)
+          .eq("status", "pending")
+          .select("id")
+          .maybeSingle();
+
+        if (retireError || !retiredTransaction) {
+          console.error(
+            "Unable to retire failed Paystack attempt:",
+            retireError,
+          );
+
+          return {
+            error:
+              "Paystack confirmed that this attempt was not completed, but its database status could not be updated. Please contact support.",
+          };
+        }
+      }
+
+      return {
+        error:
+          verified.status === "abandoned"
+            ? "This payment attempt was abandoned and has been closed. You can safely start a new payment."
+            : "Paystack confirmed that this payment failed. You can safely start a new payment.",
+      };
+    }
+
+    if (verified.status !== "success") {
+      return {
+        error:
+          "Paystack has not confirmed this payment yet. Please try again shortly.",
+      };
+    }
+
+    // if (verified.reference !== reference || verified.status !== "success") {
+    //   return {
+    //     error:
+    //       verified.status === "failed"
+    //         ? "Paystack reports that this payment failed. If you were charged, contact support."
+    //         : "Paystack has not confirmed this payment yet. Please try again shortly.",
+    //   };
+    // }
+
+    // const expectedKobo = Math.round(Number(transaction.amount) * 100);
+    // const expectedCurrency = transaction.currency.toUpperCase();
+
+    // if (
+    //   !Number.isSafeInteger(expectedKobo) ||
+    //   expectedKobo <= 0 ||
+    //   verified.amount !== expectedKobo ||
+    //   verified.currency.toUpperCase() !== expectedCurrency ||
+    //   payment.currency.toUpperCase() !== expectedCurrency
+    // ) {
+    //   console.error("Paystack verification mismatch:", {
+    //     reference,
+    //     expectedKobo,
+    //     receivedAmount: verified.amount,
+    //     expectedCurrency,
+    //     receivedCurrency: verified.currency,
+    //   });
+
+    //   return {
+    //     error:
+    //       "The verified payment details don't match our records. Please contact support.",
+    //   };
+    // }
 
     // Reconcile the verified charge atomically in PostgreSQL.
     // This RPC locks the payment summary, prevents overpayment,

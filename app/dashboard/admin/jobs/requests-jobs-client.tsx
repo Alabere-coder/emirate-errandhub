@@ -47,24 +47,6 @@ type RequestRecord = {
   serviceName: string;
 };
 
-// type JobRecord = {
-//   id: string;
-//   request_id: string;
-//   customer_id: string;
-//   worker_id: string | null;
-//   agreed_amount: number | null;
-//   currency: string | null;
-//   scheduled_at: string | null;
-//   started_at: string | null;
-//   completed_at: string | null;
-//   status: string;
-//   created_at: string;
-//   customerName: string;
-//   workerName: string;
-//   workerPhone: string | null;
-//   requestTitle: string;
-// };
-
 type JobRecord = {
   id: string;
   request_id: string;

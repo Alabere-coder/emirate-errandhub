@@ -43,7 +43,8 @@ export async function uploadRequestMedia({
 
   const extension = getExtension(file.type);
 
-  const path = `${userId}/${requestId}/${crypto.randomUUID()}.${extension}`;
+  // const path = `${userId}/${requestId}/${crypto.randomUUID()}.${extension}`;
+  const path = `${requestId}/${userId}/${crypto.randomUUID()}.${extension}`;
 
   const { error } = await supabase.storage
     .from(BUCKET_NAME)
