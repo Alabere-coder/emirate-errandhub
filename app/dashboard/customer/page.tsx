@@ -99,12 +99,39 @@ export default async function CustomerDashboardPage() {
     console.error("Customer dashboard jobs error:", jobsError);
   }
 
+  // Count quotations awaiting the customer's review
+  const { count: pendingQuotesCount, error: quotesCountError } = await supabase
+    .from("quotes")
+    .select("id, service_requests!inner(customer_id)", {
+      count: "exact",
+      head: true,
+    })
+    .eq("service_requests.customer_id", profile.id)
+    .eq("status", "pending");
+
+  if (quotesCountError) {
+    console.error("Customer dashboard quotes count error:", quotesCountError);
+  }
+
+  // Count all completed jobs belonging to this customer
+  const { count: completedJobsCount, error: completedJobsError } =
+    await supabase
+      .from("jobs")
+      .select("id", { count: "exact", head: true })
+      .eq("customer_id", profile.id)
+      .eq("status", "completed");
+
+  if (completedJobsError) {
+    console.error(
+      "Customer dashboard completed jobs count error:",
+      completedJobsError,
+    );
+  }
+
   const recentRequests = requests ?? [];
   const activeJobs = jobs ?? [];
 
-  const pendingQuotes = recentRequests.filter(
-    (request) => request.status === "quoted",
-  ).length;
+  const pendingQuotes = pendingQuotesCount ?? 0;
 
   const activeRequests = recentRequests.filter((request) =>
     ["pending", "quoted", "accepted", "assigned", "in_progress"].includes(
@@ -112,9 +139,7 @@ export default async function CustomerDashboardPage() {
     ),
   ).length;
 
-  const completedRequests = recentRequests.filter(
-    (request) => request.status === "completed",
-  ).length;
+  const completedRequests = completedJobsCount ?? 0;
 
   return (
     <main className="min-h-screen bg-slate-50/80">

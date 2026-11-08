@@ -216,7 +216,7 @@ export default async function WorkerMyJobsPage() {
         </div>
 
         <Button>
-          <Link href="/dashboard/worker/jobs">
+          <Link href="/dashboard/worker/jobs" className="flex gap-2">
             <Briefcase className="mr-2 h-4 w-4" />
             Browse Available Jobs
           </Link>

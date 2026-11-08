@@ -935,6 +935,7 @@ export async function initializeJobPayment(
 export type VerifyPaymentResult = {
   success?: string;
   error?: string;
+  requestId?: string;
 };
 
 export async function verifyJobPayment(
@@ -1008,6 +1009,24 @@ export async function verifyJobPayment(
         error: "This payment does not belong to your account.",
       };
     }
+
+    const { data: job, error: jobError } = await admin
+      .from("jobs")
+      .select("request_id")
+      .eq("id", payment.job_id)
+      .eq("customer_id", user.id)
+      .maybeSingle();
+
+    if (jobError || !job?.request_id) {
+      console.error("Payment request lookup failed:", jobError);
+
+      return {
+        error:
+          "We couldn't find the service request associated with this payment.",
+      };
+    }
+
+    const requestId = job.request_id;
 
     if (transaction.status === "failed") {
       return {
@@ -1218,15 +1237,18 @@ export async function verifyJobPayment(
     }
 
     if (result.payment_complete) {
-      return { success: "Your job has been paid in full." };
+      return {
+        success: "Your job has been paid in full.",
+        requestId,
+      };
     }
-
     // A verified deposit or partial payment must not mark the full job paid.
     const remainingBalance =
       Math.round((fullJobAmount - totalVerified + Number.EPSILON) * 100) / 100;
 
     return {
       success: `Payment of ${expectedCurrency} ${Number(transaction.amount).toFixed(2)} verified. Your remaining balance is ${expectedCurrency} ${remainingBalance.toFixed(2)}.`,
+      requestId,
     };
   } catch (error) {
     console.error("Verify job payment error:", error);
