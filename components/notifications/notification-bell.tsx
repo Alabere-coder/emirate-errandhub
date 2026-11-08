@@ -2,7 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Bell, CheckCheck, Loader2 } from "lucide-react";
+import {
+  Bell,
+  CheckCheck,
+  Delete,
+  DeleteIcon,
+  Loader2,
+  LucideDelete,
+  Trash2,
+  X,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Notification = {
@@ -21,8 +30,8 @@ export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  //   const supabase = createClient();
   const supabase = useMemo(() => createClient(), []);
 
   const loadNotifications = useCallback(async () => {
@@ -85,7 +94,13 @@ export function NotificationBell() {
         throw new Error("Unable to mark notification as read.");
       }
 
-      await loadNotifications();
+      setNotifications((current) =>
+        current.map((item) =>
+          item.id === id ? { ...item, is_read: true } : item,
+        ),
+      );
+
+      setUnreadCount((current) => Math.max(0, current - 1));
     } catch (error) {
       console.error(error);
     } finally {
@@ -109,11 +124,47 @@ export function NotificationBell() {
         throw new Error("Unable to mark notifications as read.");
       }
 
-      await loadNotifications();
+      setNotifications((current) =>
+        current.map((item) => ({ ...item, is_read: true })),
+      );
+
+      setUnreadCount(0);
     } catch (error) {
       console.error(error);
     } finally {
       setUpdatingId(null);
+    }
+  }
+
+  async function deleteNotification(notification: Notification) {
+    setDeletingId(notification.id);
+
+    try {
+      const response = await fetch("/api/notifications", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          notificationId: notification.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to delete notification.");
+      }
+
+      setNotifications((current) =>
+        current.filter((item) => item.id !== notification.id),
+      );
+
+      if (!notification.is_read) {
+        setUnreadCount((current) => Math.max(0, current - 1));
+      }
+    } catch (error) {
+      console.error("Notification deletion error:", error);
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -157,10 +208,14 @@ export function NotificationBell() {
                 <button
                   type="button"
                   onClick={markAllAsRead}
-                  disabled={updatingId !== null}
+                  disabled={updatingId !== null || deletingId !== null}
                   className="flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 disabled:opacity-50"
                 >
-                  <CheckCheck className="h-4 w-4" />
+                  {updatingId === "all" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <CheckCheck className="h-4 w-4" />
+                  )}
                   Mark all read
                 </button>
               )}
@@ -195,9 +250,11 @@ export function NotificationBell() {
                         <p className="text-sm font-semibold text-slate-900">
                           {notification.title}
                         </p>
+
                         <p className="mt-1 text-xs leading-5 text-slate-600">
                           {notification.message}
                         </p>
+
                         <p className="mt-2 text-[10px] text-slate-400">
                           {new Date(notification.created_at).toLocaleString()}
                         </p>
@@ -218,15 +275,35 @@ export function NotificationBell() {
                         )}
                       </div>
 
-                      {!notification.is_read && (
+                      <div className="flex shrink-0 items-center gap-2">
+                        {!notification.is_read && (
+                          <button
+                            type="button"
+                            onClick={() => void markAsRead(notification.id)}
+                            disabled={
+                              updatingId !== null || deletingId !== null
+                            }
+                            className="h-2.5 w-2.5 rounded-full bg-emerald-500 disabled:opacity-50"
+                            aria-label="Mark as read"
+                            title="Mark as read"
+                          />
+                        )}
+
                         <button
                           type="button"
-                          onClick={() => void markAsRead(notification.id)}
-                          disabled={updatingId !== null}
-                          className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500 disabled:opacity-50"
-                          aria-label="Mark as read"
-                        />
-                      )}
+                          onClick={() => void deleteNotification(notification)}
+                          disabled={updatingId !== null || deletingId !== null}
+                          aria-label={`Delete ${notification.title}`}
+                          title="Delete notification"
+                          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {deletingId === notification.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))

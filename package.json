@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "update-types": "npx supabase gen types typescript --project-id lscerugpsxgwoqjbdktb --schema public > types/database.types.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
