@@ -75,7 +75,6 @@ export async function CampaignBanners({
 
             <div className="relative max-w-2xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-100 backdrop-blur">
-                <Sparkles className="h-3.5 w-3.5" />
                 Emirate ErrandHub
               </div>
 

@@ -1715,6 +1715,7 @@ export type Database = {
       service_areas: {
         Row: {
           created_at: string
+          deactivated_by_parent_id: string | null
           id: string
           is_active: boolean
           name: string
@@ -1722,6 +1723,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deactivated_by_parent_id?: string | null
           id?: string
           is_active?: boolean
           name: string
@@ -1729,12 +1731,20 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deactivated_by_parent_id?: string | null
           id?: string
           is_active?: boolean
           name?: string
           parent_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "service_areas_deactivated_by_parent_id_fkey"
+            columns: ["deactivated_by_parent_id"]
+            isOneToOne: false
+            referencedRelation: "service_areas"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "service_areas_parent_id_fkey"
             columns: ["parent_id"]
@@ -2630,6 +2640,7 @@ export type Database = {
     }
     Functions: {
       accept_service_quote: { Args: { p_quote_id: string }; Returns: string }
+      admin_toggle_service_area: { Args: { p_area_id: string }; Returns: Json }
       admin_update_withdrawal: {
         Args: {
           p_failure_reason?: string

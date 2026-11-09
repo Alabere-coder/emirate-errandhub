@@ -1,14 +1,16 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import {
   CheckCircle2,
   CircleAlert,
   MapPin,
   MapPinned,
+  Plus,
   Save,
   ShieldCheck,
+  X,
 } from "lucide-react";
 
 import {
@@ -55,16 +57,48 @@ function SubmitButton() {
   );
 }
 
+function SelectField({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder,
+  disabled = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: ServiceArea[];
+  placeholder: string;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-semibold">{label}</label>
+
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        disabled={disabled}
+        className="h-12 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <option value="">{placeholder}</option>
+
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 export function WorkerServiceAreaForm({
   workerId,
   serviceAreas,
   selectedAreaIds,
 }: WorkerServiceAreaFormProps) {
-  // const [state, formAction] = useActionState(
-  //   updateWorkerServiceAreas,
-  //   initialState,
-  // );
-
   const [state, formAction] = useActionState(
     updateWorkerServiceAreas,
     initialState,
@@ -72,19 +106,65 @@ export function WorkerServiceAreaForm({
 
   const [selectedIds, setSelectedIds] = useState<string[]>(selectedAreaIds);
 
-  function toggleArea(areaId: string, checked: boolean) {
+  const [selectedStateId, setSelectedStateId] = useState("");
+  const [selectedLgaId, setSelectedLgaId] = useState("");
+  const [selectedAreaId, setSelectedAreaId] = useState("");
+
+  const areaMap = useMemo(
+    () => new Map(serviceAreas.map((area) => [area.id, area])),
+    [serviceAreas],
+  );
+
+  const states = useMemo(
+    () =>
+      serviceAreas
+        .filter((area) => area.parent_id === null && area.is_active)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [serviceAreas],
+  );
+
+  const lgas = useMemo(
+    () =>
+      serviceAreas
+        .filter((area) => area.parent_id === selectedStateId && area.is_active)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [serviceAreas, selectedStateId],
+  );
+
+  const areas = useMemo(
+    () =>
+      serviceAreas
+        .filter((area) => area.parent_id === selectedLgaId && area.is_active)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [serviceAreas, selectedLgaId],
+  );
+
+  const selectedAreas = selectedIds.map((id) => ({
+    id,
+    area: areaMap.get(id),
+  }));
+
+  function addArea() {
+    if (!selectedAreaId) return;
+
     setSelectedIds((current) =>
-      checked
-        ? current.includes(areaId)
-          ? current
-          : [...current, areaId]
-        : current.filter((id) => id !== areaId),
+      current.includes(selectedAreaId) ? current : [...current, selectedAreaId],
     );
+
+    setSelectedAreaId("");
+  }
+
+  function removeArea(areaId: string) {
+    setSelectedIds((current) => current.filter((id) => id !== areaId));
   }
 
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="worker_id" value={workerId} />
+
+      {selectedIds.map((id) => (
+        <input key={id} type="hidden" name="service_area_ids" value={id} />
+      ))}
 
       <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
         <div className="border-b bg-muted/20 px-5 py-6 sm:px-7">
@@ -100,8 +180,8 @@ export function WorkerServiceAreaForm({
                 </h2>
 
                 <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-                  Choose every area where you are willing to accept jobs. Keep
-                  your service coverage aligned with where you can work.
+                  Select your State, Local Government Area, and the specific
+                  communities where you accept jobs.
                 </p>
               </div>
             </div>
@@ -109,7 +189,6 @@ export function WorkerServiceAreaForm({
             <div className="flex w-fit shrink-0 items-center gap-2 rounded-full border bg-background px-3 py-2 text-sm">
               <MapPin className="size-4 text-primary" />
               <span className="font-semibold tabular-nums">
-                {/* {selectedAreaIds.length} */}
                 {selectedIds.length}
               </span>
               <span className="text-muted-foreground">selected</span>
@@ -117,89 +196,154 @@ export function WorkerServiceAreaForm({
           </div>
         </div>
 
-        <div className="p-5 sm:p-7">
-          {serviceAreas.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed px-5 py-12 text-center">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
-                <MapPinned className="size-6" />
-              </div>
-
-              <h3 className="mt-4 font-semibold">No service areas available</h3>
-
-              <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
-                No active service areas are currently available.
+        <div className="space-y-6 p-5 sm:p-7">
+          {states.length === 0 ? (
+            <div className="rounded-xl border border-dashed px-5 py-10 text-center">
+              <MapPinned className="mx-auto size-8 text-muted-foreground" />
+              <h3 className="mt-3 font-semibold">No service areas available</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Active States and their locations have not been configured.
               </p>
             </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {serviceAreas.map((area) => {
-                // const checked = selectedAreaIds.includes(area.id);
-                const checked = selectedIds.includes(area.id);
+            <>
+              <div className="grid gap-4 md:grid-cols-3">
+                <SelectField
+                  label="1. State"
+                  value={selectedStateId}
+                  onChange={(value) => {
+                    setSelectedStateId(value);
+                    setSelectedLgaId("");
+                    setSelectedAreaId("");
+                  }}
+                  options={states}
+                  placeholder="Select a State"
+                />
 
-                return (
-                  <label
-                    key={area.id}
-                    className={`group relative flex min-h-20 cursor-pointer items-center gap-3 rounded-xl border p-4 transition duration-200 hover:border-primary/50 hover:bg-muted/30 ${
-                      checked
-                        ? "border-primary/60 bg-primary/4 ring-1 ring-primary/10"
-                        : "border-border bg-background"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      name="service_area_ids"
-                      value={area.id}
-                      defaultChecked={checked}
-                      onChange={(event) =>
-                        toggleArea(area.id, event.target.checked)
-                      }
-                      className="peer sr-only"
-                    />
+                <SelectField
+                  label="2. Local Government Area"
+                  value={selectedLgaId}
+                  onChange={(value) => {
+                    setSelectedLgaId(value);
+                    setSelectedAreaId("");
+                  }}
+                  options={lgas}
+                  placeholder="Select an LGA"
+                  disabled={!selectedStateId}
+                />
 
-                    <span
-                      aria-hidden="true"
-                      className={`flex size-5 shrink-0 items-center justify-center rounded-md border transition ${
-                        checked
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-input bg-background text-transparent group-hover:border-primary/60"
-                      }`}
+                <SelectField
+                  label="3. Area / Community"
+                  value={selectedAreaId}
+                  onChange={setSelectedAreaId}
+                  options={areas}
+                  placeholder="Select an Area"
+                  disabled={!selectedLgaId}
+                />
+              </div>
+
+              {selectedStateId && lgas.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  No active LGAs are available under this State.
+                </p>
+              )}
+
+              {selectedLgaId && areas.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  No active Areas or Communities are available under this LGA.
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={addArea}
+                disabled={
+                  !selectedAreaId || selectedIds.includes(selectedAreaId)
+                }
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              >
+                <Plus className="size-4" />
+                Add area to coverage
+              </button>
+            </>
+          )}
+
+          <div className="border-t pt-6">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="font-semibold">Your selected locations</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  You can cover multiple communities across different LGAs.
+                </p>
+              </div>
+
+              <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold tabular-nums">
+                {selectedIds.length}
+              </span>
+            </div>
+
+            {selectedAreas.length === 0 ? (
+              <div className="mt-4 rounded-xl border border-dashed px-5 py-8 text-center">
+                <MapPin className="mx-auto size-6 text-muted-foreground" />
+                <p className="mt-2 text-sm text-muted-foreground">
+                  You haven't selected any areas yet.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {selectedAreas.map(({ id, area }) => {
+                  const lga = area?.parent_id
+                    ? areaMap.get(area.parent_id)
+                    : undefined;
+
+                  const selectedState = lga?.parent_id
+                    ? areaMap.get(lga.parent_id)
+                    : undefined;
+
+                  return (
+                    <div
+                      key={id}
+                      className="flex min-w-0 items-center gap-3 rounded-xl border bg-background p-3"
                     >
-                      <CheckCircle2 className="size-4" />
-                    </span>
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <MapPin className="size-4" />
+                      </div>
 
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground transition group-hover:bg-primary/10 group-hover:text-primary">
-                      <MapPin className="size-4" />
-                    </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">
+                          {area?.name ?? "Previously selected location"}
+                        </p>
 
-                    <span className="min-w-0 flex-1 text-sm font-semibold leading-5 text-foreground">
-                      {area.name}
-                    </span>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {area && lga && selectedState
+                            ? `${selectedState.name} · ${lga.name}`
+                            : "This location may no longer be active"}
+                        </p>
+                      </div>
 
-                    {checked && (
-                      <CheckCircle2
-                        aria-hidden="true"
-                        className="size-4 shrink-0 text-primary"
-                      />
-                    )}
+                      <button
+                        type="button"
+                        onClick={() => removeArea(id)}
+                        aria-label={`Remove ${area?.name ?? "location"}`}
+                        className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
-                    <span className="pointer-events-none absolute inset-0 rounded-xl ring-2 ring-primary opacity-0 transition peer-focus-visible:opacity-100" />
-                  </label>
-                );
-              })}
-            </div>
-          )}
-
-          {serviceAreas.length > 0 && (
-            <div className="mt-5 flex items-start gap-2 rounded-lg bg-muted/40 px-4 py-3">
-              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-
-              <p className="text-xs leading-5 text-muted-foreground">
-                Choose areas where you can realistically accept and complete
-                jobs. You can update your selections whenever your coverage
-                changes.
-              </p>
-            </div>
-          )}
+          <div className="flex items-start gap-2 rounded-lg bg-muted/40 px-4 py-3">
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <p className="text-xs leading-5 text-muted-foreground">
+              Only choose communities where you can realistically accept and
+              complete jobs. You can add or remove locations whenever your
+              coverage changes.
+            </p>
+          </div>
         </div>
       </section>
 

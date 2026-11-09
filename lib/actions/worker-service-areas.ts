@@ -9,6 +9,12 @@ export type WorkerServiceAreaActionState = {
   success?: string;
 };
 
+type ServiceAreaRecord = {
+  id: string;
+  parent_id: string | null;
+  is_active: boolean;
+};
+
 export async function updateWorkerServiceAreas(
   _previousState: WorkerServiceAreaActionState,
   formData: FormData,
@@ -20,26 +26,19 @@ export async function updateWorkerServiceAreas(
   const areaIds = formData.getAll("service_area_ids");
 
   if (typeof workerId !== "string" || !workerId) {
-    return {
-      error: "Your worker profile could not be identified.",
-    };
+    return { error: "Your worker profile could not be identified." };
   }
 
   if (areaIds.some((areaId) => typeof areaId !== "string" || !areaId)) {
-    return {
-      error: "Invalid service area selection.",
-    };
+    return { error: "Invalid service area selection." };
   }
 
   const selectedAreaIds = [...new Set(areaIds as string[])];
 
   if (selectedAreaIds.length === 0) {
-    return {
-      error: "Please select at least one service area.",
-    };
+    return { error: "Please select at least one service area." };
   }
 
-  // Verify that this worker profile belongs to the logged-in user.
   const { data: workerProfile, error: workerError } = await supabase
     .from("worker_profiles")
     .select("id")
@@ -47,38 +46,98 @@ export async function updateWorkerServiceAreas(
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (workerError) {
-    return {
-      error: "Unable to verify your worker profile.",
-    };
-  }
-
-  if (!workerProfile) {
+  if (workerError || !workerProfile) {
     return {
       error: "Your worker profile could not be verified.",
     };
   }
 
-  // Make sure every selected area is active.
-  const { data: validAreas, error: areasError } = await supabase
-    .from("service_areas")
-    .select("id")
-    .in("id", selectedAreaIds)
-    .eq("is_active", true);
+  // Get the worker's existing assignments.
+  const { data: existingAssignments, error: existingError } = await supabase
+    .from("worker_service_areas")
+    .select("service_area_id")
+    .eq("worker_id", workerId);
 
-  if (areasError) {
+  if (existingError) {
     return {
-      error: "Unable to verify the selected service areas.",
+      error: "Unable to verify your existing service areas.",
     };
   }
 
-  if (!validAreas || validAreas.length !== selectedAreaIds.length) {
-    return {
-      error: "One or more selected service areas are invalid or inactive.",
-    };
+  const existingIds = new Set(
+    (existingAssignments ?? []).map((item) => item.service_area_id),
+  );
+
+  // Newly added locations must follow:
+  // State -> LGA -> Area.
+  // Existing assignments can remain selected during the transition.
+  for (const areaId of selectedAreaIds) {
+    if (existingIds.has(areaId)) {
+      continue;
+    }
+
+    const areaResult = await supabase
+      .from("service_areas")
+      .select("id, parent_id, is_active")
+      .eq("id", areaId)
+      .maybeSingle();
+
+    if (areaResult.error || !areaResult.data) {
+      return {
+        error: "One or more selected service areas are invalid.",
+      };
+    }
+
+    const area: ServiceAreaRecord = areaResult.data;
+
+    if (!area.is_active || !area.parent_id) {
+      return {
+        error: "Please select a valid Area or Community.",
+      };
+    }
+
+    const lgaResult = await supabase
+      .from("service_areas")
+      .select("id, parent_id, is_active")
+      .eq("id", area.parent_id)
+      .maybeSingle();
+
+    if (lgaResult.error || !lgaResult.data) {
+      return {
+        error: "The selected area's LGA could not be verified.",
+      };
+    }
+
+    const lga: ServiceAreaRecord = lgaResult.data;
+
+    if (!lga.is_active || !lga.parent_id) {
+      return {
+        error: "The selected area's LGA is inactive or invalid.",
+      };
+    }
+
+    const stateResult = await supabase
+      .from("service_areas")
+      .select("id, parent_id, is_active")
+      .eq("id", lga.parent_id)
+      .maybeSingle();
+
+    if (stateResult.error || !stateResult.data) {
+      return {
+        error: "The selected area's State could not be verified.",
+      };
+    }
+
+    const state: ServiceAreaRecord = stateResult.data;
+
+    if (!state.is_active || state.parent_id !== null) {
+      return {
+        error: "The selected area's State is inactive or invalid.",
+      };
+    }
   }
 
-  // Replace the worker's existing service areas.
+  // Remove previous assignments and save the complete selection.
   const { error: deleteError } = await supabase
     .from("worker_service_areas")
     .delete()
@@ -100,6 +159,8 @@ export async function updateWorkerServiceAreas(
     .insert(rows);
 
   if (insertError) {
+    console.error("Save worker service areas error:", insertError);
+
     return {
       error: "Unable to save your service areas.",
     };

@@ -159,6 +159,11 @@ const navigation: Record<UserRole, NavItem[]> = {
       icon: BriefcaseBusiness,
     },
     {
+      label: "Service Areas",
+      href: "/dashboard/admin/service-areas",
+      icon: MapPin,
+    },
+    {
       label: "Worker Verification",
       href: "/dashboard/admin/worker-verification",
       icon: ShieldCheck,
@@ -236,6 +241,11 @@ const navigation: Record<UserRole, NavItem[]> = {
         label: "Services",
         href: "/dashboard/admin/services",
         icon: BriefcaseBusiness,
+      },
+      {
+        label: "Service Areas",
+        href: "/dashboard/admin/service-areas",
+        icon: MapPin,
       },
       {
         label: "Worker Verification",
