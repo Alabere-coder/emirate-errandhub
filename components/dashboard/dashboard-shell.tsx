@@ -226,6 +226,12 @@ const navigation: Record<UserRole, NavItem[]> = {
     },
 
     {
+      label: "Popups & Promotions",
+      href: "/dashboard/admin/popups",
+      icon: Sparkles,
+    },
+
+    {
       label: "Discount Codes",
       href: "/dashboard/admin/discount-codes",
       icon: TicketPercent,
@@ -302,6 +308,11 @@ const navigation: Record<UserRole, NavItem[]> = {
         label: "Marketing",
         href: "/dashboard/admin/marketing",
         icon: Megaphone,
+      },
+      {
+        label: "Popups & Promotions",
+        href: "/dashboard/admin/popups",
+        icon: Sparkles,
       },
       {
         label: "Discount Codes",

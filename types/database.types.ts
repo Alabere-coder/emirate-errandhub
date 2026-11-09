@@ -1211,6 +1211,63 @@ export type Database = {
         }
         Relationships: []
       }
+      popup_campaigns: {
+        Row: {
+          audience: string
+          button_text: string | null
+          button_url: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string | null
+          frequency: string
+          id: string
+          image_path: string | null
+          image_url: string | null
+          is_active: boolean
+          priority: number
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          button_text?: string | null
+          button_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          frequency?: string
+          id?: string
+          image_path?: string | null
+          image_url?: string | null
+          is_active?: boolean
+          priority?: number
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          button_text?: string | null
+          button_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          frequency?: string
+          id?: string
+          image_path?: string | null
+          image_url?: string | null
+          is_active?: boolean
+          priority?: number
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
