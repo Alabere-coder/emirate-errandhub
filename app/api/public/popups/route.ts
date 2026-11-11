@@ -48,7 +48,7 @@ export async function GET() {
       .eq("is_active", true)
       .or(`starts_at.is.null,starts_at.lte.${now}`)
       .or(`ends_at.is.null,ends_at.gt.${now}`)
-      .order("priority", { ascending: false })
+      .order("priority", { ascending: true })
       .order("created_at", { ascending: false });
 
     if (error) {

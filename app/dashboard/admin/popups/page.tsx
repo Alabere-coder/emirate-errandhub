@@ -210,12 +210,28 @@ export default async function AdminPopupsPage() {
 
                           <span className="inline-flex items-center gap-1">
                             <CalendarDays className="size-3" />
+                            Starts:{" "}
                             {campaign.starts_at
-                              ? new Date(
-                                  campaign.starts_at,
-                                ).toLocaleDateString()
-                              : "No start date"}
+                              ? new Date(campaign.starts_at).toLocaleDateString(
+                                  "en-NG",
+                                )
+                              : "Immediately"}
                           </span>
+
+                          <span>•</span>
+
+                          <span>
+                            Ends:{" "}
+                            {campaign.ends_at
+                              ? new Date(campaign.ends_at).toLocaleDateString(
+                                  "en-NG",
+                                )
+                              : "No end date"}
+                          </span>
+
+                          <span>•</span>
+
+                          <span>Priority: {campaign.priority}</span>
                         </div>
                       </div>
                     </div>

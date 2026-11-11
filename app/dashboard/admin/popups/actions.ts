@@ -11,12 +11,15 @@ export type PopupActionState = {
 };
 
 const POPUP_PATH = "/dashboard/admin/popups";
+const POPUP_BUCKET = "popup-media";
+
 const ALLOWED_AUDIENCES = [
   "everyone",
   "visitors",
   "customers",
   "workers",
 ] as const;
+
 const ALLOWED_FREQUENCIES = [
   "once_per_visitor",
   "once_per_session",
@@ -25,6 +28,15 @@ const ALLOWED_FREQUENCIES = [
 
 type PopupAudience = (typeof ALLOWED_AUDIENCES)[number];
 type PopupFrequency = (typeof ALLOWED_FREQUENCIES)[number];
+
+function revalidatePopupPaths(campaignId?: string) {
+  revalidatePath(POPUP_PATH);
+  revalidatePath("/api/public/popups");
+
+  if (campaignId) {
+    revalidatePath(`${POPUP_PATH}/${campaignId}/edit`);
+  }
+}
 
 function validateButtonUrl(value: string): string | null {
   if (!value) return null;
@@ -36,7 +48,10 @@ function validateButtonUrl(value: string): string | null {
   try {
     const url = new URL(value);
 
-    if (url.protocol !== "http:" && url.protocol !== "https:") {
+    if (
+      (url.protocol !== "http:" && url.protocol !== "https:") ||
+      !url.hostname
+    ) {
       return "The button link must use HTTP or HTTPS.";
     }
 
@@ -46,19 +61,15 @@ function validateButtonUrl(value: string): string | null {
   }
 }
 
-function validateImage(
-  imageUrl: string,
-  imagePath: string,
-  userId: string,
-): string | null {
+function validateImage(imageUrl: string, imagePath: string): string | null {
   if (!imageUrl && !imagePath) return null;
 
   if (!imageUrl || !imagePath) {
     return "The popup image information is incomplete.";
   }
 
-  // Images uploaded through this form use the uploader's user ID
-  // as the first folder in the storage path.
+  // Expected path: UUID/filename.extension
+  // Allows an image uploaded by any authorized administrator.
   const validImagePath =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[A-Za-z0-9._-]+\.(jpg|jpeg|png|webp)$/i;
 
@@ -78,7 +89,12 @@ function validateImage(
     const image = new URL(imageUrl);
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-    if (!supabaseUrl || image.origin !== new URL(supabaseUrl).origin) {
+    if (
+      !supabaseUrl ||
+      image.origin !== new URL(supabaseUrl).origin ||
+      image.username ||
+      image.password
+    ) {
       return "Invalid popup image URL.";
     }
 
@@ -151,10 +167,7 @@ function getPopupFormValues(formData: FormData) {
   };
 }
 
-function validatePopupValues(
-  values: ReturnType<typeof getPopupFormValues>,
-  userId: string,
-) {
+function validatePopupValues(values: ReturnType<typeof getPopupFormValues>) {
   if (!values.title) {
     return "Popup title is required.";
   }
@@ -176,12 +189,15 @@ function validatePopupValues(
   }
 
   const buttonError = validateButtonUrl(values.buttonUrl);
+
   if (buttonError) return buttonError;
 
-  const imageError = validateImage(values.imageUrl, values.imagePath, userId);
+  const imageError = validateImage(values.imageUrl, values.imagePath);
+
   if (imageError) return imageError;
 
   const dates = parseDates(values.startsAt, values.endsAt);
+
   if ("error" in dates) return dates.error;
 
   return null;
@@ -198,12 +214,15 @@ async function getAdminUser() {
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    return { error: "Your session has expired. Please sign in again." };
+    return {
+      error: "Your session has expired. Please sign in again.",
+    };
   }
 
   return { supabase, user };
 }
 
+// CREATE
 export async function createPopupCampaign(
   formData: FormData,
 ): Promise<PopupActionState> {
@@ -214,7 +233,7 @@ export async function createPopupCampaign(
   }
 
   const values = getPopupFormValues(formData);
-  const validationError = validatePopupValues(values, auth.user.id);
+  const validationError = validatePopupValues(values);
 
   if (validationError) {
     return { error: validationError };
@@ -244,14 +263,20 @@ export async function createPopupCampaign(
 
   if (error) {
     console.error("Create popup campaign error:", error);
-    return { error: "Could not create the popup. Please try again." };
+
+    return {
+      error: "Could not create the popup. Please try again.",
+    };
   }
 
-  revalidatePath(POPUP_PATH);
+  revalidatePopupPaths();
 
-  return { success: "Popup campaign created successfully." };
+  return {
+    success: "Popup campaign created successfully.",
+  };
 }
 
+// ACTIVATE / DEACTIVATE
 export async function togglePopupCampaign(
   campaignId: string,
   isActive: boolean,
@@ -266,17 +291,26 @@ export async function togglePopupCampaign(
     return { error: "Invalid popup campaign." };
   }
 
-  const { error } = await auth.supabase
+  const { data, error } = await auth.supabase
     .from("popup_campaigns")
     .update({ is_active: isActive })
-    .eq("id", campaignId);
+    .eq("id", campaignId)
+    .select("id")
+    .maybeSingle();
 
   if (error) {
     console.error("Toggle popup campaign error:", error);
-    return { error: "Unable to update the popup status." };
+
+    return {
+      error: "Unable to update the popup status.",
+    };
   }
 
-  revalidatePath(POPUP_PATH);
+  if (!data) {
+    return { error: "Popup campaign not found." };
+  }
+
+  revalidatePopupPaths(campaignId);
 
   return {
     success: isActive
@@ -285,6 +319,7 @@ export async function togglePopupCampaign(
   };
 }
 
+// DELETE
 export async function deletePopupCampaign(
   campaignId: string,
 ): Promise<PopupActionState> {
@@ -302,42 +337,63 @@ export async function deletePopupCampaign(
     .from("popup_campaigns")
     .select("id, image_path")
     .eq("id", campaignId)
-    .single();
+    .maybeSingle();
 
   if (fetchError || !campaign) {
     return { error: "Popup campaign not found." };
   }
 
-  // Remove the image before deleting the database record.
-  if (campaign.image_path) {
-    const { error: storageError } = await auth.supabase.storage
-      .from("popup-media")
-      .remove([campaign.image_path]);
-
-    if (storageError) {
-      console.error("Popup image deletion error:", storageError);
-      return {
-        error:
-          "Unable to remove the popup image. The campaign was not deleted.",
-      };
-    }
-  }
-
-  const { error: deleteError } = await auth.supabase
+  // Delete the database record first.
+  // This prevents a failed database deletion from leaving a campaign
+  // that references an image that has already been removed.
+  const { data: deletedCampaign, error: deleteError } = await auth.supabase
     .from("popup_campaigns")
     .delete()
-    .eq("id", campaignId);
+    .eq("id", campaignId)
+    .select("id")
+    .maybeSingle();
 
   if (deleteError) {
     console.error("Delete popup campaign error:", deleteError);
-    return { error: "Unable to delete the popup campaign." };
+
+    return {
+      error: "Unable to delete the popup campaign.",
+    };
   }
 
-  revalidatePath(POPUP_PATH);
+  if (!deletedCampaign) {
+    return { error: "Popup campaign could not be deleted." };
+  }
 
-  return { success: "Popup campaign deleted successfully." };
+  let cleanupFailed = false;
+
+  // Remove the image only after the campaign has been deleted.
+  if (campaign.image_path) {
+    const { error: storageError } = await auth.supabase.storage
+      .from(POPUP_BUCKET)
+      .remove([campaign.image_path]);
+
+    if (storageError) {
+      cleanupFailed = true;
+
+      console.error(
+        "Deleted campaign image cleanup error:",
+        storageError,
+        campaign.image_path,
+      );
+    }
+  }
+
+  revalidatePopupPaths(campaignId);
+
+  return {
+    success: cleanupFailed
+      ? "Campaign deleted, but its image could not be removed from storage. Please check the server logs."
+      : "Popup campaign deleted successfully.",
+  };
 }
 
+// UPDATE
 export async function updatePopupCampaign(
   campaignId: string,
   formData: FormData,
@@ -353,7 +409,7 @@ export async function updatePopupCampaign(
   }
 
   const values = getPopupFormValues(formData);
-  const validationError = validatePopupValues(values, auth.user.id);
+  const validationError = validatePopupValues(values);
 
   if (validationError) {
     return { error: validationError };
@@ -369,13 +425,14 @@ export async function updatePopupCampaign(
     .from("popup_campaigns")
     .select("id, image_path")
     .eq("id", campaignId)
-    .single();
+    .maybeSingle();
 
   if (fetchError || !existing) {
     return { error: "Popup campaign not found." };
   }
 
-  const { error: updateError } = await auth.supabase
+  // Save the new campaign data first.
+  const { data: updatedCampaign, error: updateError } = await auth.supabase
     .from("popup_campaigns")
     .update({
       title: values.title,
@@ -391,26 +448,48 @@ export async function updatePopupCampaign(
       priority: values.priority,
       is_active: values.isActive,
     })
-    .eq("id", campaignId);
+    .eq("id", campaignId)
+    .select("id")
+    .maybeSingle();
 
   if (updateError) {
     console.error("Update popup campaign error:", updateError);
-    return { error: "Unable to update the popup campaign." };
+
+    return {
+      error: "Unable to update the popup campaign.",
+    };
   }
 
-  // Remove the previous image if it was replaced or cleared.
+  if (!updatedCampaign) {
+    return { error: "Popup campaign could not be updated." };
+  }
+
+  // Only delete the previous image after the database update succeeds.
+  // If storage cleanup fails, the campaign remains valid and the old
+  // image can be cleaned up separately.
+  let cleanupFailed = false;
+
   if (existing.image_path && existing.image_path !== values.imagePath) {
     const { error: storageError } = await auth.supabase.storage
-      .from("popup-media")
+      .from(POPUP_BUCKET)
       .remove([existing.image_path]);
 
     if (storageError) {
-      console.error("Old popup image cleanup error:", storageError);
+      cleanupFailed = true;
+
+      console.error(
+        "Old popup image cleanup error:",
+        storageError,
+        existing.image_path,
+      );
     }
   }
 
-  revalidatePath(POPUP_PATH);
-  revalidatePath(`${POPUP_PATH}/${campaignId}/edit`);
+  revalidatePopupPaths(campaignId);
 
-  return { success: "Popup campaign updated successfully." };
+  return {
+    success: cleanupFailed
+      ? "Popup updated successfully, but the previous image could not be removed from storage. Please check the server logs."
+      : "Popup campaign updated successfully.",
+  };
 }

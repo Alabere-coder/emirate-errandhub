@@ -135,6 +135,8 @@ export function PopupCampaignForm({ campaign }: PopupCampaignFormProps) {
           return;
         }
 
+        uploadedPath = null;
+
         router.push("/dashboard/admin/popups");
         router.refresh();
       } catch (err) {
@@ -197,13 +199,19 @@ export function PopupCampaignForm({ campaign }: PopupCampaignFormProps) {
           Popup image
         </label>
 
-        {campaign?.image_url && !removeImage && (
+        {campaign?.image_url && (
           <div className="space-y-2">
-            <img
-              src={campaign.image_url}
-              alt="Current popup"
-              className="max-h-56 w-full rounded-xl border object-cover"
-            />
+            {!removeImage ? (
+              <img
+                src={campaign.image_url}
+                alt="Current popup"
+                className="max-h-56 w-full rounded-xl border object-cover"
+              />
+            ) : (
+              <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
+                The current image will be removed when you save.
+              </p>
+            )}
 
             <label className="flex items-center gap-2 text-sm text-red-600">
               <input
@@ -223,14 +231,17 @@ export function PopupCampaignForm({ campaign }: PopupCampaignFormProps) {
           accept="image/jpeg,image/png,image/webp"
           onChange={(event) => {
             setImage(event.target.files?.[0] ?? null);
-            if (event.target.files?.[0]) setRemoveImage(false);
+
+            if (event.target.files?.[0]) {
+              setRemoveImage(false);
+            }
           }}
           className="block w-full text-sm"
         />
 
         <p className="text-xs text-muted-foreground">
           JPEG, PNG or WebP. Maximum size: 5 MB. Selecting a new image replaces
-          the current image when you save.
+          the current image whe n you save.
         </p>
 
         {image && (

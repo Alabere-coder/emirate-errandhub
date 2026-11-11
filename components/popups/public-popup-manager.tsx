@@ -22,6 +22,11 @@ type PopupCampaign = {
 const VISITOR_KEY = "errandhub-popup-visitor";
 const SESSION_KEY = "errandhub-popup-session";
 
+// A new campaign version is created whenever updated_at changes.
+function getCampaignDismissalKey(campaign: PopupCampaign) {
+  return `${campaign.id}:${campaign.updated_at}`;
+}
+
 function isExcludedPath(pathname: string) {
   return (
     pathname === "/login" ||
@@ -33,13 +38,17 @@ function isExcludedPath(pathname: string) {
 }
 
 function hasBeenDismissed(campaign: PopupCampaign) {
+  const dismissalKey = getCampaignDismissalKey(campaign);
+
   try {
     if (campaign.frequency === "once_per_visitor") {
-      return localStorage.getItem(`${VISITOR_KEY}:${campaign.id}`) === "true";
+      return localStorage.getItem(`${VISITOR_KEY}:${dismissalKey}`) === "true";
     }
 
     if (campaign.frequency === "once_per_session") {
-      return sessionStorage.getItem(`${SESSION_KEY}:${campaign.id}`) === "true";
+      return (
+        sessionStorage.getItem(`${SESSION_KEY}:${dismissalKey}`) === "true"
+      );
     }
   } catch {
     // Storage may be unavailable.
@@ -52,7 +61,7 @@ export function PublicPopupManager() {
   const pathname = usePathname();
 
   const [campaigns, setCampaigns] = useState<PopupCampaign[]>([]);
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(
+  const [dismissedKeys, setDismissedKeys] = useState<Set<string>>(
     () => new Set(),
   );
   const [activeCampaignId, setActiveCampaignId] = useState<string | null>(null);
@@ -97,12 +106,12 @@ export function PublicPopupManager() {
 
         const storedDismissals = nextCampaigns
           .filter(hasBeenDismissed)
-          .map((campaign) => campaign.id);
+          .map(getCampaignDismissalKey);
 
-        setDismissedIds((previous) => {
+        setDismissedKeys((previous) => {
           const next = new Set(previous);
 
-          storedDismissals.forEach((id) => next.add(id));
+          storedDismissals.forEach((key) => next.add(key));
 
           return next;
         });
@@ -137,20 +146,23 @@ export function PublicPopupManager() {
       // Keep the currently displayed campaign if it is still eligible.
       if (
         currentId &&
-        campaigns.some(
-          (campaign) =>
-            campaign.id === currentId && !dismissedIds.has(campaign.id),
-        )
+        campaigns.some((campaign) => {
+          const key = getCampaignDismissalKey(campaign);
+
+          return campaign.id === currentId && !dismissedKeys.has(key);
+        })
       ) {
         return currentId;
       }
 
       const nextCampaign = campaigns.find((campaign) => {
-        if (dismissedIds.has(campaign.id)) return false;
+        const key = getCampaignDismissalKey(campaign);
+
+        if (dismissedKeys.has(key)) return false;
 
         if (
           campaign.frequency === "every_visit" &&
-          shownThisPage.current.has(campaign.id)
+          shownThisPage.current.has(key)
         ) {
           return false;
         }
@@ -161,12 +173,12 @@ export function PublicPopupManager() {
       if (!nextCampaign) return null;
 
       if (nextCampaign.frequency === "every_visit") {
-        shownThisPage.current.add(nextCampaign.id);
+        shownThisPage.current.add(getCampaignDismissalKey(nextCampaign));
       }
 
       return nextCampaign.id;
     });
-  }, [campaigns, dismissedIds, excluded]);
+  }, [campaigns, dismissedKeys, excluded]);
 
   const activeCampaign = campaigns.find(
     (campaign) => campaign.id === activeCampaignId,
@@ -174,19 +186,21 @@ export function PublicPopupManager() {
 
   // Dismiss a campaign and save its frequency preference.
   const dismiss = useCallback((campaign: PopupCampaign) => {
+    const dismissalKey = getCampaignDismissalKey(campaign);
+
     try {
       if (campaign.frequency === "once_per_visitor") {
-        localStorage.setItem(`${VISITOR_KEY}:${campaign.id}`, "true");
+        localStorage.setItem(`${VISITOR_KEY}:${dismissalKey}`, "true");
       } else if (campaign.frequency === "once_per_session") {
-        sessionStorage.setItem(`${SESSION_KEY}:${campaign.id}`, "true");
+        sessionStorage.setItem(`${SESSION_KEY}:${dismissalKey}`, "true");
       }
     } catch {
       // Dismissal still applies for the current page.
     }
 
-    setDismissedIds((previous) => {
+    setDismissedKeys((previous) => {
       const next = new Set(previous);
-      next.add(campaign.id);
+      next.add(dismissalKey);
       return next;
     });
 
