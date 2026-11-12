@@ -40,6 +40,7 @@ import {
 
 import { AccountDropdown } from "./profile-menu";
 import { DashboardNavbar } from "../navigation/dashboard-navbar";
+import { SupportButton } from "./support-button";
 
 type UserRole = "customer" | "worker" | "admin" | "super_admin";
 
@@ -1022,6 +1023,8 @@ export function DashboardShell({
         <main className="min-h-[calc(100vh-72px)] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-9">
           <div className="mx-auto w-full max-w-360">{children}</div>
         </main>
+
+        {(role === "customer" || role === "worker") && <SupportButton />}
       </div>
     </div>
   );
