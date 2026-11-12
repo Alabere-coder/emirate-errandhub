@@ -21,7 +21,41 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
   }
 
-  return NextResponse.redirect(
-    `${origin}${next.startsWith("/") ? next : "/dashboard"}`,
-  );
+  // Only allow safe, same-origin redirect destinations.
+  const nextUrl = new URL(next, origin);
+
+  const isSafeRedirect =
+    next.startsWith("/") && !next.startsWith("//") && nextUrl.origin === origin;
+
+  const destination = isSafeRedirect ? nextUrl : new URL("/dashboard", origin);
+
+  return NextResponse.redirect(destination);
 }
+
+// import { NextResponse } from "next/server";
+// import { createClient } from "@/lib/supabase/server";
+
+// export async function GET(request: Request) {
+//   const { searchParams, origin } = new URL(request.url);
+
+//   const code = searchParams.get("code");
+//   const next = searchParams.get("next") ?? "/dashboard";
+
+//   if (!code) {
+//     return NextResponse.redirect(`${origin}/login?error=missing_code`);
+//   }
+
+//   const supabase = await createClient();
+
+//   const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+//   if (error) {
+//     console.error("Auth callback error:", error);
+
+//     return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
+//   }
+
+//   return NextResponse.redirect(
+//     `${origin}${next.startsWith("/") ? next : "/dashboard"}`,
+//   );
+// }

@@ -3,16 +3,7 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Loader2,
-  MailCheck,
-  ShieldCheck,
-  Sparkles,
-  Zap,
-} from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader2, MailCheck } from "lucide-react";
 
 import { logIn, type LoginState } from "./actions";
 import { PublicNavbar } from "@/components/navigation/public-navbar";
@@ -230,10 +221,6 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-
-        <p className="mt-7 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} Emirate ErrandHub. All rights reserved.
-        </p>
       </div>
     </main>
   );

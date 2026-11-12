@@ -390,10 +390,6 @@ export default function WorkerSignupPage() {
             </div>
           </div>
         </div>
-
-        <p className="mt-7 text-center text-xs text-slate-500">
-          © {new Date().getFullYear()} Emirate ErrandHub. All rights reserved.
-        </p>
       </div>
     </main>
   );

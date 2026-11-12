@@ -174,17 +174,6 @@ export default function SignupPage() {
           </Link>
         </p>
       </div>
-
-      {/* Footer */}
-      <footer className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-center text-xs text-slate-500 sm:flex-row sm:text-left">
-        <p>
-          © {new Date().getFullYear()} Emirate ErrandHub. All rights reserved.
-        </p>
-        <p className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-emerald-700" />
-          Your journey starts here.
-        </p>
-      </footer>
     </main>
   );
 }
