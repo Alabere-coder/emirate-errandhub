@@ -24,8 +24,8 @@ const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Explore Services", href: "/services", icon: Search },
   {
-    label: "Become a Provider",
-    href: "/signup/worker",
+    label: "FAQ",
+    href: "/faq",
     icon: BriefcaseBusiness,
   },
 ];
