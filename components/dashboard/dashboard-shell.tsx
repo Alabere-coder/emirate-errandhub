@@ -553,6 +553,11 @@ const adminNavigation: NavGroup[] = [
         href: "/dashboard/admin/support",
         icon: Headphones,
       },
+      {
+        label: "Public Supports",
+        href: "/dashboard/admin/public-support",
+        icon: Headphones,
+      },
     ],
   },
   {

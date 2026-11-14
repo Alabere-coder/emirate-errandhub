@@ -96,13 +96,6 @@ export async function sendAdminSupportReply(
     console.error("Failed to update ticket timestamp:", updateError);
   }
 
-  // await createNotification({
-  //   userId: ticket.user_id,
-  //   type: "support_admin_reply",
-  //   title: "Support has replied to your ticket",
-  //   message: `Our support team has replied to "${ticket.subject}". Open your ticket to view the response.`,
-  //   link: `/dashboard/support/${ticket.id}`,
-  // });
   await createNotification({
     userId: ticket.user_id,
     type: "support_admin_reply",
@@ -179,13 +172,6 @@ export async function updateSupportTicketStatus(
   }
 
   if (ticket.status !== status) {
-    // await createNotification({
-    //   userId: ticket.user_id,
-    //   type: "support_status_updated",
-    //   title: "Your support ticket status has changed",
-    //   message: `Your ticket "${ticket.subject}" is now ${status.replace(/_/g, " ")}.`,
-    //   link: `/dashboard/support/${ticket.id}`,
-    // });
     if (ticket.status !== status) {
       await createNotification({
         userId: ticket.user_id,

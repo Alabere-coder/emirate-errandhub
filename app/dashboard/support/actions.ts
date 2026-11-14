@@ -117,12 +117,6 @@ export async function sendSupportTicketMessage(
 
   const supabase = await createClient();
 
-  // const { data: ticket, error: ticketError } = await supabase
-  //   .from("support_tickets")
-  //   .select("id, status")
-  //   .eq("id", ticketId)
-  //   .eq("user_id", user.id)
-  //   .maybeSingle();
   const { data: ticket, error: ticketError } = await supabase
     .from("support_tickets")
     .select("id, status, subject")

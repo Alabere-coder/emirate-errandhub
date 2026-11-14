@@ -14,6 +14,7 @@ import {
 
 import { PublicNavbar } from "@/components/navigation/public-navbar";
 import { createClient } from "@/lib/supabase/server";
+import { ContactSection } from "../components/contact/contact-section";
 
 const popularServices = [
   "Cleaning services",
@@ -466,6 +467,9 @@ export default async function HomePage() {
           </div>
         </section>
       </main>
+
+      {/* Contact section */}
+      <ContactSection />
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-slate-50">
