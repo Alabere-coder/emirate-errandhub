@@ -486,8 +486,6 @@ export function AdminDashboardShell({
         <main className="min-h-[calc(100vh-72px)] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-9">
           <div className="mx-auto w-full max-w-360">{children}</div>
         </main>
-
-        <SupportButton />
       </div>
     </div>
   );

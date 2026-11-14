@@ -44,7 +44,7 @@ const accountTypes = [
 
 export default function SignupPage() {
   return (
-    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-50 px-4 py-8 sm:px-6 sm:py-12">
+    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-50 px-4 py-2 sm:px-6 sm:py-12">
       {/* Decorative background */}
       <div
         aria-hidden="true"
@@ -66,14 +66,14 @@ export default function SignupPage() {
       <PublicNavbar />
 
       {/* Main content */}
-      <div className="mx-auto my-auto w-full max-w-5xl py-12 sm:py-16">
+      <div className="mx-auto my-auto w-full max-w-5xl py-2 sm:py-16">
         <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
-          <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
+          <h1 className=" text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
             How would you like to
             <span className="mt-1 block text-emerald-700">use ErrandHub?</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base max-md:hidden">
             Whether you need a helping hand or want to offer your expertise,
             there&apos;s a place for you here.
           </p>

@@ -105,7 +105,7 @@ export default function CustomerSignupPage() {
   }
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-slate-50 px-4 py-8 sm:px-6 sm:py-10">
+    <main className="relative isolate min-h-screen overflow-hidden bg-slate-50 px-4 py-2 sm:px-6 sm:py-10">
       {/* Background decoration */}
       <div
         aria-hidden="true"
@@ -125,14 +125,14 @@ export default function CustomerSignupPage() {
       <PublicNavbar />
 
       {/* Signup form */}
-      <div className="mx-auto w-full max-w-2xl py-10 sm:py-14">
+      <div className="mx-auto w-full max-w-2xl py-2 sm:py-14">
         <div className="mb-8 text-center">
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className=" text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
             Get more done with{" "}
             <span className="text-emerald-700">ErrandHub</span>
           </h1>
 
-          <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600 sm:text-base">
+          <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600 sm:text-base max-md:hidden">
             Create your account to find trusted professionals for everyday
             tasks, repairs, deliveries, and more.
           </p>

@@ -21,7 +21,7 @@ export default function LoginPage() {
   const error = searchParams.get("error");
 
   return (
-    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-50 px-4 py-8 sm:px-6 sm:py-10">
+    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-50 px-4 py-2 sm:px-6 sm:py-10">
       {/* Background decoration */}
       <div
         aria-hidden="true"
@@ -41,13 +41,13 @@ export default function LoginPage() {
       <PublicNavbar />
 
       {/* Login content */}
-      <div className="mx-auto my-auto w-full max-w-md py-12">
+      <div className="mx-auto my-auto w-full max-w-md py-4">
         <div className="mb-8 text-center">
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className=" text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
             Welcome back
           </h1>
 
-          <p className="mt-3 text-sm leading-7 text-slate-600">
+          <p className="mt-3 text-sm leading-7 text-slate-600 max-md:hidden">
             Sign in to manage your service requests, connect with professionals,
             and keep everything moving.
           </p>
