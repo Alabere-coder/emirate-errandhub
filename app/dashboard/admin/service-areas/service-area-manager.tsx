@@ -53,11 +53,6 @@ export default function ServiceAreaManager({ serviceAreas }: Props) {
 
   const currentParentId = selectedLgaId ?? selectedStateId;
 
-  //   const currentAreas = useMemo(() => {
-  //     return serviceAreas
-  //       .filter((area) => area.parent_id === currentParentId)
-  //       .sort((a, b) => a.name.localeCompare(b.name));
-  //   }, [serviceAreas, currentParentId]);
   const currentAreas = useMemo(() => {
     return serviceAreas
       .filter((area) => area.parent_id === currentParentId)

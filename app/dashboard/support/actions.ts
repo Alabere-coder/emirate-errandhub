@@ -58,8 +58,6 @@ export async function createSupportTicket(formData: FormData): Promise<void> {
     throw new Error("Description must be between 20 and 5,000 characters.");
   }
 
-  // const supabase = await createClient();
-
   const { data: ticket, error } = await supabase
     .from("support_tickets")
     .insert({

@@ -33,9 +33,6 @@ export async function startJob(
       return { error: "A valid job ID is required." };
     }
 
-    // const { error } = await supabase.rpc("start_assigned_job", {
-    //   p_job_id: jobId,
-    // });
     const { error } = await supabase.rpc("start_assigned_job", {
       p_job_id: jobId,
     });

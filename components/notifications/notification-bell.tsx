@@ -195,7 +195,7 @@ export function NotificationBell() {
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="absolute right-0 z-50 mt-3 w-[min(360px,calc(100vw-5rem))] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+          <div className="absolute right-0 z-50 mt-3 w-[min(360px,calc(100vw-4.5rem))] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">
@@ -245,13 +245,13 @@ export function NotificationBell() {
                       !notification.is_read ? "bg-emerald-50/40" : ""
                     }`}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 w-full">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-slate-900">
                           {notification.title}
                         </p>
 
-                        <p className="mt-1 text-xs leading-5 text-slate-600">
+                        <p className="mt-1 w-fit text-xs leading-5 text-slate-600">
                           {notification.message}
                         </p>
 

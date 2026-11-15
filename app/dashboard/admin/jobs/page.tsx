@@ -29,9 +29,7 @@ export default async function AdminRequestsPage() {
 
     supabase
       .from("jobs")
-      // .select(
-      //   "id, request_id, customer_id, worker_id, agreed_amount, currency, scheduled_at, started_at, completed_at, status, created_at",
-      // )
+
       .select(
         "id, request_id, customer_id, worker_id, agreed_amount, currency, scheduled_at, started_at, completed_at, status, customer_confirmed_at, earnings_release_approved_at, created_at",
       )

@@ -146,11 +146,7 @@ export function ServiceForm({
           </div>
 
           {/* Form */}
-          <form
-            action={formAction}
-            // encType="multipart/form-data"
-            className="space-y-6 p-6"
-          >
+          <form action={formAction} className="space-y-6 p-6">
             {service && <input type="hidden" name="id" value={service.id} />}
 
             {state.error && (

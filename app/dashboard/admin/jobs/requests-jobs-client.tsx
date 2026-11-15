@@ -288,11 +288,6 @@ export function RequestsJobsClient({
         />
         <SummaryCard
           label="Open requests"
-          //   value={
-          //     requests.filter((request) =>
-          //       ["open", "pending"].includes(request.status.toLowerCase()),
-          //     ).length
-          //   }
           value={
             requests.filter(
               (request) =>

@@ -67,7 +67,7 @@ export default async function AvailableJobsPage() {
     );
   }
 
-  // Only requests that are still open for quotations can be considered.
+  // Only requests that are still open for quotations can be considered. //
   const { data: jobs, error: jobsError } = await supabase
     .from("service_requests")
     .select(

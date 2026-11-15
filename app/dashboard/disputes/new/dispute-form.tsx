@@ -31,11 +31,7 @@ export default function DisputeForm({ jobId, backHref }: DisputeFormProps) {
       </CardHeader>
 
       <CardContent>
-        <form
-          action={formAction}
-          // encType="multipart/form-data"
-          className="space-y-5"
-        >
+        <form action={formAction} className="space-y-5">
           <input type="hidden" name="job_id" value={jobId} />
 
           <div className="space-y-2">

@@ -57,8 +57,6 @@ export async function sendAdminSupportReply(
     return { error: "Reply must be between 1 and 5,000 characters." };
   }
 
-  // const supabase = createAdminClient();
-
   const { data: ticket, error: ticketError } = await supabase
     .from("support_tickets")
     .select("id, status, user_id, subject")
@@ -106,7 +104,7 @@ export async function sendAdminSupportReply(
 
     // Administrator notification
     adminTitle: "Support ticket response sent",
-    // adminMessage: `An administrator has replied to support ticket "${ticket.subject}" (${ticket.id}).`,
+
     adminMessage: `Admin ${adminName} replied to support ticket "${ticket.subject}" (${ticket.id}).`,
 
     link: `/dashboard/support/${ticket.id}`,

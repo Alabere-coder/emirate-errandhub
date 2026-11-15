@@ -19,7 +19,7 @@ type PageProps = {
     id: string;
   }>;
 };
-
+//planing on fixing some error here
 export default async function CustomerWorkerProfilePage({ params }: PageProps) {
   await requireRole(["customer"]);
 

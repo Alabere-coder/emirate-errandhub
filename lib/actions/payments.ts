@@ -6,7 +6,6 @@ import {
   initializePaystackTransaction,
   verifyPaystackTransaction,
 } from "@/lib/payments/paystack";
-// import { createNotification } from "@/lib/notifications/create-notification";
 import { deliverPaymentNotifications } from "@/lib/notifications/payment-notification-delivery";
 
 export type InitializePaymentResult = {
@@ -22,16 +21,6 @@ function toKobo(amountInNaira: number): number {
 function roundNaira(amount: number): number {
   return Math.round((amount + Number.EPSILON) * 100) / 100;
 }
-
-// export type JobPaymentSummary = {
-//   error?: string;
-//   paymentPlan?: "full" | "deposit_balance";
-//   totalAmount?: number;
-//   amountAlreadyPaid?: number;
-//   remainingAmount?: number;
-//   depositAmount?: number;
-//   depositPaid?: boolean;
-// };
 
 export type JobPaymentSummary = {
   error?: string;
@@ -79,9 +68,7 @@ export async function getJobPaymentSummary(
 
     const { data: job, error: jobError } = await supabase
       .from("jobs")
-      // .select(
-      //   "id, customer_id, agreed_amount, currency, payment_plan, deposit_percentage, upfront_amount",
-      // )
+
       .select(
         "id, customer_id, agreed_amount, customer_payable_amount, discount_code_id, discount_amount, currency, payment_plan, deposit_percentage, upfront_amount",
       )
@@ -93,16 +80,6 @@ export async function getJobPaymentSummary(
       return { error: "We couldn't find this job in your account." };
     }
 
-    // const totalAmount = Number(job.agreed_amount);
-    // const currency = String(job.currency || "").toUpperCase();
-
-    // if (
-    //   !Number.isFinite(totalAmount) ||
-    //   totalAmount <= 0 ||
-    //   currency !== "NGN"
-    // ) {
-    //   return { error: "This job has an invalid payment amount." };
-    // }
     const originalAmount = Number(job.agreed_amount);
     const discountAmount = Number(job.discount_amount);
     const totalAmount = Number(job.customer_payable_amount);
@@ -1126,39 +1103,6 @@ export async function verifyJobPayment(
           "Paystack has not confirmed this payment yet. Please try again shortly.",
       };
     }
-
-    // if (verified.reference !== reference || verified.status !== "success") {
-    //   return {
-    //     error:
-    //       verified.status === "failed"
-    //         ? "Paystack reports that this payment failed. If you were charged, contact support."
-    //         : "Paystack has not confirmed this payment yet. Please try again shortly.",
-    //   };
-    // }
-
-    // const expectedKobo = Math.round(Number(transaction.amount) * 100);
-    // const expectedCurrency = transaction.currency.toUpperCase();
-
-    // if (
-    //   !Number.isSafeInteger(expectedKobo) ||
-    //   expectedKobo <= 0 ||
-    //   verified.amount !== expectedKobo ||
-    //   verified.currency.toUpperCase() !== expectedCurrency ||
-    //   payment.currency.toUpperCase() !== expectedCurrency
-    // ) {
-    //   console.error("Paystack verification mismatch:", {
-    //     reference,
-    //     expectedKobo,
-    //     receivedAmount: verified.amount,
-    //     expectedCurrency,
-    //     receivedCurrency: verified.currency,
-    //   });
-
-    //   return {
-    //     error:
-    //       "The verified payment details don't match our records. Please contact support.",
-    //   };
-    // }
 
     // Reconcile the verified charge atomically in PostgreSQL.
     // This RPC locks the payment summary, prevents overpayment,

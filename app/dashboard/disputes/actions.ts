@@ -288,16 +288,6 @@ export async function createDispute(
     }
 
     if (recipientUserId) {
-      // await createNotification({
-      //   userId: recipientUserId,
-      //   type: "dispute_opened",
-      //   title: "A dispute has been opened",
-      //   message:
-      //     "A dispute has been opened for a job you're involved in. Review the dispute for more details.",
-      //   link: "/dashboard/disputes",
-      //   preference: "job_updates",
-      // });
-
       // Notify administrators about the new dispute.
       await createNotification({
         userId: user.id,

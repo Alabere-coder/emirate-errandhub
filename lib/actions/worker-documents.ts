@@ -298,46 +298,6 @@ export async function rejectWorkerDocument(
   };
 }
 
-// async function updateWorkerVerificationStatus(
-//   supabase: Awaited<ReturnType<typeof createClient>>,
-//   workerId: string,
-// ): Promise<string | null> {
-//   const { data: identityDocuments, error: documentsError } = await supabase
-//     .from("worker_documents")
-//     .select("status, created_at")
-//     .eq("worker_id", workerId)
-//     .eq("document_type", "identity")
-//     .order("created_at", { ascending: false });
-
-//   if (documentsError) {
-//     return documentsError.message;
-//   }
-
-//   const latestIdentityDocument = identityDocuments?.[0];
-
-//   let verificationStatus: "pending" | "verified" | "rejected" = "pending";
-
-//   if (latestIdentityDocument?.status === "approved") {
-//     verificationStatus = "verified";
-//   } else if (latestIdentityDocument?.status === "rejected") {
-//     verificationStatus = "rejected";
-//   }
-
-//   const { error: updateError } = await supabase
-//     .from("worker_profiles")
-//     .update({
-//       verification_status: verificationStatus,
-//       updated_at: new Date().toISOString(),
-//     })
-//     .eq("id", workerId);
-
-//   if (updateError) {
-//     return updateError.message;
-//   }
-
-//   return null;
-// }
-
 async function updateWorkerVerificationStatus(
   supabase: Awaited<ReturnType<typeof createClient>>,
   workerId: string,

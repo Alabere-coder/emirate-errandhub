@@ -84,7 +84,6 @@ export default async function AdminUserDetailsPage({ params }: Props) {
   }
 
   if (profile.role === "super_admin" && currentProfile.role !== "super_admin") {
-    // notFound();
     redirect("/access-denied");
   }
 
@@ -134,8 +133,6 @@ export default async function AdminUserDetailsPage({ params }: Props) {
   const rejectedDocuments = documents.filter(
     (document) => document.status === "rejected",
   ).length;
-
-  //   const isWorker = profile.role === "worker";
 
   const { data: workerApplications, error: workerApplicationsError } = isWorker
     ? await adminClient

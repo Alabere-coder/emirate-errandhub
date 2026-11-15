@@ -52,9 +52,7 @@ export async function reconcilePaystackRefund(
 
   const { data: refund, error: refundError } = await admin
     .from("refunds")
-    // .select(
-    //   "id, payment_id, transaction_id, amount, currency, status, provider, provider_reference",
-    // )
+
     .select(
       "id, payment_id, transaction_id, customer_id, job_id, amount, currency, status, provider, provider_reference",
     )
@@ -89,7 +87,7 @@ export async function reconcilePaystackRefund(
   ] = await Promise.all([
     admin
       .from("payments")
-      //   .select("id, amount, currency, status, provider, provider_reference")
+
       .select(
         "id, customer_id, job_id, amount, currency, status, provider, provider_reference",
       )
@@ -98,9 +96,7 @@ export async function reconcilePaystackRefund(
 
     admin
       .from("payment_transactions")
-      //   .select(
-      //     "id, payment_id, transaction_type, amount, currency, status, provider, verified_at",
-      //   )
+
       .select(
         "id, payment_id, transaction_type, amount, currency, status, provider, provider_reference, verified_at",
       )
@@ -298,7 +294,6 @@ export async function reconcilePaystackRefund(
           : null,
       reconciliation_required: false,
       reconciliation_note: null,
-      //   updated_at: new Date().toISOString(),
     })
     .eq("id", refund.id)
     .eq("status", "processing")
@@ -363,9 +358,7 @@ export async function recoverPaystackRefundReference(
 
   const { data: refund, error: refundError } = await admin
     .from("refunds")
-    // .select(
-    //   "id, payment_id, transaction_id, amount, currency, status, provider, provider_reference",
-    // )
+
     .select(
       "id, payment_id, transaction_id, customer_id, job_id, amount, currency, status, provider, provider_reference",
     )
@@ -394,7 +387,7 @@ export async function recoverPaystackRefundReference(
   ] = await Promise.all([
     admin
       .from("payments")
-      //   .select("id, amount, currency, status, provider, provider_reference")
+
       .select(
         "id, customer_id, job_id, amount, currency, status, provider, provider_reference",
       )
@@ -403,9 +396,7 @@ export async function recoverPaystackRefundReference(
 
     admin
       .from("payment_transactions")
-      //   .select(
-      //     "id, payment_id, transaction_type, amount, currency, status, provider, verified_at",
-      //   )
+
       .select(
         "id, payment_id, transaction_type, amount, currency, status, provider, provider_reference, verified_at",
       )
@@ -559,7 +550,6 @@ export async function recoverPaystackRefundReference(
         provider_reference: normalizedPaystackRefundId,
         reconciliation_note:
           "Paystack refund ID manually recovered and verified. Run the reconciliation check to confirm the latest status.",
-        // updated_at: new Date().toISOString(),
       })
       .eq("id", refund.id)
       .eq("status", "processing")

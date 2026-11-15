@@ -17,10 +17,6 @@ export async function requireRole(allowedRoles: AppRole[]) {
     allowedRoles.includes(userRole) ||
     (userRole === "super_admin" && allowedRoles.includes("admin"));
 
-  // if (!hasRequiredRole) {
-  //   redirect(`/dashboard/${userRole}`);
-  // }
-
   if (!hasRequiredRole) {
     redirect("/access-denied");
   }

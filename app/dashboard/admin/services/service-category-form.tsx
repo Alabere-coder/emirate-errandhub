@@ -141,11 +141,7 @@ export function ServiceCategoryForm({
           </div>
 
           {/* Form */}
-          <form
-            action={formAction}
-            // encType="multipart/form-data"
-            className="space-y-6 p-6"
-          >
+          <form action={formAction} className="space-y-6 p-6">
             {category && <input type="hidden" name="id" value={category.id} />}
 
             {/* Parent is controlled by context, not selected manually. */}

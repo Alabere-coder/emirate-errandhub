@@ -80,8 +80,6 @@ export async function updateDisputeStatus(
       };
     }
 
-    // const supabase = createAdminClient();
-
     const { data: dispute, error: lookupError } = await supabase
       .from("disputes")
       .select(
