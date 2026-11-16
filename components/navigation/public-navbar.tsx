@@ -23,6 +23,7 @@ type PublicNavbarProps = {
 const navLinks = [
   { label: "Home", href: "/", icon: Home },
   { label: "Explore Services", href: "/services", icon: Search },
+  { label: "Contact", href: "/contact", icon: Search },
   {
     label: "FAQ",
     href: "/faq",

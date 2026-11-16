@@ -5,13 +5,20 @@ import Link from "next/link";
 import {
   Bell,
   CheckCheck,
-  Delete,
-  DeleteIcon,
   Loader2,
-  LucideDelete,
   Trash2,
   X,
+  ExternalLink,
+  Clock,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 import { createClient } from "@/lib/supabase/client";
 
 type Notification = {
@@ -24,6 +31,23 @@ type Notification = {
   created_at: string;
 };
 
+function formatNotificationDate(date: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Africa/Lagos",
+  }).format(new Date(date));
+}
+
+function getMessagePreview(message: string, maxLength = 55) {
+  if (message.length <= maxLength) return message;
+  return `${message.slice(0, maxLength).trimEnd()}........`;
+}
+
 export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -31,6 +55,8 @@ export function NotificationBell() {
   const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedNotification, setSelectedNotification] =
+    useState<Notification | null>(null);
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -161,10 +187,22 @@ export function NotificationBell() {
       if (!notification.is_read) {
         setUnreadCount((current) => Math.max(0, current - 1));
       }
+
+      if (selectedNotification?.id === notification.id) {
+        setSelectedNotification(null);
+      }
     } catch (error) {
       console.error("Notification deletion error:", error);
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function openNotification(notification: Notification) {
+    setSelectedNotification(notification);
+
+    if (!notification.is_read) {
+      await markAsRead(notification.id);
     }
   }
 
@@ -238,72 +276,60 @@ export function NotificationBell() {
                   </p>
                 </div>
               ) : (
-                notifications.map((notification) => (
+                notifications.slice(0, 10).map((notification) => (
                   <div
                     key={notification.id}
-                    className={`border-b border-slate-100 px-4 py-3 transition hover:bg-slate-50 ${
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => void openNotification(notification)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        void openNotification(notification);
+                      }
+                    }}
+                    className={`w-full cursor-pointer border-b border-slate-100 px-4 py-3 text-left transition hover:bg-slate-50 ${
                       !notification.is_read ? "bg-emerald-50/40" : ""
                     }`}
                   >
-                    <div className="flex items-start gap-3 w-full">
+                    <div className="flex items-start gap-3">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-slate-900">
-                          {notification.title}
-                        </p>
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-semibold text-slate-900">
+                            {notification.title}
+                          </p>
 
-                        <p className="mt-1 w-fit text-xs leading-5 text-slate-600">
-                          {notification.message}
+                          {!notification.is_read && (
+                            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                          )}
+                        </div>
+
+                        <p className="mt-1 text-xs leading-5 text-slate-600">
+                          {getMessagePreview(notification.message)}
                         </p>
 
                         <p className="mt-2 text-[10px] text-slate-400">
-                          {new Date(notification.created_at).toLocaleString()}
+                          {formatNotificationDate(notification.created_at)}
                         </p>
-
-                        {notification.link && (
-                          <Link
-                            href={notification.link}
-                            onClick={() => {
-                              if (!notification.is_read) {
-                                void markAsRead(notification.id);
-                              }
-                              setIsOpen(false);
-                            }}
-                            className="mt-2 inline-block text-xs font-semibold text-emerald-700 hover:underline"
-                          >
-                            View details
-                          </Link>
-                        )}
                       </div>
 
-                      <div className="flex shrink-0 items-center gap-2">
-                        {!notification.is_read && (
-                          <button
-                            type="button"
-                            onClick={() => void markAsRead(notification.id)}
-                            disabled={
-                              updatingId !== null || deletingId !== null
-                            }
-                            className="h-2.5 w-2.5 rounded-full bg-emerald-500 disabled:opacity-50"
-                            aria-label="Mark as read"
-                            title="Mark as read"
-                          />
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void deleteNotification(notification);
+                        }}
+                        disabled={updatingId !== null || deletingId !== null}
+                        aria-label={`Delete ${notification.title}`}
+                        title="Delete notification"
+                        className="shrink-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {deletingId === notification.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4 text-red-500" />
                         )}
-
-                        <button
-                          type="button"
-                          onClick={() => void deleteNotification(notification)}
-                          disabled={updatingId !== null || deletingId !== null}
-                          aria-label={`Delete ${notification.title}`}
-                          title="Delete notification"
-                          className="rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {deletingId === notification.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          )}
-                        </button>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 ))
@@ -322,6 +348,50 @@ export function NotificationBell() {
           </div>
         </>
       )}
+
+      <Dialog
+        open={selectedNotification !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedNotification(null);
+        }}
+      >
+        <DialogContent className="max-w-md rounded-2xl">
+          {selectedNotification && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-base font-bold text-slate-900">
+                  {selectedNotification.title}
+                </DialogTitle>
+
+                <DialogDescription className="flex items-center gap-1 text-xs">
+                  <Clock className="h-3.5 w-3.5" />
+                  {formatNotificationDate(selectedNotification.created_at)}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="rounded-xl bg-slate-50 p-8">
+                <p className="whitespace-pre-wrap wrap-break-word text-lg leading-7 text-slate-700">
+                  {selectedNotification.message}
+                </p>
+              </div>
+
+              {selectedNotification.link && (
+                <Link
+                  href={selectedNotification.link}
+                  onClick={() => {
+                    setSelectedNotification(null);
+                    setIsOpen(false);
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                >
+                  View details
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Baby,
@@ -31,6 +31,7 @@ import {
   PawPrint,
   Phone,
   Plus,
+  Power,
   Scissors,
   Search,
   Shield,
@@ -642,6 +643,31 @@ function CategoryTreeRow({
     await toggleServiceCategory(formData);
   }
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
   async function handleDelete() {
     const confirmed = window.confirm(
       `Delete "${category.name}"? This may fail if the category still has subcategories.`,
@@ -723,43 +749,75 @@ function CategoryTreeRow({
             </p>
           </div>
 
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-            {/* ADD SUBCATEGORY */}
+          <div className="relative shrink-0" ref={menuRef}>
             <button
               type="button"
-              onClick={() => onAddSubcategory(category)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-              title={`Add subcategory under ${category.name}`}
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+              title="Category actions"
+              aria-label="Category actions"
+              aria-expanded={menuOpen}
             >
-              <Plus className="h-3.5 w-3.5" />
-              Add subcategory
+              <MoreHorizontal className="h-5 w-5" />
             </button>
 
-            <button
-              type="button"
-              onClick={() => onEditCategory(category)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
-              title="Edit category"
-            >
-              <Edit3 className="h-4 w-4" />
-            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-11 z-50 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg animate-in fade-in zoom-in-95 duration-150">
+                {/* Add subcategory */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onAddSubcategory(category);
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                  <Plus className="h-4 w-4 text-slate-500" />
+                  Add subcategory
+                </button>
 
-            <button
-              type="button"
-              onClick={handleToggle}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
-            >
-              {category.is_active ? "Deactivate" : "Activate"}
-            </button>
+                {/* Edit category */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onEditCategory(category);
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                  <Edit3 className="h-4 w-4 text-slate-500" />
+                  Edit category
+                </button>
 
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-200 text-red-500 transition hover:bg-red-50 hover:text-red-700"
-              title="Delete category"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
+                {/* Activate / Deactivate */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleToggle();
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                  <Power className="h-4 w-4 text-slate-500" />
+                  {category.is_active ? "Deactivate" : "Activate"}
+                </button>
+
+                <div className="my-1 border-t border-slate-100" />
+
+                {/* Delete category */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleDelete();
+                  }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete category
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -826,6 +884,31 @@ function SubcategoryTreeRow({
 
     await toggleServiceCategory(formData);
   }
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   async function handleDelete() {
     const confirmed = window.confirm(
@@ -909,43 +992,78 @@ function SubcategoryTreeRow({
             </p>
           </div>
 
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-            {/* ADD SERVICE */}
+          <div
+            ref={menuRef}
+            className="relative flex shrink-0 items-center justify-end"
+          >
             <button
               type="button"
-              onClick={() => onAddService(category)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-              title={`Add service under ${category.name}`}
+              onClick={() => setMenuOpen((previous) => !previous)}
+              aria-label="Category actions"
+              aria-expanded={menuOpen}
+              title="Category actions"
+              className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition ${
+                menuOpen
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+              }`}
             >
-              <Plus className="h-3.5 w-3.5" />
-              Add service
+              <MoreHorizontal className="h-5 w-5" />
             </button>
 
-            <button
-              type="button"
-              onClick={() => onEditCategory(category)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
-              title="Edit subcategory"
-            >
-              <Edit3 className="h-4 w-4" />
-            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-11 z-50 w-52 origin-top-right animate-in fade-in zoom-in-95 duration-150 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-200/50">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onAddService(category);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                >
+                  <Plus className="h-4 w-4 text-slate-400" />
+                  Add service
+                </button>
 
-            <button
-              type="button"
-              onClick={handleToggle}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
-            >
-              {category.is_active ? "Deactivate" : "Activate"}
-            </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onEditCategory(category);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                >
+                  <Edit3 className="h-4 w-4 text-slate-400" />
+                  Edit subcategory
+                </button>
 
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-200 bg-white text-red-500 transition hover:bg-red-50 hover:text-red-700"
-              title="Delete subcategory"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleToggle();
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                >
+                  <Power className="h-4 w-4 text-slate-400" />
+                  {category.is_active ? "Deactivate" : "Activate"}
+                </button>
+
+                <div className="my-1 border-t border-slate-100" />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleDelete();
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete subcategory
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -990,6 +1108,31 @@ function ServiceTreeRow({
 
     await toggleService(formData);
   }
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   async function handleDelete() {
     const confirmed = window.confirm(
@@ -1055,32 +1198,62 @@ function ServiceTreeRow({
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 sm:ml-auto">
+      <div ref={menuRef} className="relative flex shrink-0 sm:ml-auto">
         <button
           type="button"
-          onClick={onEdit}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
-          title="Edit service"
+          onClick={() => setMenuOpen((previous) => !previous)}
+          aria-label="Service actions"
+          aria-expanded={menuOpen}
+          className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition ${
+            menuOpen
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+          }`}
         >
-          <Edit3 className="h-4 w-4" />
+          <MoreHorizontal className="h-5 w-5" />
         </button>
 
-        <button
-          type="button"
-          onClick={handleToggle}
-          className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
-        >
-          {service.is_active ? "Deactivate" : "Activate"}
-        </button>
+        {menuOpen && (
+          <div className="absolute right-0 top-11 z-50 w-48 origin-top-right animate-in fade-in zoom-in-95 duration-150 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-200/50">
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                onEdit();
+              }}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+            >
+              <Edit3 className="h-4 w-4 text-slate-400" />
+              Edit service
+            </button>
 
-        <button
-          type="button"
-          onClick={handleDelete}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-200 text-red-500 transition hover:bg-red-50 hover:text-red-700"
-          title="Delete service"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                handleToggle();
+              }}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+            >
+              <Power className="h-4 w-4 text-slate-400" />
+              {service.is_active ? "Deactivate" : "Activate"}
+            </button>
+
+            <div className="my-1 border-t border-slate-100" />
+
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                handleDelete();
+              }}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete service
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

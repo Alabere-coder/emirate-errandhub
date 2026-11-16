@@ -341,7 +341,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <main className="min-h-full bg-muted/30">
-      <div className="mx-auto max-w-7xl space-y-8 p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-7xl space-y-8 sm:p-4 lg:p-8">
         {/* Welcome header */}
         <section className="relative overflow-hidden rounded-3xl bg-slate-950 p-6 text-white sm:p-8 lg:p-10">
           <div className="pointer-events-none absolute -right-12 -top-20 size-64 rounded-full bg-emerald-400/10 blur-3xl" />

@@ -184,7 +184,7 @@ export default async function AdminReviewsPage() {
 
   return (
     <main className="min-h-full bg-muted/30">
-      <div className="mx-auto max-w-7xl space-y-8 p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-7xl space-y-8 sm:p-6 lg:p-8">
         <div>
           <Link
             href="/dashboard/admin"
