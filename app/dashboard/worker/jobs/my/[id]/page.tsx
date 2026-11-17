@@ -322,7 +322,7 @@ export default async function WorkerJobDetailPage({
   ];
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-8 py-8 sm:px-6 lg:px-8">
       <div>
         <Button variant="ghost" className="-ml-3 mb-4">
           <Link href="/dashboard/worker/jobs/my">

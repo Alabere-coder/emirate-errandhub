@@ -178,7 +178,7 @@ export default async function CustomerRequestsPage() {
     console.error("Load customer requests error:", error);
 
     return (
-      <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl space-y-6 py-6 sm:px-6 lg:px-8">
         <div>
           <p className="text-sm font-semibold text-teal-700">
             CUSTOMER DASHBOARD
@@ -260,7 +260,7 @@ export default async function CustomerRequestsPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-8 py-6 sm:px-6 lg:px-8">
       {/* Page header */}
       <section className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-8 sm:py-10">
         <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-teal-500/15 blur-3xl" />

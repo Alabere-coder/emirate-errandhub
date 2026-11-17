@@ -49,7 +49,7 @@ export default async function CustomerFavoritesPage() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 pb-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-8 pb-8 sm:px-6 lg:px-8">
       <div className="rounded-2xl border bg-card p-6 sm:p-8">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600">

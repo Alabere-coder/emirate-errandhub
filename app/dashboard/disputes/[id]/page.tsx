@@ -1,15 +1,24 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
 import {
   ArrowLeft,
+  ArrowRight,
   CalendarDays,
   ClipboardList,
   ShieldAlert,
+  ShieldCheck,
+  Clock3,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  FileImage,
+  BriefcaseBusiness,
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -42,18 +51,38 @@ function formatDate(value: string | null) {
   }).format(date);
 }
 
-function statusVariant(
-  status: string,
-): "default" | "secondary" | "outline" | "destructive" {
+function statusStyles(status: string) {
   switch (status) {
     case "resolved":
-      return "default";
+      return {
+        label: "Resolved",
+        className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+        icon: CheckCircle2,
+      };
     case "rejected":
-      return "destructive";
+      return {
+        label: "Rejected",
+        className: "border-red-200 bg-red-50 text-red-700",
+        icon: XCircle,
+      };
     case "under_review":
-      return "secondary";
+      return {
+        label: "Under review",
+        className: "border-blue-200 bg-blue-50 text-blue-700",
+        icon: Clock3,
+      };
+    case "closed":
+      return {
+        label: "Closed",
+        className: "border-slate-200 bg-slate-100 text-slate-600",
+        icon: ShieldCheck,
+      };
     default:
-      return "outline";
+      return {
+        label: "Open",
+        className: "border-amber-200 bg-amber-50 text-amber-700",
+        icon: AlertCircle,
+      };
   }
 }
 
@@ -160,62 +189,126 @@ export default async function ParticipantDisputeDetailPage({
     }),
   );
 
+  const status = statusStyles(dispute.status);
+  const StatusIcon = status.icon;
+
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <Button variant="outline" size="sm">
-        <Link href="/dashboard/disputes">
+    <div className="mx-auto max-w-5xl space-y-8 pb-10">
+      {/* Navigation */}
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-9 rounded-xl border-slate-200 bg-white px-4 text-slate-600 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+      >
+        <Link
+          href="/dashboard/disputes"
+          className="inline-flex items-center gap-1.5"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to My Disputes
         </Link>
       </Button>
 
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">Dispute details</h1>
-          <Badge variant={statusVariant(dispute.status)}>
-            {formatStatus(dispute.status)}
-          </Badge>
-        </div>
+      {/* Page header */}
+      <div className="relative overflow-hidden rounded-3xl border border-emerald-100 bg-linear-to-br from-white via-white to-emerald-50/80 p-6 shadow-sm sm:p-9">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-emerald-100/40 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 right-1/4 h-40 w-40 rounded-full bg-teal-100/40 blur-3xl" />
 
-        <p className="break-all text-xs text-slate-500">
-          Reference: {dispute.id}
-        </p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Reported issue</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="text-sm font-semibold">Reason</p>
-            <p className="mt-1 text-sm text-slate-600">{dispute.reason}</p>
+        <div className="relative z-10">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-100 bg-white text-emerald-700 shadow-sm">
+            <ShieldAlert className="h-6 w-6" />
           </div>
 
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-emerald-700">
+                Support & Resolution Centre
+              </p>
+
+              <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+                Dispute details
+              </h1>
+
+              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+                Review your reported issue, submitted evidence, and the latest
+                decision from our support team.
+              </p>
+            </div>
+
+            <Badge
+              variant="outline"
+              className={`inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold capitalize ${status.className}`}
+            >
+              <StatusIcon className="h-4 w-4" />
+              {status.label || formatStatus(dispute.status)}
+            </Badge>
+          </div>
+
+          <div className="mt-6 border-t border-emerald-100/80 pt-4">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              Dispute reference
+            </p>
+            <p className="mt-1 break-all font-mono text-xs text-slate-600">
+              {dispute.id}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Reported issue */}
+      <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
+        <div className="border-b border-slate-100 bg-white px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+              <BriefcaseBusiness className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="font-bold text-slate-900">Reported issue</h2>
+              <p className="mt-0.5 text-xs text-slate-500">
+                Details of the problem you submitted
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <CardContent className="space-y-6 p-5 sm:p-6">
           <div>
-            <p className="text-sm font-semibold">Description</p>
-            <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-slate-600">
-              {dispute.description}
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Reason
+            </p>
+            <p className="mt-2 text-base font-semibold text-slate-900">
+              {dispute.reason}
             </p>
           </div>
 
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Description
+            </p>
+            <div className="mt-2 rounded-xl bg-slate-50 p-4 sm:p-5">
+              <p className="whitespace-pre-wrap text-sm leading-7 text-slate-600">
+                {dispute.description}
+              </p>
+            </div>
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg bg-slate-50 p-3">
-              <p className="flex items-center gap-2 text-xs text-slate-500">
+            <div className="rounded-xl border border-slate-100 bg-white p-4">
+              <p className="flex items-center gap-2 text-xs font-medium text-slate-400">
                 <CalendarDays className="h-4 w-4" />
                 Submitted
               </p>
-              <p className="mt-1 text-sm font-medium">
+              <p className="mt-2 text-sm font-semibold text-slate-800">
                 {formatDate(dispute.created_at)}
               </p>
             </div>
 
-            <div className="rounded-lg bg-slate-50 p-3">
-              <p className="flex items-center gap-2 text-xs text-slate-500">
+            <div className="rounded-xl border border-slate-100 bg-white p-4">
+              <p className="flex items-center gap-2 text-xs font-medium text-slate-400">
                 <ClipboardList className="h-4 w-4" />
                 Last updated
               </p>
-              <p className="mt-1 text-sm font-medium">
+              <p className="mt-2 text-sm font-semibold text-slate-800">
                 {formatDate(dispute.updated_at)}
               </p>
             </div>
@@ -223,49 +316,84 @@ export default async function ParticipantDisputeDetailPage({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Dispute evidence</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Evidence */}
+      <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
+        <div className="border-b border-slate-100 bg-white px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+              <FileImage className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="font-bold text-slate-900">Dispute evidence</h2>
+              <p className="mt-0.5 text-xs text-slate-500">
+                Images and supporting files submitted with your dispute
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <CardContent className="p-5 sm:p-6">
           {mediaError ? (
-            <p role="alert" className="text-sm text-red-700">
-              Evidence could not be loaded. Please refresh and try again.
-            </p>
+            <div
+              role="alert"
+              className="rounded-xl border border-red-100 bg-red-50 p-4"
+            >
+              <p className="text-sm font-medium text-red-700">
+                Evidence could not be loaded. Please refresh and try again.
+              </p>
+            </div>
           ) : evidence.length === 0 ? (
-            <p className="text-sm text-slate-500">
-              No evidence images have been attached to this dispute.
-            </p>
+            <div className="flex flex-col items-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-5 py-10 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm">
+                <FileImage className="h-6 w-6" />
+              </div>
+              <p className="mt-3 text-sm font-semibold text-slate-700">
+                No evidence attached
+              </p>
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                No evidence images have been attached to this dispute.
+              </p>
+            </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               {evidence.map((item) => (
                 <div
                   key={item.id}
-                  className="space-y-3 rounded-xl border border-slate-200 p-3"
+                  className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:border-emerald-200 hover:shadow-md"
                 >
-                  {item.signedUrl && item.fileType.startsWith("image/") ? (
-                    <a
-                      href={item.signedUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Open dispute evidence in a new tab"
-                    >
-                      <img
-                        src={item.signedUrl}
-                        alt="Evidence submitted for this dispute"
-                        className="max-h-80 w-full rounded-lg object-contain"
-                        loading="lazy"
-                      />
-                    </a>
-                  ) : (
-                    <p className="text-sm text-slate-500">
-                      This evidence image could not be previewed.
-                    </p>
-                  )}
+                  <div className="flex min-h-48 items-center justify-center bg-slate-50 p-3">
+                    {item.signedUrl && item.fileType.startsWith("image/") ? (
+                      <a
+                        href={item.signedUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Open dispute evidence in a new tab"
+                        className="block w-full"
+                      >
+                        <img
+                          src={item.signedUrl}
+                          alt="Evidence submitted for this dispute"
+                          className="max-h-80 w-full rounded-xl object-contain transition duration-300 group-hover:scale-[1.01]"
+                          loading="lazy"
+                        />
+                      </a>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <FileImage className="h-8 w-8 text-slate-300" />
+                        <p className="text-xs text-slate-500">
+                          This evidence image could not be previewed.
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
-                  <div className="flex flex-wrap justify-between gap-2 text-xs text-slate-500">
-                    <span>{item.fileType}</span>
-                    <span>{formatDate(item.createdAt)}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-4 py-3">
+                    <span className="text-xs font-medium text-slate-500">
+                      {item.fileType}
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      {formatDate(item.createdAt)}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -274,47 +402,89 @@ export default async function ParticipantDisputeDetailPage({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ShieldAlert className="h-5 w-5" />
-            Status and resolution
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="text-sm font-semibold">Current status</p>
-            <div className="mt-2">
-              <Badge variant={statusVariant(dispute.status)}>
-                {formatStatus(dispute.status)}
+      {/* Status and resolution */}
+      <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
+        <div className="border-b border-slate-100 bg-white px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="font-bold text-slate-900">
+                Status and resolution
+              </h2>
+              <p className="mt-0.5 text-xs text-slate-500">
+                Current progress and administrative decision
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <CardContent className="space-y-5 p-5 sm:p-6">
+          <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Current status
+            </p>
+            <div className="mt-3">
+              <Badge
+                variant="outline"
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold capitalize ${status.className}`}
+              >
+                <StatusIcon className="h-3.5 w-3.5" />
+                {status.label || formatStatus(dispute.status)}
               </Badge>
             </div>
           </div>
 
           {dispute.resolution ? (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm font-semibold">Admin resolution</p>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700">
+            <div className="rounded-2xl border border-emerald-200 bg-linear-to-br from-emerald-50/80 to-white p-5">
+              <div className="flex items-center gap-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-emerald-900">
+                    Admin resolution
+                  </p>
+                  <p className="text-xs text-emerald-700/70">
+                    Official response from the support team
+                  </p>
+                </div>
+              </div>
+
+              <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-700">
                 {dispute.resolution}
               </p>
 
               {dispute.resolved_at && (
-                <p className="mt-3 text-xs text-slate-500">
+                <div className="mt-4 flex items-center gap-2 border-t border-emerald-100 pt-3 text-xs text-emerald-700/80">
+                  <CalendarDays className="h-3.5 w-3.5" />
                   Recorded {formatDate(dispute.resolved_at)}
-                </p>
+                </div>
               )}
             </div>
           ) : (
-            <p className="text-sm leading-6 text-slate-500">
-              Your dispute has not received a written resolution yet. Check this
-              page again for updates as the admin reviews your case.
-            </p>
+            <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+              <div className="flex items-center gap-2">
+                <Clock3 className="h-4 w-4 text-blue-600" />
+                <p className="text-sm font-semibold text-blue-900">
+                  Awaiting resolution
+                </p>
+              </div>
+              <p className="mt-2 text-sm leading-6 text-blue-800/80">
+                Your dispute has not received a written resolution yet. Check
+                this page again for updates as the admin reviews your case.
+              </p>
+            </div>
           )}
 
-          <p className="text-xs leading-5 text-slate-500">
-            This page is read-only. Only an authorized admin can change the
-            dispute status or record a resolution.
-          </p>
+          <div className="flex items-start gap-2 rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+            <p className="text-xs leading-6 text-slate-500">
+              This page is read-only. Only an authorized admin can change the
+              dispute status or record a resolution.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

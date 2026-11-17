@@ -29,7 +29,7 @@ export default async function WorkerApplicationPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:py-8">
+    <div className="mx-auto w-full max-w-5xl space-y-6 py-6 sm:px-6 lg:py-8">
       <Link
         href="/dashboard/worker"
         className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
