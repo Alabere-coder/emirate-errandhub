@@ -200,7 +200,7 @@ export default async function NewRequestPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-8 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-5xl space-y-8 py-6 sm:px-6 lg:px-8">
       {/* Header */}
       <section className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-8 sm:py-10">
         <div className="pointer-events-none absolute -right-12 -top-20 h-60 w-60 rounded-full bg-teal-500/15 blur-3xl" />

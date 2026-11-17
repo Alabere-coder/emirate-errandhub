@@ -166,7 +166,7 @@ export default async function AdminUserDetailsPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl space-y-8 py-8 sm:px-6 lg:px-8">
         <Link
           href="/dashboard/admin/users"
           className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-emerald-700"

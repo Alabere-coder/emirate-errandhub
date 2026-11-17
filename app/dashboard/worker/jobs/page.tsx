@@ -30,7 +30,7 @@ export default async function AvailableJobsPage() {
     console.error("Worker profile error:", workerProfileError);
 
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         <Card>
           <CardContent className="py-10 text-center">
             <h2 className="font-semibold text-slate-900">
@@ -47,7 +47,7 @@ export default async function AvailableJobsPage() {
 
   if (!workerProfile) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         <Card>
           <CardContent className="py-10 text-center">
             <h2 className="font-semibold text-slate-900">
@@ -106,7 +106,7 @@ export default async function AvailableJobsPage() {
     console.error("Available jobs error:", jobsError);
 
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         <Card>
           <CardContent className="py-10 text-center">
             <h2 className="font-semibold text-slate-900">

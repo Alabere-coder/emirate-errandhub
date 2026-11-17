@@ -99,7 +99,7 @@ export default async function CustomerWorkersPage() {
   }
 
   return (
-    <div className="space-y-8 pb-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="space-y-8 pb-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
       {/* Header */}
       <div className="relative overflow-hidden rounded-2xl border bg-card p-6 sm:p-8">
         <div className="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full bg-primary/5 blur-3xl" />

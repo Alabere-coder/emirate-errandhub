@@ -46,7 +46,7 @@ export default async function SupportPage() {
   const supportTickets = (tickets ?? []) as SupportTicket[];
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 p-4 sm:p-6">
+    <div className="mx-auto max-w-5xl space-y-8 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">

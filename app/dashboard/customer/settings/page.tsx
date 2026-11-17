@@ -41,7 +41,7 @@ export default async function CustomerSettingsPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 p-4 sm:p-6 lg:p-8">
+    <div className="mx-auto w-full max-w-5xl space-y-6 sm:p-6 lg:p-8">
       <div>
         <div className="flex items-center gap-2">
           <Settings className="h-6 w-6 text-emerald-600" />

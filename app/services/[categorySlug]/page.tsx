@@ -44,7 +44,7 @@ export default async function ServiceCategoryPage({
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.2),transparent_50%)]"
         />
 
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mx-auto max-w-7xl py-10 sm:px-6 sm:py-14 lg:px-8">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
@@ -119,7 +119,7 @@ export default async function ServiceCategoryPage({
       </section>
 
       {/* Subcategories */}
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+      <section className="mx-auto max-w-7xl py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-teal-700">

@@ -19,7 +19,7 @@ export default async function ServiceCategoriesPage() {
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.2),transparent_50%)]"
         />
 
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mx-auto max-w-7xl py-12 sm:px-6 sm:py-16 lg:px-8">
           <Link
             href="/services"
             className="inline-flex items-center gap-2 rounded-lg text-sm font-medium text-slate-300 transition hover:text-white"
@@ -53,7 +53,7 @@ export default async function ServiceCategoriesPage() {
       </section>
 
       {/* Category directory */}
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+      <section className="mx-auto max-w-7xl py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-950">
@@ -149,7 +149,7 @@ export default async function ServiceCategoriesPage() {
 
       {/* Bottom call to action */}
       {categories.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-7xl pb-12 sm:px-6 lg:px-8">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
             <div>
               <h2 className="text-lg font-bold text-slate-950">

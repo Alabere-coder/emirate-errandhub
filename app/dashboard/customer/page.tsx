@@ -143,7 +143,7 @@ export default async function CustomerDashboardPage() {
 
   return (
     <main className="min-h-screen bg-slate-50/80">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-9 lg:px-8">
+      <div className="mx-auto max-w-7xl py-6 sm:px-6 sm:py-9 lg:px-8">
         {/* Welcome banner */}
         <section className="relative isolate overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-9 sm:py-10">
           <div

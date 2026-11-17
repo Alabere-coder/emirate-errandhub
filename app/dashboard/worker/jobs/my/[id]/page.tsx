@@ -119,7 +119,7 @@ export default async function WorkerJobDetailPage({
     console.error("Worker profile lookup error:", workerProfileError);
 
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         <Card>
           <CardContent className="py-10 text-center">
             <p className="text-destructive">
@@ -173,7 +173,7 @@ export default async function WorkerJobDetailPage({
     console.error("Worker job lookup error:", error);
 
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         <Card>
           <CardContent className="py-10 text-center">
             <p className="text-destructive">

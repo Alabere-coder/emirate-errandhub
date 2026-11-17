@@ -106,7 +106,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
   return (
     <main className="min-h-screen bg-slate-50">
       <PublicNavbar />
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <nav
           aria-label="Breadcrumb"

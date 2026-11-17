@@ -569,15 +569,6 @@ upfront_amount,
                     </Link>
                   </Button>
 
-                  {/* <Button
-                    variant="destructive"
-                    className="rounded-xl"
-                    disabled
-                    title="Delete will be enabled after the server action is implemented."
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Request
-                  </Button> */}
                   <DeleteServiceRequestButton requestId={request.id} />
                 </div>
               )}
