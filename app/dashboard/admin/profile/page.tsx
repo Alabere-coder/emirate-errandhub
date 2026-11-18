@@ -50,17 +50,31 @@ export default async function AdminProfilePage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <div className="flex items-center gap-2 text-sm text-emerald-600">
-          <ShieldCheck className="size-4" />
-          <span className="font-medium">Account management</span>
+      <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 p-6 text-white shadow-xl shadow-emerald-950/10 sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-emerald-400/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 left-1/3 size-72 rounded-full bg-teal-300/10 blur-3xl" />
+
+        <div className="relative flex items-center gap-4">
+          <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10">
+            <ShieldCheck className="size-7 text-emerald-100" />
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 text-sm font-medium text-emerald-200">
+              <ShieldCheck className="size-4" />
+              <span>Account management</span>
+            </div>
+
+            <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+              My Profile
+            </h1>
+
+            <p className="mt-2 max-w-xl text-sm leading-6 text-emerald-50/80 sm:text-base">
+              Manage your administrator information, personal details, and
+              account security.
+            </p>
+          </div>
         </div>
-
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">My Profile</h1>
-
-        <p className="mt-2 text-muted-foreground">
-          Manage your administrator information and account security.
-        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[460px_1fr]">

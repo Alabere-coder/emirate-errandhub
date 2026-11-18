@@ -167,14 +167,6 @@ export default async function AdminUserDetailsPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-5xl space-y-8 py-8 sm:px-6 lg:px-8">
-        <Link
-          href="/dashboard/admin/users"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-emerald-700"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to users
-        </Link>
-
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-center gap-4">

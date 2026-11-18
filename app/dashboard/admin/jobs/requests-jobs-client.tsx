@@ -270,13 +270,6 @@ export function RequestsJobsClient({
             progress across Emirate ErrandHub.
           </p>
         </div>
-
-        <Link
-          href="/dashboard/admin"
-          className="inline-flex w-fit items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-        >
-          Back to dashboard
-        </Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

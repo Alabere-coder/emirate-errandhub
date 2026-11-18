@@ -126,14 +126,6 @@ export function UsersPageClient({ users }: Props) {
               Emirate ErrandHub.
             </p>
           </div>
-
-          <Link
-            href="/dashboard/admin"
-            className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Admin dashboard
-          </Link>
         </div>
 
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

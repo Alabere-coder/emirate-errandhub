@@ -225,14 +225,6 @@ export default async function WorkerEarningsPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-7">
-      <Link
-        href="/dashboard/worker"
-        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" />
-        Back to dashboard
-      </Link>
-
       <section className="relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-8">
         <div className="absolute -right-12 -top-12 size-48 rounded-full bg-primary/5 blur-3xl" />
 

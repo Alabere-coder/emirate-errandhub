@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
 import {
   ArrowLeft,
   CalendarDays,
@@ -7,13 +8,20 @@ import {
   ShieldAlert,
   UserRound,
   BriefcaseBusiness,
+  Clock3,
+  CheckCircle2,
+  FileImage,
+  ImageIcon,
+  Hash,
+  Phone,
+  Wallet,
+  ShieldCheck,
+  AlertTriangle,
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import DisputeDecisionForm from "./dispute-decision-form";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +36,18 @@ type DisputeStatus =
   | "resolved"
   | "rejected"
   | "closed";
+
+const STATUS_STYLES: Record<DisputeStatus, string> = {
+  open: "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400",
+  under_review:
+    "border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-400",
+  resolved:
+    "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400",
+  rejected:
+    "border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400",
+  closed:
+    "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+};
 
 function isValidUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -45,11 +65,69 @@ function formatDate(value: string | null) {
   return new Intl.DateTimeFormat("en-NG", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: "Africa/Lagos",
   }).format(date);
 }
 
 function formatStatus(status: string) {
   return status.replaceAll("_", " ");
+}
+
+function getStatusStyle(status: string) {
+  return (
+    STATUS_STYLES[status as DisputeStatus] ??
+    "border-border bg-muted text-muted-foreground"
+  );
+}
+
+function SectionHeading({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ElementType;
+  title: string;
+  description?: string;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="rounded-xl bg-emerald-50 p-2.5 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+        <Icon className="size-5" />
+      </div>
+
+      <div>
+        <h2 className="font-semibold tracking-tight">{title}</h2>
+        {description && (
+          <p className="mt-1 text-sm leading-5 text-muted-foreground">
+            {description}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DetailItem({
+  label,
+  value,
+  mono = false,
+}: {
+  label: string;
+  value: React.ReactNode;
+  mono?: boolean;
+}) {
+  return (
+    <div className="min-w-0">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+      <div
+        className={`mt-1.5 text-sm ${
+          mono ? "break-all font-mono text-xs" : "font-medium"
+        }`}
+      >
+        {value}
+      </div>
+    </div>
+  );
 }
 
 export default async function AdminDisputeDetailPage({ params }: PageProps) {
@@ -156,6 +234,7 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
       "Admin dispute participants query failed:",
       customerResult.error ?? workerResult.error,
     );
+
     throw new Error("Unable to load the job participants.");
   }
 
@@ -174,6 +253,7 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
       "Admin dispute worker profile query failed:",
       workerUserResult.error.message,
     );
+
     throw new Error("Unable to load the worker's information.");
   }
 
@@ -192,282 +272,408 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
   const isFinal = ["resolved", "rejected", "closed"].includes(dispute.status);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <div>
-        <Button variant="ghost" className="-ml-3 mb-3">
-          <Link href="/dashboard/admin/disputes">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to disputes
-          </Link>
-        </Button>
+    <div className="mx-auto max-w-6xl space-y-7 p-4 md:p-6">
+      {/* Page header */}
+      <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 p-6 text-white shadow-lg md:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 right-1/3 size-56 rounded-full bg-teal-300/10 blur-3xl" />
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <ShieldAlert className="h-4 w-4" />
+        <div className="relative space-y-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+              <ShieldCheck className="size-3.5" />
+              Trust & Safety
+            </span>
+
+            <span className="text-xs text-emerald-100/60">
               Admin dispute review
+            </span>
+          </div>
+
+          <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+                {dispute.reason}
+              </h1>
+
+              <p className="mt-3 text-sm text-emerald-100/75">
+                Review the reported issue, supporting evidence, and related
+                transaction details.
+              </p>
+
+              <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-lg border border-white/10 bg-black/10 px-3 py-2">
+                <Hash className="size-3.5 shrink-0 text-emerald-200" />
+                <span className="break-all font-mono text-xs text-emerald-100/80">
+                  {dispute.id}
+                </span>
+              </div>
             </div>
 
-            <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-              {dispute.reason}
-            </h1>
-
-            <p className="mt-2 break-all font-mono text-xs text-slate-500">
-              Dispute ID: {dispute.id}
-            </p>
+            <span
+              className={`inline-flex w-fit shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold capitalize ${getStatusStyle(dispute.status)}`}
+            >
+              <span className="size-1.5 rounded-full bg-current" />
+              {formatStatus(dispute.status)}
+            </span>
           </div>
-
-          <span className="inline-flex w-fit rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium capitalize text-slate-700">
-            {formatStatus(dispute.status)}
-          </span>
         </div>
-      </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5" />
-            Reported issue
-          </CardTitle>
-        </CardHeader>
+      {/* Reported issue */}
+      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+        <div className="border-b bg-muted/20 p-5 md:p-6">
+          <SectionHeading
+            icon={ClipboardList}
+            title="Reported issue"
+            description="Original complaint and administrative record."
+          />
+        </div>
 
-        <CardContent className="space-y-4">
+        <div className="space-y-5 p-5 md:p-6">
           <div>
-            <p className="text-sm font-medium text-slate-700">Reason</p>
-            <p className="mt-1 text-sm text-slate-600">{dispute.reason}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Reason
+            </p>
+            <p className="mt-2 text-base font-semibold">{dispute.reason}</p>
           </div>
 
-          <div>
-            <p className="text-sm font-medium text-slate-700">Description</p>
-            <p className="mt-1 whitespace-pre-wrap text-sm leading-7 text-slate-600">
+          <div className="rounded-xl bg-muted/40 p-4 md:p-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Description
+            </p>
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-foreground/90">
               {dispute.description}
             </p>
           </div>
 
-          <div className="grid gap-4 border-t pt-4 sm:grid-cols-2">
-            <div>
-              <p className="text-xs text-slate-500">Submitted</p>
-              <p className="mt-1 text-sm">{formatDate(dispute.created_at)}</p>
-            </div>
+          <div className="grid gap-5 border-t pt-5 sm:grid-cols-2 lg:grid-cols-4">
+            <DetailItem
+              label="Submitted"
+              value={formatDate(dispute.created_at)}
+            />
 
-            <div>
-              <p className="text-xs text-slate-500">Last updated</p>
-              <p className="mt-1 text-sm">{formatDate(dispute.updated_at)}</p>
-            </div>
+            <DetailItem
+              label="Last updated"
+              value={formatDate(dispute.updated_at)}
+            />
 
-            <div>
-              <p className="text-xs text-slate-500">Opened by</p>
-              <p className="mt-1 break-all font-mono text-xs">
-                {dispute.opened_by}
-              </p>
-            </div>
+            <DetailItem label="Opened by" value={dispute.opened_by} mono />
 
-            <div>
-              <p className="text-xs text-slate-500">Resolved at</p>
-              <p className="mt-1 text-sm">{formatDate(dispute.resolved_at)}</p>
-            </div>
+            <DetailItem
+              label="Resolved at"
+              value={formatDate(dispute.resolved_at)}
+            />
           </div>
 
           {dispute.resolution && (
-            <div className="rounded-xl bg-slate-50 p-4">
-              <p className="text-sm font-medium text-slate-700">
+            <div className="rounded-xl border border-emerald-200/70 bg-emerald-50/50 p-4 dark:border-emerald-900/40 dark:bg-emerald-950/10">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-400">
+                <CheckCircle2 className="size-4" />
                 Recorded resolution
-              </p>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-600">
+              </div>
+
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground/90">
                 {dispute.resolution}
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Dispute evidence</CardTitle>
-          <p className="text-sm text-slate-500">
-            Private evidence submitted by the dispute participants. Image links
-            expire after five minutes.
+      {/* Evidence */}
+      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+        <div className="border-b bg-muted/20 p-5 md:p-6">
+          <SectionHeading
+            icon={FileImage}
+            title="Dispute evidence"
+            description="Private files submitted by the dispute participants."
+          />
+
+          <p className="mt-3 text-xs text-muted-foreground">
+            Signed evidence links expire after five minutes.
           </p>
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-4">
+        <div className="p-5 md:p-6">
           {disputeMediaError ? (
-            <p role="alert" className="text-sm text-red-700">
-              Evidence could not be loaded. Refresh the page and try again.
-            </p>
+            <div
+              role="alert"
+              className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400"
+            >
+              <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+              <p>
+                Evidence could not be loaded. Refresh the page and try again.
+              </p>
+            </div>
           ) : evidence.length === 0 ? (
-            <p className="text-sm text-slate-500">
-              No evidence images have been attached to this dispute.
-            </p>
+            <div className="rounded-xl border border-dashed px-5 py-10 text-center">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                <ImageIcon className="size-6" />
+              </div>
+
+              <p className="mt-3 font-medium">No evidence attached</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                No evidence files have been submitted for this dispute.
+              </p>
+            </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {evidence.map((item) => (
                 <div
                   key={item.id}
-                  className="space-y-3 rounded-xl border border-slate-200 p-3"
+                  className="overflow-hidden rounded-2xl border bg-background"
                 >
-                  {item.signedUrl && item.fileType.startsWith("image/") ? (
-                    <a
-                      href={item.signedUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Open dispute evidence in a new tab"
-                    >
-                      <img
-                        src={item.signedUrl}
-                        alt="Evidence submitted for this dispute"
-                        className="max-h-80 w-full rounded-lg object-contain"
-                        loading="lazy"
-                      />
-                    </a>
-                  ) : (
-                    <p className="text-sm text-slate-500">
-                      This evidence file could not be previewed.
-                    </p>
-                  )}
-
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-xs text-slate-500">
-                      {item.fileType}
-                    </span>
-                    <span className="text-xs text-slate-500">
-                      {formatDate(item.createdAt)}
-                    </span>
+                  <div className="flex min-h-48 items-center justify-center bg-muted/40 p-3">
+                    {item.signedUrl && item.fileType.startsWith("image/") ? (
+                      <a
+                        href={item.signedUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Open dispute evidence in a new tab"
+                        className="block w-full"
+                      >
+                        <img
+                          src={item.signedUrl}
+                          alt="Evidence submitted for this dispute"
+                          className="max-h-80 w-full rounded-lg object-contain"
+                          loading="lazy"
+                        />
+                      </a>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <FileImage className="size-9 text-muted-foreground/60" />
+                        <p className="text-xs text-muted-foreground">
+                          This evidence file could not be previewed.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
-                  {item.signedUrl && (
-                    <a
-                      href={item.signedUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-medium text-emerald-700 underline underline-offset-4"
-                    >
-                      Open full image
-                    </a>
-                  )}
+                  <div className="space-y-3 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="max-w-full break-all text-xs font-medium text-muted-foreground">
+                        {item.fileType}
+                      </span>
+
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(item.createdAt)}
+                      </span>
+                    </div>
+
+                    {item.signedUrl && (
+                      <a
+                        href={item.signedUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 underline-offset-4 hover:underline dark:text-emerald-400"
+                      >
+                        Open full image
+                        <ArrowLeft className="size-3.5 rotate-180" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BriefcaseBusiness className="h-5 w-5" />
-            Related job
-          </CardTitle>
-        </CardHeader>
+      {/* Related job */}
+      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+        <div className="border-b bg-muted/20 p-5 md:p-6">
+          <SectionHeading
+            icon={BriefcaseBusiness}
+            title="Related job"
+            description="Job information associated with this dispute."
+          />
+        </div>
 
-        <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <p className="text-xs text-slate-500">Job reference</p>
-            <p className="mt-1 break-all font-mono text-xs">{job.id}</p>
+        <div className="space-y-5 p-5 md:p-6">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <DetailItem label="Job reference" value={job.id} mono />
+
+            <DetailItem
+              label="Job status"
+              value={
+                <span className="capitalize">{formatStatus(job.status)}</span>
+              }
+            />
+
+            <DetailItem
+              label="Agreed amount"
+              value={
+                <span className="inline-flex items-center gap-2">
+                  <Wallet className="size-4 text-emerald-700 dark:text-emerald-400" />
+                  {job.currency || "NGN"}{" "}
+                  {Number(job.agreed_amount).toLocaleString("en-NG", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              }
+            />
+
+            <DetailItem
+              label="Scheduled date"
+              value={
+                <span className="inline-flex items-center gap-2">
+                  <CalendarDays className="size-4 text-muted-foreground" />
+                  {formatDate(job.scheduled_at)}
+                </span>
+              }
+            />
+
+            <DetailItem
+              label="Job started"
+              value={formatDate(job.started_at)}
+            />
+
+            <DetailItem
+              label="Job completed"
+              value={formatDate(job.completed_at)}
+            />
+
+            <DetailItem label="Request reference" value={job.request_id} mono />
+          </div>
+        </div>
+      </section>
+
+      {/* Participants */}
+      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+        <div className="border-b bg-muted/20 p-5 md:p-6">
+          <SectionHeading
+            icon={UserRound}
+            title="Job participants"
+            description="Customer and worker associated with this job."
+          />
+        </div>
+
+        <div className="grid gap-4 p-5 md:grid-cols-2 md:p-6">
+          <div className="rounded-2xl border p-5">
+            <div className="flex items-center gap-3">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400">
+                <UserRound className="size-5" />
+              </div>
+
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Customer
+                </p>
+                <p className="mt-1 font-semibold">
+                  {participantName(customer)}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-3 border-t pt-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Phone className="size-4" />
+                {customer?.phone || "No phone number"}
+              </div>
+
+              <p className="break-all font-mono text-xs text-muted-foreground">
+                {job.customer_id}
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border p-5">
+            <div className="flex items-center gap-3">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                <BriefcaseBusiness className="size-5" />
+              </div>
+
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Worker
+                </p>
+                <p className="mt-1 font-semibold">{participantName(worker)}</p>
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-3 border-t pt-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Phone className="size-4" />
+                {worker?.phone || "No phone number"}
+              </div>
+
+              <p className="break-all font-mono text-xs text-muted-foreground">
+                {workerProfile?.user_id ?? "Worker profile unavailable"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Administrative notice */}
+      <section
+        className={`rounded-2xl border p-5 ${
+          isFinal
+            ? "border-emerald-200/70 bg-emerald-50/50 dark:border-emerald-900/40 dark:bg-emerald-950/10"
+            : "border-amber-200/70 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/10"
+        }`}
+      >
+        <div className="flex items-start gap-3">
+          <div
+            className={`mt-0.5 rounded-xl p-2 ${
+              isFinal
+                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400"
+                : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+            }`}
+          >
+            {isFinal ? (
+              <CheckCircle2 className="size-5" />
+            ) : (
+              <ShieldAlert className="size-5" />
+            )}
           </div>
 
           <div>
-            <p className="text-xs text-slate-500">Job status</p>
-            <p className="mt-1 text-sm capitalize">
-              {formatStatus(job.status)}
+            <h3
+              className={`font-semibold ${
+                isFinal
+                  ? "text-emerald-950 dark:text-emerald-300"
+                  : "text-amber-950 dark:text-amber-300"
+              }`}
+            >
+              {isFinal
+                ? "This dispute is in a final state"
+                : "Review before deciding"}
+            </h3>
+
+            <p
+              className={`mt-1 text-sm leading-6 ${
+                isFinal
+                  ? "text-emerald-900/80 dark:text-emerald-400/90"
+                  : "text-amber-900/80 dark:text-amber-400/90"
+              }`}
+            >
+              {isFinal
+                ? "This page currently displays the recorded decision. No payment, earnings, or job changes are performed here."
+                : "Review the submitted information and evidence carefully before making a decision. Dispute decisions do not automatically change the job or its payment."}
             </p>
           </div>
+        </div>
+      </section>
 
-          <div>
-            <p className="text-xs text-slate-500">Agreed amount</p>
-            <p className="mt-1 text-sm font-semibold">
-              {job.currency || "NGN"}{" "}
-              {Number(job.agreed_amount).toLocaleString("en-NG", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </p>
-          </div>
+      {/* Decision form */}
+      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+        <div className="border-b bg-muted/20 p-5 md:p-6">
+          <SectionHeading
+            icon={ShieldCheck}
+            title="Administrative decision"
+            description="Review and manage the dispute using the controls below."
+          />
+        </div>
 
-          <div>
-            <p className="text-xs text-slate-500">Scheduled date</p>
-            <p className="mt-1 flex items-center gap-2 text-sm">
-              <CalendarDays className="h-4 w-4 text-slate-400" />
-              {formatDate(job.scheduled_at)}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs text-slate-500">Job started</p>
-            <p className="mt-1 text-sm">{formatDate(job.started_at)}</p>
-          </div>
-
-          <div>
-            <p className="text-xs text-slate-500">Job completed</p>
-            <p className="mt-1 text-sm">{formatDate(job.completed_at)}</p>
-          </div>
-
-          <div>
-            <p className="text-xs text-slate-500">Request reference</p>
-            <p className="mt-1 break-all font-mono text-xs">{job.request_id}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserRound className="h-5 w-5" />
-            Job participants
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="grid gap-6 sm:grid-cols-2">
-          <div className="rounded-xl border p-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-              Customer
-            </p>
-            <p className="mt-2 font-semibold text-slate-900">
-              {participantName(customer)}
-            </p>
-            <p className="mt-1 text-sm text-slate-600">
-              {customer?.phone || "No phone number"}
-            </p>
-            <p className="mt-2 break-all font-mono text-xs text-slate-400">
-              {job.customer_id}
-            </p>
-          </div>
-
-          <div className="rounded-xl border p-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-              Worker
-            </p>
-            <p className="mt-2 font-semibold text-slate-900">
-              {participantName(worker)}
-            </p>
-            <p className="mt-1 text-sm text-slate-600">
-              {worker?.phone || "No phone number"}
-            </p>
-            <p className="mt-2 break-all font-mono text-xs text-slate-400">
-              {workerProfile?.user_id ?? "Worker profile unavailable"}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-amber-200 bg-amber-50/50 shadow-none">
-        <CardContent className="p-4">
-          <p className="font-semibold text-amber-950">
-            {isFinal
-              ? "This dispute is in a final state"
-              : "Review before deciding"}
-          </p>
-          <p className="mt-1 text-sm leading-6 text-amber-900">
-            {isFinal
-              ? "This page currently displays the recorded decision. No payment, earnings, or job changes are performed here."
-              : "This page is currently read-only. The next step will add admin-only status changes and a required written resolution, without automatically changing the job or its payment."}
-          </p>
-        </CardContent>
-      </Card>
-      <DisputeDecisionForm
-        disputeId={dispute.id}
-        currentStatus={dispute.status}
-      />
+        <div className="p-5 md:p-6">
+          <DisputeDecisionForm
+            disputeId={dispute.id}
+            currentStatus={dispute.status}
+          />
+        </div>
+      </section>
     </div>
   );
 }

@@ -38,14 +38,6 @@ export default async function WorkerAvailabilityPage() {
   if (!workerProfile) {
     return (
       <div className="mx-auto w-full max-w-5xl space-y-6 py-6 sm:px-6 lg:py-8">
-        <Link
-          href="/dashboard/worker"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" />
-          Back to dashboard
-        </Link>
-
         <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
           <div className="h-1 bg-primary" />
 
@@ -93,14 +85,6 @@ export default async function WorkerAvailabilityPage() {
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 py-6 sm:px-6 lg:space-y-8 lg:py-8">
-      <Link
-        href="/dashboard/worker"
-        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" />
-        Back to dashboard
-      </Link>
-
       <section className="relative overflow-hidden rounded-2xl border bg-card shadow-sm">
         <div className="absolute inset-x-0 top-0 h-1 bg-primary" />
 

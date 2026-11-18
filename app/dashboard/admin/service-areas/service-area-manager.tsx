@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Building2,
   ChevronRight,
   MapPin,
+  MoreHorizontal,
   Pencil,
   Plus,
   Power,
@@ -43,6 +44,8 @@ export default function ServiceAreaManager({ serviceAreas }: Props) {
     area: ServiceArea;
   } | null>(null);
 
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
   const selectedState = serviceAreas.find(
     (area) => area.id === selectedStateId,
   );
@@ -78,6 +81,33 @@ export default function ServiceAreaManager({ serviceAreas }: Props) {
         return a.name.localeCompare(b.name);
       });
   }, [serviceAreas]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target;
+
+      if (
+        target instanceof Element &&
+        !target.closest("[data-service-area-menu]")
+      ) {
+        setOpenMenuId(null);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpenMenuId(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   const getChildCount = useCallback(
     (id: string) => {
@@ -354,7 +384,7 @@ export default function ServiceAreaManager({ serviceAreas }: Props) {
       )}
 
       {/* LOCATION LIST */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <div className="relative overflow-visible rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div>
             <h2 className="font-semibold text-slate-900 dark:text-white">
@@ -489,39 +519,76 @@ export default function ServiceAreaManager({ serviceAreas }: Props) {
                         </button>
                       )}
 
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => setFormMode({ type: "edit", area })}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                      <div
+                        className="relative flex shrink-0"
+                        data-service-area-menu
                       >
-                        <Pencil className="h-3.5 w-3.5" />
-                        Edit
-                      </button>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() =>
+                            setOpenMenuId((current) =>
+                              current === area.id ? null : area.id,
+                            )
+                          }
+                          aria-label={`Actions for ${area.name}`}
+                          aria-expanded={openMenuId === area.id}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </button>
 
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => handleToggle(area)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                      >
-                        <Power className="h-3.5 w-3.5" />
-                        {busy
-                          ? "Please wait..."
-                          : area.is_active
-                            ? "Deactivate"
-                            : "Activate"}
-                      </button>
+                        {openMenuId === area.id && (
+                          <div
+                            className={`absolute right-0 z-50 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl dark:border-slate-700 dark:bg-slate-900 ${
+                              index === currentAreas.length - 1
+                                ? "bottom-full mb-2"
+                                : "top-full mt-2"
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                setFormMode({ type: "edit", area });
+                              }}
+                              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                            >
+                              <Pencil className="h-4 w-4 text-slate-500" />
+                              Edit location
+                            </button>
 
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => handleDelete(area)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Delete
-                      </button>
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                handleToggle(area);
+                              }}
+                              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                            >
+                              <Power className="h-4 w-4 text-slate-500" />
+                              {area.is_active ? "Deactivate" : "Activate"}
+                            </button>
+
+                            <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
+
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                handleDelete(area);
+                              }}
+                              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm text-red-600 transition hover:bg-red-50 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete location
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -185,24 +185,14 @@ export default async function AdminReviewsPage() {
   return (
     <main className="min-h-full bg-muted/30">
       <div className="mx-auto max-w-7xl space-y-8 sm:p-6 lg:p-8">
-        <div>
-          <Link
-            href="/dashboard/admin"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
-          >
-            <ArrowLeft className="size-4" />
-            Back to dashboard
-          </Link>
-
-          <div className="mt-5">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Reviews Management
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Review customer feedback, moderate inappropriate content, and
-              maintain a record of moderation decisions.
-            </p>
-          </div>
+        <div className="mt-5">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Reviews Management
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            Review customer feedback, moderate inappropriate content, and
+            maintain a record of moderation decisions.
+          </p>
         </div>
 
         {/* Summary cards */}

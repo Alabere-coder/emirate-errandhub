@@ -26,14 +26,6 @@ export default async function WorkerPortfolioPage() {
   if (profileError || !workerProfile) {
     return (
       <div className="mx-auto max-w-5xl space-y-6">
-        <Link
-          href="/dashboard/worker"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" />
-          Back to dashboard
-        </Link>
-
         <section className="overflow-hidden rounded-3xl border bg-card p-6 sm:p-8">
           <div className="flex items-start gap-4">
             <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl border bg-muted/40 text-primary">
@@ -90,14 +82,6 @@ export default async function WorkerPortfolioPage() {
 
     return (
       <div className="mx-auto max-w-5xl space-y-6">
-        <Link
-          href="/dashboard/worker"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" />
-          Back to dashboard
-        </Link>
-
         <section className="rounded-3xl border bg-card p-6 sm:p-8">
           <div className="flex items-center gap-3">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
@@ -138,14 +122,6 @@ export default async function WorkerPortfolioPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <Link
-        href="/dashboard/worker"
-        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" />
-        Back to dashboard
-      </Link>
-
       {/* Page header */}
       <section className="relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-8">
         <div className="absolute -right-12 -top-12 size-48 rounded-full bg-primary/5 blur-3xl" />
