@@ -65,7 +65,7 @@ export default async function HomePage() {
     .limit(8);
 
   return (
-    <div className="min-h-screen overflow-hidden bg-white text-slate-900">
+    <div className="min-h-screen overflow-hidden bg-card text-foreground">
       <PublicNavbar />
 
       <main>
@@ -120,7 +120,7 @@ export default async function HomePage() {
                     )}
 
                     <div className="relative max-w-2xl">
-                      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-100 backdrop-blur">
+                      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-card/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-100 backdrop-blur">
                         <Sparkles className="h-3.5 w-3.5" />
                         Emirate ErrandHub
                       </div>
@@ -142,7 +142,7 @@ export default async function HomePage() {
                               href={safeUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 font-bold text-emerald-900 transition hover:bg-emerald-50"
+                              className="inline-flex items-center gap-2 rounded-xl bg-card px-5 py-3 font-bold text-emerald-900 transition hover:bg-emerald-50"
                             >
                               {campaign.button_text}
                               <ArrowUpRight className="h-4 w-4" />
@@ -150,7 +150,7 @@ export default async function HomePage() {
                           ) : (
                             <Link
                               href={safeUrl}
-                              className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 font-bold text-emerald-900 transition hover:bg-emerald-50"
+                              className="inline-flex items-center gap-2 rounded-xl bg-card px-5 py-3 font-bold text-emerald-900 transition hover:bg-emerald-50"
                             >
                               {campaign.button_text}
                               <ArrowUpRight className="h-4 w-4" />
@@ -173,7 +173,7 @@ export default async function HomePage() {
 
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-2 lg:gap-16 lg:py-28">
             <div>
-              <div className="mb-6 inline-flex items-center gap-2 bg-white/80 px-4 py-2 text-sm font-medium text-emerald-800 shadow-sm">
+              <div className="mb-6 inline-flex items-center gap-2 bg-card/80 px-4 py-2 text-sm font-medium text-emerald-800 shadow-sm">
                 {/* <Sparkles className="h-4 w-4" /> */}
                 Everyday tasks, made easier
               </div>
@@ -183,7 +183,7 @@ export default async function HomePage() {
                 <span className="block text-emerald-700">Taken care of.</span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
+              <p className="mt-6 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
                 From home repairs to cleaning, deliveries, and daily errands,
                 connect with service providers who can help you get things done.
               </p>
@@ -191,16 +191,16 @@ export default async function HomePage() {
               <form
                 action="/services"
                 method="GET"
-                className="mt-8 flex max-w-xl flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-lg shadow-slate-200/50 sm:flex-row"
+                className="mt-8 flex max-w-xl flex-col gap-3 rounded-2xl border   border-border bg-card p-3 shadow-lg shadow-slate-200/50 sm:flex-row"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-3 px-3">
-                  <Search className="h-5 w-5 shrink-0 text-slate-400" />
+                  <Search className="h-5 w-5 shrink-0 text-muted-foreground/70" />
                   <input
                     type="search"
                     name="q"
                     placeholder="What service do you need?"
                     aria-label="Search for a service"
-                    className="w-full bg-transparent py-2 text-sm outline-none placeholder:text-slate-400"
+                    className="w-full bg-transparent py-2 text-sm outline-none placeholder:text-muted-foreground/70"
                   />
                 </div>
 
@@ -213,7 +213,7 @@ export default async function HomePage() {
                 </button>
               </form>
 
-              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500">
+              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
                 <span className="inline-flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-700" />
                   Simple requests
@@ -227,7 +227,7 @@ export default async function HomePage() {
               <div className="mt-9 flex flex-wrap items-center gap-4">
                 <Link
                   href="/signup"
-                  className="inline-flex items-center gap-2 font-semibold text-slate-700 transition hover:text-emerald-800"
+                  className="inline-flex items-center gap-2 font-semibold text-foreground transition hover:text-emerald-800"
                 >
                   Create an account
                   <ArrowUpRight className="h-4 w-4" />
@@ -248,10 +248,10 @@ export default async function HomePage() {
             <div className="relative mx-auto w-full max-w-xl">
               <div className="absolute -inset-4 rounded-[2rem] bg-emerald-200/40 blur-2xl" />
 
-              <div className="relative overflow-hidden rounded-[2rem] border border-white bg-white p-6 shadow-2xl shadow-emerald-950/10 sm:p-8">
+              <div className="relative overflow-hidden rounded-[2rem] border border-white bg-card p-6 shadow-2xl shadow-emerald-950/10 sm:p-8">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-medium text-slate-500">
+                    <p className="text-sm font-medium text-muted-foreground">
                       Your next task
                     </p>
                     <h2 className="mt-1 text-xl font-bold">
@@ -284,20 +284,20 @@ export default async function HomePage() {
                     <Link
                       key={item.title}
                       href="/services"
-                      className="group flex items-center gap-4 rounded-2xl border border-slate-100 p-4 transition hover:border-emerald-200 hover:bg-emerald-50/60"
+                      className="group flex items-center gap-4 rounded-2xl border   border-border p-4 transition hover:border-emerald-200 hover:bg-emerald-50/60"
                     >
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-sm font-bold text-emerald-800 transition group-hover:bg-emerald-100">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-sm font-bold text-emerald-800 transition group-hover:bg-emerald-100">
                         {item.icon}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-slate-900">
+                        <p className="font-semibold text-foreground">
                           {item.title}
                         </p>
-                        <p className="mt-1 text-sm text-slate-500">
+                        <p className="mt-1 text-sm text-muted-foreground">
                           {item.description}
                         </p>
                       </div>
-                      <ArrowUpRight className="h-5 w-5 text-slate-400 transition group-hover:text-emerald-700" />
+                      <ArrowUpRight className="h-5 w-5 text-muted-foreground/70 transition group-hover:text-emerald-700" />
                     </Link>
                   ))}
                 </div>
@@ -306,27 +306,27 @@ export default async function HomePage() {
                   <div className="rounded-2xl bg-emerald-50 p-4">
                     <ShieldCheck className="h-5 w-5 text-emerald-700" />
                     <p className="mt-3 font-semibold">Trusted connections</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
                       Find providers for your needs.
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-slate-50 p-4">
+                  <div className="rounded-2xl bg-muted p-4">
                     <Clock3 className="h-5 w-5 text-emerald-700" />
                     <p className="mt-3 font-semibold">Your schedule</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
                       Request a convenient time.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="absolute -bottom-5 -left-3 hidden items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-lg sm:flex">
+              <div className="absolute -bottom-5 -left-3 hidden items-center gap-3 rounded-2xl border   border-border bg-card p-4 shadow-lg sm:flex">
                 <div className="rounded-xl bg-amber-50 p-2 text-amber-600">
                   <Star className="h-5 w-5 fill-current" />
                 </div>
                 <div>
                   <p className="text-sm font-bold">Quality service</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Help for everyday life
                   </p>
                 </div>
@@ -345,7 +345,7 @@ export default async function HomePage() {
               <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
                 What can we help you with?
               </h2>
-              <p className="mt-4 max-w-2xl leading-7 text-slate-600">
+              <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">
                 Browse services for your home, your work, and your everyday
                 needs.
               </p>
@@ -366,13 +366,13 @@ export default async function HomePage() {
                 <Link
                   key={category.id}
                   href={`/services/${category.slug}`}
-                  className="group rounded-2xl border border-slate-200 bg-white p-6 transition duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-900/5"
+                  className="group rounded-2xl border   border-border bg-card p-6 transition duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-900/5"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800 transition group-hover:bg-emerald-100">
                     <Wrench className="h-6 w-6" />
                   </div>
                   <h3 className="mt-5 font-bold">{category.name}</h3>
-                  <p className="mt-2 line-clamp-2 min-h-10 text-sm leading-5 text-slate-500">
+                  <p className="mt-2 line-clamp-2 min-h-10 text-sm leading-5 text-muted-foreground">
                     {category.description ||
                       "Find help from a service provider."}
                   </p>
@@ -389,7 +389,7 @@ export default async function HomePage() {
                 <Link
                   key={service}
                   href="/services"
-                  className="flex items-center justify-between rounded-2xl border border-slate-200 p-5 font-semibold transition hover:border-emerald-300 hover:bg-emerald-50/50"
+                  className="flex items-center justify-between rounded-2xl border   border-border p-5 font-semibold transition hover:border-emerald-300 hover:bg-emerald-50/50"
                 >
                   {service}
                   <ArrowUpRight className="h-4 w-4 text-emerald-700" />
@@ -419,7 +419,7 @@ export default async function HomePage() {
               {steps.map((step) => (
                 <div
                   key={step.number}
-                  className="rounded-2xl border border-white/10 bg-white/4 p-7"
+                  className="rounded-2xl border border-white/10 bg-card/4 p-7"
                 >
                   <p className="text-sm font-bold tracking-widest text-emerald-400">
                     STEP {step.number}
@@ -458,7 +458,7 @@ export default async function HomePage() {
 
               <Link
                 href="/signup/worker"
-                className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-white px-6 py-3.5 font-bold text-emerald-800 transition hover:bg-emerald-50 md:self-center"
+                className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-card px-6 py-3.5 font-bold text-emerald-800 transition hover:bg-emerald-50 md:self-center"
               >
                 Join as a provider
                 <ArrowRight className="h-4 w-4" />
@@ -472,13 +472,13 @@ export default async function HomePage() {
       <ContactSection />
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-slate-50">
+      <footer className="border-t   border-border bg-muted">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-8 sm:px-8 md:flex-row md:items-center md:justify-between">
           <Link href="/" className="text-xl font-extrabold tracking-tight">
             Emirate<span className="text-emerald-700"> ErrandHub</span>
           </Link>
 
-          <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-600">
+          <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground">
             <Link href="/services" className="hover:text-emerald-800">
               Services
             </Link>
@@ -493,7 +493,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Emirate ErrandHub
           </p>
         </div>

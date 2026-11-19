@@ -65,7 +65,7 @@ function statusStyles(status: DisputeStatus) {
     case "closed":
       return {
         label: "Closed",
-        className: "border-slate-200 bg-slate-100 text-slate-600",
+        className: "  border-border bg-muted text-muted-foreground",
         icon: ShieldCheck,
       };
     default:
@@ -110,10 +110,10 @@ export default async function MyDisputesPage() {
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-600">
               <ShieldAlert className="h-6 w-6" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               My Disputes
             </h1>
-            <p className="mt-2 max-w-lg text-sm leading-6 text-slate-500">
+            <p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
               We couldn't retrieve your dispute information at the moment.
               Please try again.
             </p>
@@ -123,12 +123,12 @@ export default async function MyDisputesPage() {
         <Card className="rounded-2xl border-red-100 shadow-sm">
           <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
             <AlertCircle className="h-9 w-9 text-red-500" />
-            <p className="text-sm font-medium text-slate-700">
+            <p className="text-sm font-medium text-foreground">
               Unable to load your disputes.
             </p>
             <Button
               variant="outline"
-              className="rounded-xl flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700"
+              className="rounded-xl flex items-center gap-2 px-4 py-2 text-sm font-semibold text-foreground"
             >
               <Link href="/dashboard">Back to dashboard</Link>
             </Button>
@@ -170,7 +170,7 @@ export default async function MyDisputesPage() {
               My Disputes
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
               Keep track of reported issues, monitor review progress, and view
               the decisions made by our support team.
             </p>
@@ -178,7 +178,7 @@ export default async function MyDisputesPage() {
 
           <Button
             variant="outline"
-            className="h-10 shrink-0 rounded-xl border-slate-200 bg-white px-4 font-semibold shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+            className="h-10 shrink-0 rounded-xl   border-border bg-card px-4 font-semibold shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
           >
             <Link
               href="/dashboard"
@@ -194,20 +194,20 @@ export default async function MyDisputesPage() {
       {/* Summary cards */}
       {disputeList.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Card className="group rounded-2xl border-slate-200/80 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <Card className="group rounded-2xl   border-border/80 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
             <CardContent className="flex items-center justify-between p-5">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                   Total disputes
                 </p>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+                <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">
                   {disputeList.length}
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   All your reported issues
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition group-hover:bg-emerald-50 group-hover:text-emerald-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground transition group-hover:bg-emerald-50 group-hover:text-emerald-700">
                 <ClipboardList className="h-6 w-6" />
               </div>
             </CardContent>
@@ -219,10 +219,10 @@ export default async function MyDisputesPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-amber-600">
                   Awaiting resolution
                 </p>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+                <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">
                   {openCount + reviewCount}
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Open or under review
                 </p>
               </div>
@@ -238,10 +238,10 @@ export default async function MyDisputesPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
                   Resolved
                 </p>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+                <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">
                   {resolvedCount}
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Resolved or closed disputes
                 </p>
               </div>
@@ -255,17 +255,17 @@ export default async function MyDisputesPage() {
 
       {/* Disputes list */}
       {disputeList.length === 0 ? (
-        <Card className="overflow-hidden rounded-3xl border-slate-200 shadow-sm">
+        <Card className="overflow-hidden rounded-3xl   border-border shadow-sm">
           <CardContent className="flex flex-col items-center px-6 py-14 text-center sm:py-20">
             <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl border border-emerald-100 bg-linear-to-br from-emerald-50 to-teal-50 text-emerald-600 shadow-sm">
               <ShieldAlert className="h-9 w-9" />
             </div>
 
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
               No disputes yet
             </h2>
 
-            <p className="mt-2 max-w-md text-sm leading-7 text-slate-500">
+            <p className="mt-2 max-w-md text-sm leading-7 text-muted-foreground">
               You haven't reported any issues with your jobs. When you open a
               dispute, you can follow its progress and view any recorded
               resolution here.
@@ -283,17 +283,17 @@ export default async function MyDisputesPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold tracking-tight text-slate-900">
+              <h2 className="text-lg font-bold tracking-tight text-foreground">
                 Dispute history
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Your reported issues and their latest updates
               </p>
             </div>
 
             <Badge
               variant="outline"
-              className="rounded-full border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600"
+              className="rounded-full   border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground"
             >
               {disputeList.length}{" "}
               {disputeList.length === 1 ? "record" : "records"}
@@ -307,21 +307,21 @@ export default async function MyDisputesPage() {
             return (
               <Card
                 key={dispute.id}
-                className="group overflow-hidden rounded-2xl border-slate-200/80 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md"
+                className="group overflow-hidden rounded-2xl   border-border/80 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md"
               >
                 <CardContent className="p-0">
                   <div className="p-5 sm:p-6">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="flex min-w-0 gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition group-hover:bg-emerald-50 group-hover:text-emerald-700">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground transition group-hover:bg-emerald-50 group-hover:text-emerald-700">
                           <BriefcaseBusiness className="h-5 w-5" />
                         </div>
 
                         <div className="min-w-0">
-                          <h3 className="font-bold leading-6 text-slate-900">
+                          <h3 className="font-bold leading-6 text-foreground">
                             {dispute.reason}
                           </h3>
-                          <p className="mt-1 break-all text-xs text-slate-400">
+                          <p className="mt-1 break-all text-xs text-muted-foreground/70">
                             Reference: {dispute.id}
                           </p>
                         </div>
@@ -336,21 +336,21 @@ export default async function MyDisputesPage() {
                       </Badge>
                     </div>
 
-                    <div className="mt-5 rounded-xl bg-slate-50/80 p-4">
-                      <p className="whitespace-pre-wrap text-sm leading-7 text-slate-600">
+                    <div className="mt-5 rounded-xl bg-muted/80 p-4">
+                      <p className="whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
                         {dispute.description}
                       </p>
                     </div>
 
-                    <div className="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="mt-5 flex flex-col gap-3 border-t   border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex flex-wrap gap-x-5 gap-y-2">
-                        <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
-                          <CalendarDays className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <CalendarDays className="h-3.5 w-3.5 text-muted-foreground/70" />
                           Opened {formatDate(dispute.created_at)}
                         </span>
 
-                        <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
-                          <ClipboardList className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <ClipboardList className="h-3.5 w-3.5 text-muted-foreground/70" />
                           Updated {formatDate(dispute.updated_at)}
                         </span>
                       </div>

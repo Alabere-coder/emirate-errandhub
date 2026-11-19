@@ -201,7 +201,7 @@ export default async function WorkerDashboardPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-muted">
       <div className="mx-auto max-w-7xl space-y-8 py-8 sm:px-6 lg:px-8">
         {/* Welcome header */}
         <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -210,11 +210,11 @@ export default async function WorkerDashboardPage() {
               Worker workspace
             </p>
 
-            <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
+            <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">
               Welcome back, {firstName}!
             </h1>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
               Find new opportunities, manage your quotations, and keep track of
               your jobs in one place.
             </p>
@@ -222,7 +222,7 @@ export default async function WorkerDashboardPage() {
 
           <Link
             href="/dashboard/worker/profile"
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border   border-border bg-card px-4 text-sm font-medium text-foreground transition hover:bg-muted"
           >
             <UserRound className="h-4 w-4" />
             My profile
@@ -249,7 +249,7 @@ export default async function WorkerDashboardPage() {
 
             <Link
               href="/dashboard/worker/jobs"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-50"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-card px-5 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-50"
             >
               Browse available jobs
               <ArrowRight className="h-4 w-4" />
@@ -263,10 +263,10 @@ export default async function WorkerDashboardPage() {
         {/* Summary statistics */}
         <section>
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-foreground">
               Your activity
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               A quick overview of your work on Emirate ErrandHub.
             </p>
           </div>
@@ -279,7 +279,7 @@ export default async function WorkerDashboardPage() {
                 <Link
                   key={stat.title}
                   href={stat.href}
-                  className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md"
+                  className="group rounded-2xl border   border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div
@@ -291,15 +291,15 @@ export default async function WorkerDashboardPage() {
                     <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-emerald-700" />
                   </div>
 
-                  <p className="mt-5 text-3xl font-bold tracking-tight text-slate-900">
+                  <p className="mt-5 text-3xl font-bold tracking-tight text-foreground">
                     {stat.value.toLocaleString()}
                   </p>
 
-                  <h3 className="mt-1 text-sm font-semibold text-slate-800">
+                  <h3 className="mt-1 text-sm font-semibold text-foreground">
                     {stat.title}
                   </h3>
 
-                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
                     {stat.description}
                   </p>
                 </Link>
@@ -312,10 +312,10 @@ export default async function WorkerDashboardPage() {
         <section>
           <div className="mb-4 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-foreground">
                 Active jobs
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Keep track of work assigned to you.
               </p>
             </div>
@@ -342,19 +342,19 @@ export default async function WorkerDashboardPage() {
                   <Link
                     key={job.id}
                     href={`/dashboard/worker/jobs/my/${job.id}`}
-                    className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md sm:p-6"
+                    className="group rounded-2xl border   border-border bg-card p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md sm:p-6"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground/70">
                           Active job
                         </p>
 
-                        <h3 className="mt-1 truncate font-semibold text-slate-900">
+                        <h3 className="mt-1 truncate font-semibold text-foreground">
                           {request?.title || "Service job"}
                         </h3>
 
-                        <p className="mt-2 text-lg font-bold text-slate-900">
+                        <p className="mt-2 text-lg font-bold text-foreground">
                           {formatCurrency(job.agreed_amount, job.currency)}
                         </p>
                       </div>
@@ -377,12 +377,12 @@ export default async function WorkerDashboardPage() {
                     </div>
 
                     {job.scheduled_at ? (
-                      <div className="mt-5 flex items-center gap-2 border-t border-slate-100 pt-4 text-sm text-slate-500">
+                      <div className="mt-5 flex items-center gap-2 border-t   border-border pt-4 text-sm text-muted-foreground">
                         <CalendarClock className="h-4 w-4 shrink-0" />
                         <span>Scheduled: {formatDate(job.scheduled_at)}</span>
                       </div>
                     ) : (
-                      <div className="mt-5 flex items-center gap-2 border-t border-slate-100 pt-4 text-sm text-slate-500">
+                      <div className="mt-5 flex items-center gap-2 border-t   border-border pt-4 text-sm text-muted-foreground">
                         <Clock3 className="h-4 w-4 shrink-0" />
                         <span>Schedule not set</span>
                       </div>
@@ -397,16 +397,16 @@ export default async function WorkerDashboardPage() {
               })}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-card px-6 py-10 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
                 <ClipboardList className="h-6 w-6" />
               </div>
 
-              <h3 className="mt-4 font-semibold text-slate-900">
+              <h3 className="mt-4 font-semibold text-foreground">
                 No active jobs yet
               </h3>
 
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 When a customer accepts your quotation and a job is assigned to
                 you, it will appear here.
               </p>
@@ -426,40 +426,42 @@ export default async function WorkerDashboardPage() {
         <section className="grid gap-4 sm:grid-cols-2">
           <Link
             href="/dashboard/worker/jobs"
-            className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-emerald-200 hover:shadow-sm"
+            className="flex items-center gap-4 rounded-2xl border   border-border bg-card p-5 transition hover:border-emerald-200 hover:shadow-sm"
           >
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
               <Search className="h-5 w-5" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-slate-900">Explore requests</h3>
-              <p className="mt-1 text-sm text-slate-500">
+              <h3 className="font-semibold text-foreground">
+                Explore requests
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
                 Find work that matches your skills.
               </p>
             </div>
 
-            <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
+            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/70" />
           </Link>
 
           <Link
             href="/dashboard/worker/profile"
-            className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-emerald-200 hover:shadow-sm"
+            className="flex items-center gap-4 rounded-2xl border   border-border bg-card p-5 transition hover:border-emerald-200 hover:shadow-sm"
           >
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
               <UserRound className="h-5 w-5" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-slate-900">
+              <h3 className="font-semibold text-foreground">
                 Update your profile
               </h3>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Keep your service information up to date.
               </p>
             </div>
 
-            <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
+            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/70" />
           </Link>
         </section>
       </div>

@@ -25,7 +25,7 @@ export default async function NewDiscountCodePage() {
 
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex size-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 shadow-inner">
+            <div className="mb-4 inline-flex size-12 items-center justify-center rounded-2xl border border-white/15 bg-card/10 shadow-inner">
               <TicketPercent className="size-6" />
             </div>
 
@@ -44,7 +44,7 @@ export default async function NewDiscountCodePage() {
             </p>
           </div>
 
-          <div className="hidden shrink-0 items-center justify-center rounded-3xl border border-white/15 bg-white/10 p-5 sm:flex">
+          <div className="hidden shrink-0 items-center justify-center rounded-3xl border border-white/15 bg-card/10 p-5 sm:flex">
             <TicketPercent
               className="size-16 text-emerald-100"
               strokeWidth={1.2}

@@ -46,14 +46,14 @@ const enquiryTypes = [
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-card">
       <PublicNavbar />
 
-      <section className="bg-slate-50">
+      <section className="bg-muted">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-emerald-800"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-emerald-800"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to home
@@ -68,7 +68,7 @@ export default function ContactPage() {
               We'd love to hear from you.
             </h1>
 
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-600">
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
               Whether you're looking for assistance, have a question about our
               services, or want to explore a partnership, our contact channels
               are open to you.
@@ -79,7 +79,7 @@ export default function ContactPage() {
 
       <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-slate-200 p-7 shadow-sm sm:p-9">
+          <div className="rounded-3xl border   border-border p-7 shadow-sm sm:p-9">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
               <Mail className="h-6 w-6" />
             </div>
@@ -88,7 +88,7 @@ export default function ContactPage() {
               Send us an email
             </h2>
 
-            <p className="mt-3 leading-7 text-slate-600">
+            <p className="mt-3 leading-7 text-muted-foreground">
               For detailed enquiries, complaints, feedback, and partnership
               proposals, send us an email.
             </p>
@@ -110,7 +110,7 @@ export default function ContactPage() {
             </a>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 p-7 shadow-sm sm:p-9">
+          <div className="rounded-3xl border   border-border p-7 shadow-sm sm:p-9">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
               <MessageCircle className="h-6 w-6" />
             </div>
@@ -119,12 +119,12 @@ export default function ContactPage() {
               Chat with us on WhatsApp
             </h2>
 
-            <p className="mt-3 leading-7 text-slate-600">
+            <p className="mt-3 leading-7 text-muted-foreground">
               Prefer a conversation? Reach us on WhatsApp for questions about
               bookings, payments, accounts, and provider assistance.
             </p>
 
-            <p className="mt-6 font-semibold text-slate-900">
+            <p className="mt-6 font-semibold text-foreground">
               +234 813 032 4506
             </p>
 
@@ -149,11 +149,11 @@ export default function ContactPage() {
 
       <PublicSupportForm />
 
-      <section className="border-y border-slate-100 bg-slate-50">
+      <section className="border-y   border-border bg-muted">
         {/* Keep your existing How can we help section here. */}
       </section>
 
-      <section className="border-y border-slate-100 bg-slate-50">
+      <section className="border-y   border-border bg-muted">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">
@@ -164,7 +164,7 @@ export default function ContactPage() {
               We're ready to listen.
             </h2>
 
-            <p className="mt-4 leading-7 text-slate-600">
+            <p className="mt-4 leading-7 text-muted-foreground">
               Choose the topic that best describes your enquiry. Our contact
               channels are available for all these needs.
             </p>
@@ -177,7 +177,7 @@ export default function ContactPage() {
               return (
                 <div
                   key={item.title}
-                  className="rounded-2xl border border-slate-200 bg-white p-6"
+                  className="rounded-2xl border   border-border bg-card p-6"
                 >
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                     <Icon className="h-5 w-5" />
@@ -187,7 +187,7 @@ export default function ContactPage() {
                     {item.title}
                   </h3>
 
-                  <p className="mt-2 text-sm leading-7 text-slate-600">
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
                     {item.description}
                   </p>
                 </div>
@@ -199,7 +199,7 @@ export default function ContactPage() {
 
       <section className="mx-auto max-w-5xl px-5 py-16 sm:px-8 lg:py-20">
         <div className="rounded-3xl bg-emerald-950 px-6 py-10 text-center text-white sm:px-10">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-emerald-200">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-card/10 text-emerald-200">
             <ShieldCheck className="h-6 w-6" />
           </div>
 
@@ -214,7 +214,7 @@ export default function ContactPage() {
 
           <Link
             href="/login?next=%2Fdashboard%2Fsupport"
-            className="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-50"
+            className="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-card px-6 py-3.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-50"
           >
             Visit Support Center
             <ArrowRight className="h-4 w-4" />
@@ -222,8 +222,8 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-100">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-500 sm:px-8 md:flex-row md:items-center md:justify-between">
+      <footer className="border-t   border-border">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-muted-foreground sm:px-8 md:flex-row md:items-center md:justify-between">
           <p>
             © {new Date().getFullYear()} Emirate ErrandHub. All rights reserved.
           </p>

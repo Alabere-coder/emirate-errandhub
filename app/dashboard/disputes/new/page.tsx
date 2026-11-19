@@ -78,13 +78,13 @@ export default async function NewDisputePage({ searchParams }: PageProps) {
             <ShieldAlert className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Open a dispute
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Job reference: {job.id}
             </p>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
               Submit an issue for an administrator to review. Provide enough
               detail to help us understand what happened.
             </p>

@@ -24,7 +24,7 @@ export default async function NewPopupPage() {
 
           <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
                 <Sparkles className="size-3.5" />
                 Popup campaign management
               </div>
@@ -39,7 +39,7 @@ export default async function NewPopupPage() {
               </p>
             </div>
 
-            <div className="hidden size-20 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 shadow-inner sm:flex">
+            <div className="hidden size-20 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-card/10 shadow-inner sm:flex">
               <Megaphone className="size-10 text-emerald-100" />
             </div>
           </div>

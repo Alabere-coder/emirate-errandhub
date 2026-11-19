@@ -7,7 +7,7 @@ const statusStyles: Record<string, string> = {
   open: "bg-blue-50 text-blue-700",
   in_progress: "bg-amber-50 text-amber-700",
   responded: "bg-emerald-50 text-emerald-700",
-  closed: "bg-slate-100 text-slate-600",
+  closed: "bg-muted text-muted-foreground",
 };
 
 const statusLabels: Record<string, string> = {
@@ -74,7 +74,7 @@ export default async function PublicSupportPage() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Inbox className="h-4 w-4" />
             Admin / Public Support
           </div>
@@ -83,13 +83,13 @@ export default async function PublicSupportPage() {
             Public Support Inbox
           </h1>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Manage enquiries submitted by visitors through the public Contact
             page. Replies are sent directly to visitors by email.
           </p>
         </div>
 
-        <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700">
+        <div className="inline-flex w-fit items-center gap-2 rounded-xl border   border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground">
           <MessageSquareText className="h-4 w-4 text-emerald-700" />
           {allEnquiries.length}{" "}
           {allEnquiries.length === 1 ? "Enquiry" : "Enquiries"}
@@ -97,50 +97,54 @@ export default async function PublicSupportPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <p className="text-sm font-medium text-slate-500">Total enquiries</p>
+        <div className="rounded-2xl border   border-border bg-card p-5">
+          <p className="text-sm font-medium text-muted-foreground">
+            Total enquiries
+          </p>
           <p className="mt-2 text-3xl font-bold text-slate-950">
             {allEnquiries.length}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <p className="text-sm font-medium text-slate-500">Open</p>
+        <div className="rounded-2xl border   border-border bg-card p-5">
+          <p className="text-sm font-medium text-muted-foreground">Open</p>
           <p className="mt-2 text-3xl font-bold text-blue-700">{openCount}</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <p className="text-sm font-medium text-slate-500">In progress</p>
+        <div className="rounded-2xl border   border-border bg-card p-5">
+          <p className="text-sm font-medium text-muted-foreground">
+            In progress
+          </p>
           <p className="mt-2 text-3xl font-bold text-amber-600">
             {inProgressCount}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <p className="text-sm font-medium text-slate-500">Responded</p>
+        <div className="rounded-2xl border   border-border bg-card p-5">
+          <p className="text-sm font-medium text-muted-foreground">Responded</p>
           <p className="mt-2 text-3xl font-bold text-emerald-700">
             {respondedCount}
           </p>
         </div>
       </div>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
+      <section className="overflow-hidden rounded-2xl border   border-border bg-card">
+        <div className="border-b   border-border px-5 py-5 sm:px-6">
           <h2 className="font-bold text-slate-950">All enquiries</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Newest enquiries appear first.
           </p>
         </div>
 
         {allEnquiries.length === 0 ? (
           <div className="px-6 py-16 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100">
-              <Inbox className="h-7 w-7 text-slate-500" />
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
+              <Inbox className="h-7 w-7 text-muted-foreground" />
             </div>
 
             <h3 className="mt-4 font-bold text-slate-950">No enquiries yet</h3>
 
-            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
               Public messages submitted through your Contact page will appear
               here.
             </p>
@@ -151,7 +155,7 @@ export default async function PublicSupportPage() {
               <Link
                 key={enquiry.id}
                 href={`/dashboard/admin/public-support/${enquiry.id}`}
-                className="group block px-5 py-5 transition hover:bg-slate-50 sm:px-6"
+                className="group block px-5 py-5 transition hover:bg-muted sm:px-6"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
@@ -163,15 +167,15 @@ export default async function PublicSupportPage() {
                       <span
                         className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
                           statusStyles[enquiry.status] ??
-                          "bg-slate-100 text-slate-600"
+                          "bg-muted text-muted-foreground"
                         }`}
                       >
                         {statusLabels[enquiry.status] ?? enquiry.status}
                       </span>
                     </div>
 
-                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600">
-                      <span className="font-medium text-slate-800">
+                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+                      <span className="font-medium text-foreground">
                         {enquiry.full_name}
                       </span>
 
@@ -181,11 +185,11 @@ export default async function PublicSupportPage() {
                       </span>
                     </div>
 
-                    <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500">
+                    <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">
                       {enquiry.message}
                     </p>
 
-                    <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                    <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                       <span>
                         {categoryLabels[enquiry.category] ?? enquiry.category}
                       </span>

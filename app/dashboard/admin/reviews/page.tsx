@@ -78,7 +78,6 @@ export default async function AdminReviewsPage() {
   }
 
   const reviews = (reviewsResult.data ?? []) as ReviewRow[];
-
   const reviewIds = reviews.map((review) => review.id);
 
   const { data: votes, error: votesError } = reviewIds.length
@@ -170,7 +169,6 @@ export default async function AdminReviewsPage() {
   );
 
   const visibleCount = reviews.filter((review) => review.is_visible).length;
-
   const hiddenCount = reviews.length - visibleCount;
 
   const averageRating =
@@ -182,63 +180,88 @@ export default async function AdminReviewsPage() {
 
   const moderationLogs = logsResult.data ?? [];
 
+  const metrics = [
+    {
+      label: "Total reviews",
+      value: reviews.length.toLocaleString("en-NG"),
+      icon: MessageSquareText,
+      iconStyle: "bg-primary/10 text-primary",
+    },
+    {
+      label: "Public reviews",
+      value: visibleCount.toLocaleString("en-NG"),
+      icon: Eye,
+      iconStyle: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      label: "Hidden reviews",
+      value: hiddenCount.toLocaleString("en-NG"),
+      icon: EyeOff,
+      iconStyle: "bg-muted text-muted-foreground",
+    },
+    {
+      label: "Public average",
+      value: averageRating !== null ? `${averageRating.toFixed(1)} / 5` : "—",
+      icon: Star,
+      iconStyle: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    },
+  ];
+
   return (
     <main className="min-h-full bg-muted/30">
-      <div className="mx-auto max-w-7xl space-y-8 sm:p-6 lg:p-8">
-        <div className="mt-5">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Reviews Management
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Review customer feedback, moderate inappropriate content, and
-            maintain a record of moderation decisions.
-          </p>
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 lg:px-8">
+        {/* Page heading */}
+        <div className="space-y-3">
+          <Link
+            href="/dashboard/admin"
+            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-4" />
+            Back to dashboard
+          </Link>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="mb-2 flex items-center gap-2 text-sm font-medium text-primary">
+                <MessageSquareText className="size-4" />
+                Customer feedback
+              </div>
+
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Reviews Management
+              </h1>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                Review customer feedback, moderate inappropriate content, and
+                maintain a record of moderation decisions.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Summary cards */}
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {[
-            {
-              label: "Total reviews",
-              value: reviews.length.toLocaleString("en-NG"),
-              icon: MessageSquareText,
-            },
-            {
-              label: "Public reviews",
-              value: visibleCount.toLocaleString("en-NG"),
-              icon: Eye,
-            },
-            {
-              label: "Hidden reviews",
-              value: hiddenCount.toLocaleString("en-NG"),
-              icon: EyeOff,
-            },
-            {
-              label: "Public average",
-              value:
-                averageRating !== null
-                  ? `${averageRating.toFixed(1)} / 5`
-                  : "—",
-              icon: Star,
-            },
-          ].map((metric) => {
+          {metrics.map((metric) => {
             const Icon = metric.icon;
 
             return (
               <div
                 key={metric.label}
-                className="rounded-2xl border bg-card p-5"
+                className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-colors"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-medium text-muted-foreground">
                     {metric.label}
                   </p>
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+
+                  <div
+                    className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${metric.iconStyle}`}
+                  >
                     <Icon className="size-5" />
                   </div>
                 </div>
 
-                <p className="mt-4 text-3xl font-bold tracking-tight tabular-nums">
+                <p className="mt-4 text-3xl font-bold tracking-tight tabular-nums text-foreground">
                   {metric.value}
                 </p>
               </div>
@@ -247,9 +270,15 @@ export default async function AdminReviewsPage() {
         </section>
 
         {/* Reviews list */}
-        <section className="overflow-hidden rounded-2xl border bg-card">
-          <div className="border-b p-5 sm:p-6">
-            <h2 className="font-bold">All customer reviews</h2>
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="border-b border-border p-5 sm:p-6">
+            <div className="flex items-center gap-2">
+              <MessageSquareText className="size-5 text-primary" />
+              <h2 className="font-bold text-foreground">
+                All customer reviews
+              </h2>
+            </div>
+
             <p className="mt-1 text-sm text-muted-foreground">
               Hide reviews that violate your review policy or restore reviews
               that should be public.
@@ -263,14 +292,20 @@ export default async function AdminReviewsPage() {
             </div>
           ) : reviews.length === 0 ? (
             <div className="px-6 py-16 text-center">
-              <MessageSquareText className="mx-auto size-10 text-muted-foreground/50" />
-              <h3 className="mt-4 font-semibold">No reviews yet</h3>
+              <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-muted">
+                <MessageSquareText className="size-7 text-muted-foreground" />
+              </div>
+
+              <h3 className="mt-4 font-semibold text-foreground">
+                No reviews yet
+              </h3>
+
               <p className="mt-1 text-sm text-muted-foreground">
                 Customer reviews will appear here when they are submitted.
               </p>
             </div>
           ) : (
-            <div className="divide-y">
+            <div className="divide-y divide-border">
               {reviews.map((review) => {
                 const workerUserId = workerUserByProfileId.get(
                   review.worker_id,
@@ -284,28 +319,42 @@ export default async function AdminReviewsPage() {
                   customerNames.get(review.customer_id) ?? "Customer";
 
                 return (
-                  <article key={review.id} className="space-y-5 p-5 sm:p-6">
+                  <article
+                    key={review.id}
+                    className="space-y-5 p-5 transition-colors hover:bg-muted/20 sm:p-6"
+                  >
                     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-semibold">{workerName}</h3>
+                          <h3 className="font-semibold text-foreground">
+                            {workerName}
+                          </h3>
 
                           <span
-                            className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
                               review.is_visible
                                 ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                                 : "bg-muted text-muted-foreground"
                             }`}
                           >
+                            {review.is_visible ? (
+                              <Eye className="size-3" />
+                            ) : (
+                              <EyeOff className="size-3" />
+                            )}
+
                             {review.is_visible ? "Public" : "Hidden"}
                           </span>
                         </div>
 
                         <p className="mt-1 text-sm text-muted-foreground">
-                          Reviewed by {customerName}
+                          Reviewed by{" "}
+                          <span className="font-medium text-foreground">
+                            {customerName}
+                          </span>
                         </p>
 
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="mt-2 break-all text-xs text-muted-foreground">
                           Job: {review.job_id}
                         </p>
 
@@ -329,25 +378,25 @@ export default async function AdminReviewsPage() {
                           />
                         ))}
 
-                        <span className="ml-1 text-sm font-semibold">
+                        <span className="ml-1 text-sm font-semibold text-foreground">
                           {review.rating}/5
                         </span>
                       </div>
                     </div>
 
                     <div className="space-y-4">
-                      <div className="rounded-xl bg-muted/40 p-4">
-                        <p className="whitespace-pre-line text-sm leading-7">
+                      <div className="rounded-xl border border-border/70 bg-muted/40 p-4">
+                        <p className="whitespace-pre-line text-sm leading-7 text-foreground">
                           {review.comment?.trim() ||
                             "No written comment provided."}
                         </p>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
                         <span className="inline-flex items-center gap-2">
                           <ThumbsUp className="size-4" />
                           Helpful
-                          <span className="font-semibold text-foreground">
+                          <span className="font-semibold tabular-nums text-foreground">
                             {voteCounts.get(review.id)?.helpful ?? 0}
                           </span>
                         </span>
@@ -355,16 +404,17 @@ export default async function AdminReviewsPage() {
                         <span className="inline-flex items-center gap-2">
                           <ThumbsDown className="size-4" />
                           Not helpful
-                          <span className="font-semibold text-foreground">
+                          <span className="font-semibold tabular-nums text-foreground">
                             {voteCounts.get(review.id)?.notHelpful ?? 0}
                           </span>
                         </span>
                       </div>
                     </div>
 
+                    {/* Moderation action */}
                     <form
                       action={moderateReview}
-                      className="grid gap-3 rounded-xl border p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end"
+                      className="grid gap-4 rounded-xl border border-border bg-muted/20 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end"
                     >
                       <input type="hidden" name="review_id" value={review.id} />
 
@@ -374,10 +424,10 @@ export default async function AdminReviewsPage() {
                         value={review.is_visible ? "false" : "true"}
                       />
 
-                      <div>
+                      <div className="min-w-0">
                         <label
                           htmlFor={`reason-${review.id}`}
-                          className="mb-2 block text-sm font-medium"
+                          className="mb-2 block text-sm font-medium text-foreground"
                         >
                           {review.is_visible
                             ? "Reason for hiding this review"
@@ -396,16 +446,16 @@ export default async function AdminReviewsPage() {
                               ? "Explain the policy violation..."
                               : "Explain why this review should be restored..."
                           }
-                          className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                          className="w-full resize-y rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
                         />
                       </div>
 
                       <button
                         type="submit"
-                        className={`inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition ${
+                        className={`inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                           review.is_visible
-                            ? "bg-destructive text-destructive-foreground hover:opacity-90"
-                            : "bg-primary text-primary-foreground hover:opacity-90"
+                            ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            : "bg-primary text-primary-foreground hover:bg-primary/90"
                         }`}
                       >
                         {review.is_visible ? (
@@ -425,9 +475,15 @@ export default async function AdminReviewsPage() {
         </section>
 
         {/* Recent moderation history */}
-        <section className="overflow-hidden rounded-2xl border bg-card">
-          <div className="border-b p-5 sm:p-6">
-            <h2 className="font-bold">Recent moderation history</h2>
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="border-b border-border p-5 sm:p-6">
+            <div className="flex items-center gap-2">
+              <Eye className="size-5 text-primary" />
+              <h2 className="font-bold text-foreground">
+                Recent moderation history
+              </h2>
+            </div>
+
             <p className="mt-1 text-sm text-muted-foreground">
               The latest recorded hide and restore actions.
             </p>
@@ -439,30 +495,58 @@ export default async function AdminReviewsPage() {
               permissions.
             </p>
           ) : moderationLogs.length === 0 ? (
-            <p className="p-6 text-sm text-muted-foreground">
-              No moderation actions have been recorded yet.
-            </p>
+            <div className="px-6 py-12 text-center">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-muted">
+                <Eye className="size-6 text-muted-foreground" />
+              </div>
+
+              <p className="mt-3 text-sm font-medium text-foreground">
+                No moderation actions yet
+              </p>
+
+              <p className="mt-1 text-sm text-muted-foreground">
+                Hide or restore a review to see its moderation record here.
+              </p>
+            </div>
           ) : (
-            <div className="divide-y">
+            <div className="divide-y divide-border">
               {moderationLogs.map((log) => (
                 <div
                   key={log.id}
-                  className="flex flex-col gap-2 p-5 sm:flex-row sm:items-start sm:justify-between"
+                  className="flex flex-col gap-3 p-5 transition-colors hover:bg-muted/20 sm:flex-row sm:items-start sm:justify-between"
                 >
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold">
-                      {log.new_visibility ? "Review restored" : "Review hidden"}
-                    </p>
+                  <div className="min-w-0 space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={`flex size-7 items-center justify-center rounded-lg ${
+                          log.new_visibility
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                            : "bg-destructive/10 text-destructive"
+                        }`}
+                      >
+                        {log.new_visibility ? (
+                          <Eye className="size-4" />
+                        ) : (
+                          <EyeOff className="size-4" />
+                        )}
+                      </span>
 
-                    <p className="mt-1 text-sm text-muted-foreground">
+                      <p className="text-sm font-semibold text-foreground">
+                        {log.new_visibility
+                          ? "Review restored"
+                          : "Review hidden"}
+                      </p>
+                    </div>
+
+                    <p className="text-sm leading-6 text-muted-foreground">
                       {log.reason}
                     </p>
 
-                    <p className="mt-1 break-all text-xs text-muted-foreground">
+                    <p className="break-all text-xs text-muted-foreground">
                       Review ID: {log.review_id}
                     </p>
 
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="break-all text-xs text-muted-foreground">
                       Admin ID: {log.admin_id}
                     </p>
                   </div>

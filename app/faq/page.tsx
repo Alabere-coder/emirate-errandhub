@@ -17,7 +17,7 @@ export const metadata = {
 
 export default function FAQPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-screen bg-card text-foreground">
       <PublicNavbar />
 
       <main>
@@ -26,7 +26,7 @@ export default function FAQPage() {
           <div className="absolute -bottom-32 -left-20 -z-10 h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
 
           <div className="mx-auto max-w-4xl text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-emerald-200">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-card/10 text-emerald-200">
               <MessageCircleQuestion className="h-8 w-8" />
             </div>
 
@@ -48,27 +48,27 @@ export default function FAQPage() {
 
         <section className="mx-auto max-w-5xl px-5 py-16 sm:px-8 lg:py-20">
           <div className="mb-10 grid gap-4 sm:grid-cols-2">
-            <div className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+            <div className="flex gap-4 rounded-2xl border   border-border bg-card p-5">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                 <ShieldCheck className="h-6 w-6" />
               </div>
 
               <div>
                 <h2 className="font-bold">For customers and providers</h2>
-                <p className="mt-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
                   Find guidance for every stage of using the platform.
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+            <div className="flex gap-4 rounded-2xl border   border-border bg-card p-5">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                 <MessageCircleQuestion className="h-6 w-6" />
               </div>
 
               <div>
                 <h2 className="font-bold">Searchable answers</h2>
-                <p className="mt-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
                   Search by topic or browse questions by category.
                 </p>
               </div>
@@ -109,13 +109,13 @@ export default function FAQPage() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 bg-slate-50">
+      <footer className="border-t   border-border bg-muted">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-7 sm:px-8 md:flex-row md:items-center md:justify-between">
           <Link href="/" className="text-lg font-extrabold">
             Emirate<span className="text-emerald-700"> ErrandHub</span>
           </Link>
 
-          <div className="flex flex-wrap gap-5 text-sm text-slate-600">
+          <div className="flex flex-wrap gap-5 text-sm text-muted-foreground">
             <Link href="/" className="hover:text-emerald-800">
               Home
             </Link>
@@ -130,7 +130,7 @@ export default function FAQPage() {
             </Link>
           </div>
 
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Emirate ErrandHub
           </p>
         </div>

@@ -44,7 +44,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
       {!isPreview && (
         <div className="mx-auto max-w-2xl">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground/70" />
 
             <input
               type="search"
@@ -52,7 +52,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search questions or topics..."
               aria-label="Search frequently asked questions"
-              className="h-14 w-full rounded-2xl border border-slate-200 bg-white pl-12 pr-4 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10"
+              className="h-14 w-full rounded-2xl border   border-border bg-card pl-12 pr-4 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground/70 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10"
             />
           </div>
         </div>
@@ -66,7 +66,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
             activeCategory === "All"
               ? "bg-emerald-700 text-white"
-              : "border border-slate-200 bg-white text-slate-600 hover:border-emerald-300 hover:text-emerald-800"
+              : "border   border-border bg-card text-muted-foreground hover:border-emerald-300 hover:text-emerald-800"
           }`}
         >
           All questions
@@ -81,7 +81,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
             className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
               activeCategory === category
                 ? "bg-emerald-700 text-white"
-                : "border border-slate-200 bg-white text-slate-600 hover:border-emerald-300 hover:text-emerald-800"
+                : "border   border-border bg-card text-muted-foreground hover:border-emerald-300 hover:text-emerald-800"
             }`}
           >
             {category}
@@ -99,7 +99,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
               className={`overflow-hidden rounded-2xl border transition ${
                 isExpanded
                   ? "border-emerald-200 bg-emerald-50/40"
-                  : "border-slate-200 bg-white hover:border-emerald-200"
+                  : "  border-border bg-card hover:border-emerald-200"
               }`}
             >
               <button
@@ -109,7 +109,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
                 aria-controls={`faq-answer-${item.id}`}
                 className="flex w-full items-center justify-between gap-5 px-5 py-5 text-left sm:px-6"
               >
-                <span className="font-semibold leading-6 text-slate-900">
+                <span className="font-semibold leading-6 text-foreground">
                   {item.question}
                 </span>
 
@@ -117,7 +117,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition ${
                     isExpanded
                       ? "rotate-180 bg-emerald-100 text-emerald-800"
-                      : "bg-slate-100 text-slate-500"
+                      : "bg-muted text-muted-foreground"
                   }`}
                 >
                   <ChevronDown className="h-5 w-5" />
@@ -129,7 +129,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
                   id={`faq-answer-${item.id}`}
                   className="border-t border-emerald-100 px-5 pb-5 pt-4 sm:px-6"
                 >
-                  <p className="text-sm leading-7 text-slate-600">
+                  <p className="text-sm leading-7 text-muted-foreground">
                     {item.answer}
                   </p>
                 </div>
@@ -139,14 +139,14 @@ export function FAQList({ variant = "full" }: FAQListProps) {
         })}
 
         {displayedFAQs.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
-            <Search className="mx-auto h-8 w-8 text-slate-400" />
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-muted px-6 py-12 text-center">
+            <Search className="mx-auto h-8 w-8 text-muted-foreground/70" />
 
-            <h3 className="mt-4 font-bold text-slate-900">
+            <h3 className="mt-4 font-bold text-foreground">
               No matching questions
             </h3>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Try another search term or choose a different category.
             </p>
 
@@ -177,7 +177,7 @@ export function FAQList({ variant = "full" }: FAQListProps) {
       )}
 
       {!isPreview && (
-        <p className="mt-5 text-center text-sm text-slate-500">
+        <p className="mt-5 text-center text-sm text-muted-foreground">
           Showing {displayedFAQs.length} of {filteredFAQs.length} matching
           questions.
         </p>

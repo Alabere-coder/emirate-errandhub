@@ -56,7 +56,7 @@ function getStatusStyle(status: string) {
     case "resolved":
       return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300";
     case "closed":
-      return "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
+      return "  border-border bg-muted text-muted-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
     default:
       return "border-border bg-muted text-muted-foreground";
   }
@@ -167,7 +167,7 @@ export default async function AdminSupportTicketPage({
 
         <div className="relative space-y-5">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
               <Headset className="h-3.5 w-3.5" />
               Support ticket
             </span>

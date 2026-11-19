@@ -249,10 +249,12 @@ export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
   return (
     <div className="space-y-5">
       {/* Discount code */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="rounded-xl border   border-border bg-card p-4">
         <div className="mb-3 flex items-center gap-2">
           <Tag className="h-4 w-4 text-teal-600" />
-          <h3 className="font-semibold text-slate-900">Promotional discount</h3>
+          <h3 className="font-semibold text-foreground">
+            Promotional discount
+          </h3>
         </div>
 
         {hasDiscount && (
@@ -302,7 +304,7 @@ export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
             placeholder="Enter discount code"
             disabled={loading || applyingDiscount || removingDiscount}
             maxLength={40}
-            className="h-11 min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 text-sm uppercase text-slate-900 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-slate-100"
+            className="h-11 min-w-0 flex-1 rounded-lg border border-slate-300 bg-card px-3 text-sm uppercase text-foreground outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-muted"
           />
 
           <Button
@@ -341,13 +343,13 @@ export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
       </div>
 
       {/* Booking price breakdown */}
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-        <h3 className="mb-3 font-semibold text-slate-900">Payment summary</h3>
+      <div className="rounded-xl border   border-border bg-muted p-4">
+        <h3 className="mb-3 font-semibold text-foreground">Payment summary</h3>
 
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between gap-3 text-slate-600">
+          <div className="flex justify-between gap-3 text-muted-foreground">
             <span>Original booking amount</span>
-            <span className="font-medium text-slate-900">
+            <span className="font-medium text-foreground">
               {formatNaira(originalAmount)}
             </span>
           </div>
@@ -361,9 +363,9 @@ export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
             </div>
           )}
 
-          <div className="border-t border-slate-200 pt-3">
+          <div className="border-t   border-border pt-3">
             <div className="flex justify-between gap-3">
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-foreground">
                 Customer payable amount
               </span>
               <span className="text-lg font-bold text-teal-700">
@@ -374,12 +376,12 @@ export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
 
           {amountAlreadyPaid > 0 && (
             <>
-              <div className="flex justify-between gap-3 text-slate-600">
+              <div className="flex justify-between gap-3 text-muted-foreground">
                 <span>Amount already paid</span>
                 <span>{formatNaira(amountAlreadyPaid)}</span>
               </div>
 
-              <div className="flex justify-between gap-3 font-semibold text-slate-900">
+              <div className="flex justify-between gap-3 font-semibold text-foreground">
                 <span>Remaining balance</span>
                 <span>{formatNaira(remainingAmount)}</span>
               </div>
@@ -396,7 +398,7 @@ export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
             className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors ${
               selectedOption === option.value
                 ? "border-teal-600 bg-teal-50"
-                : "border-slate-200 bg-white hover:border-teal-300"
+                : "  border-border bg-card hover:border-teal-300"
             }`}
           >
             <input
@@ -411,7 +413,7 @@ export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
 
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-semibold text-slate-900">
+                <span className="font-semibold text-foreground">
                   {option.label}
                 </span>
 
@@ -420,7 +422,7 @@ export function PayJobButton({ jobId, paymentSummary }: PayJobButtonProps) {
                 </span>
               </span>
 
-              <span className="mt-1 block text-sm text-slate-500">
+              <span className="mt-1 block text-sm text-muted-foreground">
                 {option.description}
               </span>
             </span>

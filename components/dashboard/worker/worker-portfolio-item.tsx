@@ -17,7 +17,7 @@ export function WorkerPortfolioItem({ item }: { item: PortfolioItem }) {
 
   return (
     <>
-      <article className="overflow-hidden rounded-xl border bg-white">
+      <article className="overflow-hidden rounded-xl border bg-card">
         {item.imageSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -73,7 +73,7 @@ export function WorkerPortfolioItem({ item }: { item: PortfolioItem }) {
             role="dialog"
             aria-modal="true"
             aria-labelledby={`edit-portfolio-title-${item.id}`}
-            className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+            className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-card p-6 shadow-xl"
           >
             <div className="mb-5 flex items-center justify-between gap-4">
               <h2

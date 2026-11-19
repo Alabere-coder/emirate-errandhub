@@ -72,7 +72,7 @@ export function UserStatusControl({ userId, userName, isActive, role }: Props) {
         className={`inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition sm:w-auto ${
           activating
             ? "bg-emerald-600 text-white hover:bg-emerald-700"
-            : "border border-rose-200 bg-white text-rose-700 hover:bg-rose-50"
+            : "border border-rose-200 bg-card text-rose-700 hover:bg-rose-50"
         }`}
       >
         {activating ? (
@@ -97,7 +97,7 @@ export function UserStatusControl({ userId, userName, isActive, role }: Props) {
             aria-modal="true"
             aria-labelledby="user-status-title"
             aria-describedby="user-status-description"
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl"
+            className="w-full max-w-md rounded-2xl border   border-border bg-card p-6 shadow-2xl"
           >
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-xl ${
@@ -115,7 +115,7 @@ export function UserStatusControl({ userId, userName, isActive, role }: Props) {
 
             <h2
               id="user-status-title"
-              className="mt-5 text-xl font-bold text-slate-900"
+              className="mt-5 text-xl font-bold text-foreground"
             >
               {activating
                 ? "Activate this account?"
@@ -124,10 +124,10 @@ export function UserStatusControl({ userId, userName, isActive, role }: Props) {
 
             <p
               id="user-status-description"
-              className="mt-2 text-sm leading-6 text-slate-600"
+              className="mt-2 text-sm leading-6 text-muted-foreground"
             >
               You are about to {activating ? "activate" : "deactivate"}{" "}
-              <strong className="wrap-break-word text-slate-900">
+              <strong className="wrap-break-word text-foreground">
                 {userName}
               </strong>
               .
@@ -148,7 +148,7 @@ export function UserStatusControl({ userId, userName, isActive, role }: Props) {
                 type="button"
                 disabled={isPending}
                 onClick={() => setDialogOpen(false)}
-                className="min-h-10 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+                className="min-h-10 rounded-xl border   border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-50"
               >
                 Cancel
               </button>

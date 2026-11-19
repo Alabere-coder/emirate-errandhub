@@ -176,13 +176,13 @@ export default async function AdminPopupsPage() {
 
         <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
               <Sparkles className="h-3.5 w-3.5" />
               Marketing & engagement
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-card/10">
                 <Megaphone className="h-6 w-6 text-emerald-100" />
               </div>
 
@@ -211,7 +211,7 @@ export default async function AdminPopupsPage() {
             </div>
           </div>
 
-          <Button className="relative h-11 shrink-0 rounded-xl bg-white px-5 font-semibold text-emerald-950 shadow-sm hover:bg-emerald-50">
+          <Button className="relative h-11 shrink-0 rounded-xl bg-card px-5 font-semibold text-emerald-950 shadow-sm hover:bg-emerald-50">
             <Link href="/dashboard/admin/popups/new">
               <Plus className="mr-2 h-4 w-4" />
               Create Popup
@@ -227,7 +227,7 @@ export default async function AdminPopupsPage() {
           value={items.length}
           description="All created popup campaigns"
           icon={Layers3}
-          iconClass="bg-slate-500/10 text-slate-600 dark:text-slate-300"
+          iconClass="bg-muted0/10 text-muted-foreground dark:text-slate-300"
         />
 
         <StatCard

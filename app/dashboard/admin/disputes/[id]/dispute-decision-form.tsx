@@ -37,7 +37,7 @@ export default function DisputeDecisionForm({
           <CardTitle>Decision recorded</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm leading-6 text-slate-600">
+          <p className="text-sm leading-6 text-muted-foreground">
             This dispute is in a final state. The decision cannot be changed
             using this form.
           </p>
@@ -50,7 +50,7 @@ export default function DisputeDecisionForm({
     <Card>
       <CardHeader>
         <CardTitle>Administrator decision</CardTitle>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Record the review status or a final decision. A written note is
           required for every action.
         </p>
@@ -63,7 +63,7 @@ export default function DisputeDecisionForm({
           <div className="space-y-2">
             <label
               htmlFor="decision"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
             >
               Decision
             </label>
@@ -72,7 +72,7 @@ export default function DisputeDecisionForm({
               name="decision"
               required
               defaultValue=""
-              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+              className="w-full rounded-xl border   border-border bg-card px-3.5 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
             >
               <option value="" disabled>
                 Choose an action
@@ -86,7 +86,7 @@ export default function DisputeDecisionForm({
           <div className="space-y-2">
             <label
               htmlFor="resolution"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
             >
               Decision note
             </label>
@@ -98,9 +98,9 @@ export default function DisputeDecisionForm({
               maxLength={3000}
               rows={5}
               placeholder="Explain the review status or the reasons for your decision..."
-              className="w-full resize-y rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+              className="w-full resize-y rounded-xl border   border-border bg-card px-3.5 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
             />
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Enter between 10 and 3,000 characters. Be specific and
               professional.
             </p>
@@ -131,7 +131,7 @@ export default function DisputeDecisionForm({
             {pending ? "Saving decision..." : "Save decision"}
           </Button>
 
-          <p className="text-xs leading-5 text-slate-500">
+          <p className="text-xs leading-5 text-muted-foreground">
             This action does not issue refunds, release earnings, or change the
             related job status.
           </p>

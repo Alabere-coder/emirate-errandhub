@@ -104,11 +104,11 @@ export function ServiceCategoryForm({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 p-4">
       <div className="flex min-h-full items-center justify-center">
-        <div className="w-full max-w-2xl rounded-2xl bg-white shadow-xl">
+        <div className="w-full max-w-2xl rounded-2xl bg-card shadow-xl">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+          <div className="flex items-center justify-between border-b   border-border px-6 py-5">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-foreground">
                 {editing
                   ? isSubcategory
                     ? "Edit subcategory"
@@ -118,7 +118,7 @@ export function ServiceCategoryForm({
                     : "Add category"}
               </h2>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {editing
                   ? isSubcategory
                     ? "Update this subcategory."
@@ -133,7 +133,7 @@ export function ServiceCategoryForm({
               type="button"
               onClick={onClose}
               disabled={pending}
-              className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"
+              className="rounded-lg p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
               aria-label="Close"
             >
               <X className="h-5 w-5" />
@@ -159,12 +159,12 @@ export function ServiceCategoryForm({
 
             {/* Parent */}
             {resolvedParent && (
-              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              <div className="rounded-xl border   border-border bg-muted px-4 py-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Parent category
                 </p>
 
-                <p className="mt-1 text-sm font-semibold text-slate-900">
+                <p className="mt-1 text-sm font-semibold text-foreground">
                   {resolvedParent.name}
                 </p>
               </div>
@@ -175,7 +175,7 @@ export function ServiceCategoryForm({
               <div>
                 <label
                   htmlFor="name"
-                  className="mb-2 block text-sm font-medium text-slate-700"
+                  className="mb-2 block text-sm font-medium text-foreground"
                 >
                   Name
                 </label>
@@ -190,14 +190,14 @@ export function ServiceCategoryForm({
                   }
                   required
                   disabled={pending}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-muted"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="slug"
-                  className="mb-2 block text-sm font-medium text-slate-700"
+                  className="mb-2 block text-sm font-medium text-foreground"
                 >
                   Slug
                 </label>
@@ -208,10 +208,10 @@ export function ServiceCategoryForm({
                   defaultValue={category?.slug ?? ""}
                   placeholder={isSubcategory ? "plumbing" : "home-services"}
                   disabled={pending}
-                  className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
+                  className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-muted"
                 />
 
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 text-xs text-muted-foreground/70">
                   Leave empty to generate from the name.
                 </p>
               </div>
@@ -221,7 +221,7 @@ export function ServiceCategoryForm({
             <div>
               <label
                 htmlFor="description"
-                className="mb-2 block text-sm font-medium text-slate-700"
+                className="mb-2 block text-sm font-medium text-foreground"
               >
                 Description
               </label>
@@ -237,7 +237,7 @@ export function ServiceCategoryForm({
                     : "Describe the services in this category..."
                 }
                 disabled={pending}
-                className="w-full resize-none rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
+                className="w-full resize-none rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-muted"
               />
             </div>
 
@@ -245,7 +245,7 @@ export function ServiceCategoryForm({
             <div>
               <label
                 htmlFor="sortOrder"
-                className="mb-2 block text-sm font-medium text-slate-700"
+                className="mb-2 block text-sm font-medium text-foreground"
               >
                 Sort order
               </label>
@@ -257,17 +257,17 @@ export function ServiceCategoryForm({
                 min="0"
                 defaultValue={category?.sort_order ?? 0}
                 disabled={pending}
-                className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
+                className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-muted"
               />
 
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-muted-foreground/70">
                 Lower numbers appear first.
               </p>
             </div>
 
             {/* Icon */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 block text-sm font-medium text-foreground">
                 {isSubcategory ? "Subcategory Icon" : "Category Icon"}
               </label>
 
@@ -282,14 +282,14 @@ export function ServiceCategoryForm({
             <div>
               <label
                 htmlFor="category-image"
-                className="mb-2 block text-sm font-medium text-slate-700"
+                className="mb-2 block text-sm font-medium text-foreground"
               >
                 {isSubcategory ? "Subcategory Image" : "Category Image"}
               </label>
 
-              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+              <div className="rounded-xl border border-dashed border-slate-300 bg-muted p-4">
                 {previewUrl ? (
-                  <div className="mb-4 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                  <div className="mb-4 overflow-hidden rounded-xl border   border-border bg-card">
                     <img
                       src={previewUrl}
                       alt={
@@ -301,7 +301,7 @@ export function ServiceCategoryForm({
                     />
                   </div>
                 ) : (
-                  <div className="mb-4 flex h-40 flex-col items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400">
+                  <div className="mb-4 flex h-40 flex-col items-center justify-center rounded-xl border   border-border bg-card text-muted-foreground/70">
                     <ImagePlus className="h-8 w-8" />
 
                     <p className="mt-2 text-sm">No image selected</p>
@@ -315,10 +315,10 @@ export function ServiceCategoryForm({
                   accept="image/jpeg,image/png,image/webp,image/gif"
                   onChange={handleImageChange}
                   disabled={pending}
-                  className="block w-full cursor-pointer rounded-lg border border-slate-300 bg-white text-sm text-slate-600 file:mr-4 file:border-0 file:border-r file:border-slate-300 file:bg-slate-100 file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="block w-full cursor-pointer rounded-lg border border-slate-300 bg-card text-sm text-muted-foreground file:mr-4 file:border-0 file:border-r file:border-slate-300 file:bg-muted file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-foreground hover:file:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
                 />
 
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-muted-foreground">
                   JPG, PNG, WebP, or GIF. Maximum size: 5 MB.
                   {editing && category?.image_url
                     ? " Select a new image to replace the current one."
@@ -326,7 +326,7 @@ export function ServiceCategoryForm({
                 </p>
 
                 {selectedImage && (
-                  <p className="mt-2 truncate text-xs font-medium text-slate-700">
+                  <p className="mt-2 truncate text-xs font-medium text-foreground">
                     Selected: {selectedImage.name}
                   </p>
                 )}
@@ -334,7 +334,7 @@ export function ServiceCategoryForm({
             </div>
 
             {/* Settings */}
-            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="space-y-3 rounded-xl border   border-border bg-muted p-4">
               <label className="flex cursor-pointer items-start gap-3">
                 <input
                   type="checkbox"
@@ -345,11 +345,11 @@ export function ServiceCategoryForm({
                 />
 
                 <span>
-                  <span className="block text-sm font-medium text-slate-900">
+                  <span className="block text-sm font-medium text-foreground">
                     Active
                   </span>
 
-                  <span className="block text-xs text-slate-500">
+                  <span className="block text-xs text-muted-foreground">
                     Active categories are available to customers.
                   </span>
                 </span>
@@ -365,11 +365,11 @@ export function ServiceCategoryForm({
                 />
 
                 <span>
-                  <span className="block text-sm font-medium text-slate-900">
+                  <span className="block text-sm font-medium text-foreground">
                     Require worker verification
                   </span>
 
-                  <span className="block text-xs text-slate-500">
+                  <span className="block text-xs text-muted-foreground">
                     Workers offering this service must be verified.
                   </span>
                 </span>
@@ -385,11 +385,11 @@ export function ServiceCategoryForm({
                 />
 
                 <span>
-                  <span className="block text-sm font-medium text-slate-900">
+                  <span className="block text-sm font-medium text-foreground">
                     Require certificate
                   </span>
 
-                  <span className="block text-xs text-slate-500">
+                  <span className="block text-xs text-muted-foreground">
                     Workers may need to provide supporting certification.
                   </span>
                 </span>
@@ -397,12 +397,12 @@ export function ServiceCategoryForm({
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 border-t border-slate-200 pt-5">
+            <div className="flex justify-end gap-3 border-t   border-border pt-5">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={pending}
-                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-50"
               >
                 Cancel
               </button>

@@ -83,7 +83,7 @@ export default async function AdminManagementPage() {
 
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex size-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10">
+            <div className="mb-4 inline-flex size-12 items-center justify-center rounded-2xl border border-white/15 bg-card/10">
               <ShieldCheck className="size-6" />
             </div>
 
@@ -101,7 +101,7 @@ export default async function AdminManagementPage() {
             </p>
           </div>
 
-          <div className="hidden shrink-0 items-center justify-center rounded-3xl border border-white/15 bg-white/10 p-5 sm:flex">
+          <div className="hidden shrink-0 items-center justify-center rounded-3xl border border-white/15 bg-card/10 p-5 sm:flex">
             <Users className="size-16 text-emerald-100" strokeWidth={1.2} />
           </div>
         </div>

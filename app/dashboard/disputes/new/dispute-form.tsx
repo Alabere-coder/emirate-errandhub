@@ -21,10 +21,10 @@ export default function DisputeForm({ jobId, backHref }: DisputeFormProps) {
   );
 
   return (
-    <Card className="border-slate-200 shadow-sm">
+    <Card className="  border-border shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl">Describe the dispute</CardTitle>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Explain what happened and what you would like the administrator to
           review. Please keep your description factual and specific.
         </p>
@@ -37,7 +37,7 @@ export default function DisputeForm({ jobId, backHref }: DisputeFormProps) {
           <div className="space-y-2">
             <label
               htmlFor="reason"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
             >
               Reason
             </label>
@@ -48,14 +48,14 @@ export default function DisputeForm({ jobId, backHref }: DisputeFormProps) {
               minLength={3}
               maxLength={120}
               placeholder="e.g. Incomplete service"
-              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+              className="w-full rounded-xl border   border-border bg-card px-3.5 py-3 text-sm outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
             />
           </div>
 
           <div className="space-y-2">
             <label
               htmlFor="description"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
             >
               What happened?
             </label>
@@ -67,9 +67,9 @@ export default function DisputeForm({ jobId, backHref }: DisputeFormProps) {
               maxLength={3000}
               rows={7}
               placeholder="Describe the issue, relevant dates, and any steps already taken to resolve it..."
-              className="w-full resize-y rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+              className="w-full resize-y rounded-xl border   border-border bg-card px-3.5 py-3 text-sm outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
             />
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Include at least 20 characters. Do not include passwords or other
               sensitive account credentials.
             </p>
@@ -78,7 +78,7 @@ export default function DisputeForm({ jobId, backHref }: DisputeFormProps) {
           <div className="space-y-2">
             <label
               htmlFor="evidence"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
             >
               Evidence images (optional)
             </label>
@@ -89,10 +89,10 @@ export default function DisputeForm({ jobId, backHref }: DisputeFormProps) {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               multiple
-              className="block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium"
+              className="block w-full rounded-xl border   border-border bg-card px-3.5 py-3 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium"
             />
 
-            <p className="text-xs leading-5 text-slate-500">
+            <p className="text-xs leading-5 text-muted-foreground">
               Attach up to 3 JPEG, PNG, or WebP images. Each image must be 5 MB
               or smaller. Avoid uploading passwords or other sensitive
               information.
@@ -139,7 +139,7 @@ export default function DisputeForm({ jobId, backHref }: DisputeFormProps) {
             </Button>
           </div>
 
-          <p className="text-xs leading-5 text-slate-500">
+          <p className="text-xs leading-5 text-muted-foreground">
             Submitting a dispute does not automatically refund a payment,
             release worker earnings, or change the job status.
           </p>

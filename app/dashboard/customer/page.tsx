@@ -46,13 +46,13 @@ const statusStyles: Record<string, string> = {
   assigned: "bg-violet-50 text-violet-700 ring-violet-600/20",
   in_progress: "bg-sky-50 text-sky-700 ring-sky-600/20",
   completed: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  cancelled: "bg-slate-100 text-slate-600 ring-slate-500/20",
+  cancelled: "bg-muted text-muted-foreground ring-slate-500/20",
   rejected: "bg-rose-50 text-rose-700 ring-rose-600/20",
 };
 
 function getStatusStyle(status: string) {
   return (
-    statusStyles[status] ?? "bg-slate-100 text-slate-600 ring-slate-500/20"
+    statusStyles[status] ?? "bg-muted text-muted-foreground ring-slate-500/20"
   );
 }
 
@@ -142,7 +142,7 @@ export default async function CustomerDashboardPage() {
   const completedRequests = completedJobsCount ?? 0;
 
   return (
-    <main className="min-h-screen bg-slate-50/80">
+    <main className="min-h-screen bg-muted/80">
       <div className="mx-auto max-w-7xl py-6 sm:px-6 sm:py-9 lg:px-8">
         {/* Welcome banner */}
         <section className="relative isolate overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-9 sm:py-10">
@@ -157,7 +157,7 @@ export default async function CustomerDashboardPage() {
 
           <div className="relative flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/5 px-3 py-1.5 text-xs font-medium text-slate-200">
                 <span className="h-2 w-2 rounded-full bg-teal-400" />
                 Your personal service hub
               </div>
@@ -182,7 +182,7 @@ export default async function CustomerDashboardPage() {
 
                 <Link
                   href="/services"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/20 px-5 text-sm font-medium text-white transition hover:bg-white/10"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/20 px-5 text-sm font-medium text-white transition hover:bg-card/10"
                 >
                   Explore services
                   <ArrowRight className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default async function CustomerDashboardPage() {
               </div>
             </div>
 
-            <div className="hidden shrink-0 sm:flex sm:h-24 sm:w-24 sm:items-center sm:justify-center sm:rounded-3xl sm:border sm:border-white/10 sm:bg-white/5">
+            <div className="hidden shrink-0 sm:flex sm:h-24 sm:w-24 sm:items-center sm:justify-center sm:rounded-3xl sm:border sm:border-white/10 sm:bg-card/5">
               <BriefcaseBusiness className="h-11 w-11 text-teal-300" />
             </div>
           </div>
@@ -204,10 +204,10 @@ export default async function CustomerDashboardPage() {
         {/* Quick navigation */}
         <section className="mt-8">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Quick access
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Everything you need, just a click away.
             </p>
           </div>
@@ -250,10 +250,10 @@ export default async function CustomerDashboardPage() {
         {/* Overview */}
         <section className="mt-8">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Your overview
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               A snapshot of your latest activity.
             </p>
           </div>
@@ -289,17 +289,17 @@ export default async function CustomerDashboardPage() {
         <section className="mt-10">
           <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight text-slate-900">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
                 Active jobs
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Keep up with the services currently underway.
               </p>
             </div>
 
             <Link
               href="/dashboard/customer/requests"
-              className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-slate-700 transition hover:text-teal-700"
+              className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-foreground transition hover:text-teal-700"
             >
               View all requests
               <ArrowRight className="h-4 w-4" />
@@ -307,14 +307,14 @@ export default async function CustomerDashboardPage() {
           </div>
 
           {activeJobs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-9 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-card px-6 py-9 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                 <BriefcaseBusiness className="h-6 w-6" />
               </div>
-              <h3 className="mt-4 font-semibold text-slate-900">
+              <h3 className="mt-4 font-semibold text-foreground">
                 No active jobs right now
               </h3>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 When a quotation is accepted and a job is assigned, you will see
                 its progress here.
               </p>
@@ -337,7 +337,7 @@ export default async function CustomerDashboardPage() {
                   <Link
                     key={job.id}
                     href={`/dashboard/customer/requests/${job.request_id}`}
-                    className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6"
+                    className="group rounded-2xl border   border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6"
                   >
                     <div className="flex items-start gap-4">
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
@@ -346,19 +346,19 @@ export default async function CustomerDashboardPage() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-semibold text-slate-900 transition group-hover:text-teal-800">
+                          <h3 className="font-semibold text-foreground transition group-hover:text-teal-800">
                             {request?.title || "Service job"}
                           </h3>
                           <StatusBadge status={job.status} />
                         </div>
 
-                        <p className="mt-2 text-lg font-semibold text-slate-900">
+                        <p className="mt-2 text-lg font-semibold text-foreground">
                           {job.currency}{" "}
                           {Number(job.agreed_amount).toLocaleString("en-NG")}
                         </p>
 
                         {job.scheduled_at && (
-                          <p className="mt-3 flex items-center gap-2 text-sm text-slate-500">
+                          <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
                             <CalendarDays className="h-4 w-4 shrink-0" />
                             {formatDateTime(job.scheduled_at, preferences)}
                           </p>
@@ -381,17 +381,17 @@ export default async function CustomerDashboardPage() {
         <section className="mt-10">
           <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight text-slate-900">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
                 Recent requests
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Follow your latest service requests and quotations.
               </p>
             </div>
 
             <Link
               href="/dashboard/customer/requests"
-              className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-slate-700 transition hover:text-teal-700"
+              className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-foreground transition hover:text-teal-700"
             >
               View all requests
               <ArrowRight className="h-4 w-4" />
@@ -399,16 +399,16 @@ export default async function CustomerDashboardPage() {
           </div>
 
           {recentRequests.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10 text-center shadow-sm">
+            <div className="rounded-2xl border   border-border bg-card px-6 py-10 text-center shadow-sm">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-700">
                 <ClipboardList className="h-7 w-7" />
               </div>
 
-              <h3 className="mt-4 text-base font-semibold text-slate-900">
+              <h3 className="mt-4 text-base font-semibold text-foreground">
                 Your next task starts here
               </h3>
 
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 Tell us what you need help with and receive quotations from
                 professionals who can get the job done.
               </p>
@@ -422,24 +422,24 @@ export default async function CustomerDashboardPage() {
               </Link>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-2xl border   border-border bg-card shadow-sm">
               <div className="divide-y divide-slate-100">
                 {recentRequests.map((request) => (
                   <Link
                     key={request.id}
                     href={`/dashboard/customer/requests/${request.id}`}
-                    className="group flex flex-col gap-3 p-4 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5"
+                    className="group flex flex-col gap-3 p-4 transition hover:bg-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5"
                   >
                     <div className="flex min-w-0 items-start gap-3">
-                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition group-hover:bg-teal-50 group-hover:text-teal-700">
+                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground transition group-hover:bg-teal-50 group-hover:text-teal-700">
                         <ClipboardList className="h-5 w-5" />
                       </div>
 
                       <div className="min-w-0">
-                        <h3 className="truncate font-semibold text-slate-900">
+                        <h3 className="truncate font-semibold text-foreground">
                           {request.title}
                         </h3>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           Created {formatDate(request.created_at, preferences)}
                         </p>
                       </div>
@@ -447,7 +447,7 @@ export default async function CustomerDashboardPage() {
 
                     <div className="flex items-center justify-between gap-4 pl-13 sm:pl-0">
                       <StatusBadge status={request.status} />
-                      <ArrowRight className="h-4 w-4 shrink-0 text-slate-400 transition group-hover:translate-x-1 group-hover:text-teal-700" />
+                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/70 transition group-hover:translate-x-1 group-hover:text-teal-700" />
                     </div>
                   </Link>
                 ))}
@@ -463,10 +463,10 @@ export default async function CustomerDashboardPage() {
               <p className="text-sm font-semibold text-teal-800">
                 Need a helping hand?
               </p>
-              <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+              <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                 Get your next task taken care of.
               </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 Describe what you need, choose your preferred schedule and
                 location, and receive quotations from professionals.
               </p>
@@ -502,7 +502,7 @@ function DashboardCard({
   return (
     <Link
       href={href}
-      className="group rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:p-6"
+      className="group rounded-2xl border   border-border/80 bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <div
@@ -510,11 +510,13 @@ function DashboardCard({
         >
           {icon}
         </div>
-        <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-slate-600" />
+        <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-muted-foreground" />
       </div>
 
-      <h3 className="mt-5 font-semibold text-slate-900">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+      <h3 className="mt-5 font-semibold text-foreground">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        {description}
+      </p>
     </Link>
   );
 }
@@ -533,9 +535,9 @@ function OverviewCard({
   accent: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+    <div className="rounded-2xl border   border-border/80 bg-card p-5 shadow-sm sm:p-6">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-medium text-slate-600">{label}</p>
+        <p className="text-sm font-medium text-muted-foreground">{label}</p>
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${accent}`}
         >
@@ -543,10 +545,12 @@ function OverviewCard({
         </div>
       </div>
 
-      <p className="mt-4 text-3xl font-bold tracking-tight text-slate-900">
+      <p className="mt-4 text-3xl font-bold tracking-tight text-foreground">
         {value}
       </p>
-      <p className="mt-1 text-xs leading-5 text-slate-500">{description}</p>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+        {description}
+      </p>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
-import Link from "next/link";
 import {
   AlertCircle,
   BriefcaseBusiness,
@@ -13,6 +12,7 @@ import {
   Search,
   Users,
 } from "lucide-react";
+
 import ProviderAssignmentForm, {
   type ProviderOption,
 } from "./component/provider-assignment-form";
@@ -59,15 +59,12 @@ type JobRecord = {
   completed_at: string | null;
   status: string;
   created_at: string;
-
   customer_confirmed_at: string | null;
   earnings_release_approved_at: string | null;
-
   paymentStatus: string;
   paymentAmount: number | null;
   paymentCurrency: string | null;
   paymentPaidAt: string | null;
-
   customerName: string;
   workerName: string;
   workerPhone: string | null;
@@ -125,18 +122,18 @@ function statusClass(status: string) {
       "released",
     ].includes(normalized)
   ) {
-    return "bg-emerald-50 text-emerald-700 ring-emerald-600/20";
+    return "bg-emerald-500/10 text-emerald-700 ring-emerald-600/20 dark:text-emerald-300";
   }
 
   if (["cancelled", "rejected", "failed", "inactive"].includes(normalized)) {
-    return "bg-rose-50 text-rose-700 ring-rose-600/20";
+    return "bg-rose-500/10 text-rose-700 ring-rose-600/20 dark:text-rose-300";
   }
 
   if (["in_progress", "assigned", "accepted", "quoted"].includes(normalized)) {
-    return "bg-blue-50 text-blue-700 ring-blue-600/20";
+    return "bg-blue-500/10 text-blue-700 ring-blue-600/20 dark:text-blue-300";
   }
 
-  return "bg-amber-50 text-amber-700 ring-amber-600/20";
+  return "bg-amber-500/10 text-amber-700 ring-amber-600/20 dark:text-amber-300";
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -161,16 +158,17 @@ function SummaryCard({
   icon: typeof ClipboardList;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">
             {value.toLocaleString("en-NG")}
           </p>
-          <p className="mt-1 text-xs text-slate-500">{detail}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
         </div>
-        <div className="rounded-xl bg-emerald-50 p-3 text-emerald-700">
+
+        <div className="rounded-xl bg-primary/10 p-3 text-primary">
           <Icon className="size-5" />
         </div>
       </div>
@@ -256,22 +254,26 @@ export function RequestsJobsClient({
 
   return (
     <div className="space-y-7">
+      {/* PAGE HEADER */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-emerald-700">
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-primary">
             <ClipboardList className="size-4" />
             Operations
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Requests &amp; Jobs
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Monitor customer service requests, track job assignments, and review
             progress across Emirate ErrandHub.
           </p>
         </div>
       </div>
 
+      {/* SUMMARY CARDS */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <SummaryCard
           label="Total requests"
@@ -279,6 +281,7 @@ export function RequestsJobsClient({
           detail="Loaded service requests"
           icon={ClipboardList}
         />
+
         <SummaryCard
           label="Open requests"
           value={
@@ -292,18 +295,14 @@ export function RequestsJobsClient({
           detail="Awaiting further action"
           icon={Clock3}
         />
+
         <SummaryCard
           label="Total jobs"
           value={jobs.length}
           detail="Created job records"
           icon={BriefcaseBusiness}
         />
-        {/* <SummaryCard
-          label="Unassigned jobs"
-          value={jobs.filter((job) => !job.worker_id).length}
-          detail="No worker linked to job"
-          icon={Users}
-        /> */}
+
         <SummaryCard
           label="Unassigned requests"
           value={
@@ -323,19 +322,22 @@ export function RequestsJobsClient({
         />
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 sm:p-6">
+      {/* OPERATIONS OVERVIEW */}
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border p-5 sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-950">
+              <h2 className="text-lg font-bold text-foreground">
                 Operations overview
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+
+              <p className="mt-1 text-sm text-muted-foreground">
                 Search and inspect requests or jobs.
               </p>
             </div>
 
-            <div className="inline-flex w-fit rounded-xl bg-slate-100 p-1">
+            {/* TABS */}
+            <div className="inline-flex w-fit rounded-xl bg-muted p-1">
               <button
                 type="button"
                 onClick={() => {
@@ -345,12 +347,13 @@ export function RequestsJobsClient({
                 }}
                 className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
                   tab === "requests"
-                    ? "bg-white text-slate-950 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Requests ({requests.length})
               </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -360,8 +363,8 @@ export function RequestsJobsClient({
                 }}
                 className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
                   tab === "jobs"
-                    ? "bg-white text-slate-950 shadow-sm"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Jobs ({jobs.length})
@@ -369,9 +372,11 @@ export function RequestsJobsClient({
             </div>
           </div>
 
+          {/* SEARCH AND FILTERS */}
           <div className="mt-5 flex flex-col gap-3 md:flex-row">
             <div className="relative min-w-0 flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/70" />
+
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -380,17 +385,18 @@ export function RequestsJobsClient({
                     ? "Search title, customer, category, location..."
                     : "Search job, request, customer, or worker..."
                 }
-                className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+                className="h-11 w-full rounded-xl border border-input bg-background pl-10 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-4 focus:ring-ring/20"
               />
             </div>
 
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
-              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+              className="h-11 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-4 focus:ring-ring/20"
               aria-label="Filter by status"
             >
               <option value="all">All statuses</option>
+
               {availableStatuses.map((status) => (
                 <option key={status} value={status}>
                   {readableStatus(status)}
@@ -401,17 +407,18 @@ export function RequestsJobsClient({
             <button
               type="button"
               onClick={resetFilters}
-              className="h-11 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+              className="h-11 rounded-xl border border-border px-4 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
             >
               Clear filters
             </button>
           </div>
         </div>
 
+        {/* REQUESTS TABLE */}
         {tab === "requests" ? (
           <div className="overflow-x-auto">
             <table className="w-full min-w-225 text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+              <thead className="bg-muted text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-5 py-4 font-semibold">Request</th>
                   <th className="px-5 py-4 font-semibold">Customer</th>
@@ -422,27 +429,28 @@ export function RequestsJobsClient({
                   <th className="px-5 py-4 font-semibold">Details</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+
+              <tbody className="divide-y divide-border">
                 {filteredRequests.map((request) => (
                   <Fragment key={request.id}>
-                    <tr
-                      key={request.id}
-                      className="transition hover:bg-slate-50/70"
-                    >
+                    <tr className="transition hover:bg-muted/50">
                       <td className="px-5 py-4">
                         <div className="flex items-start gap-3">
-                          <div className="rounded-xl bg-emerald-50 p-2 text-emerald-700">
+                          <div className="rounded-xl bg-primary/10 p-2 text-primary">
                             <ClipboardList className="size-4" />
                           </div>
+
                           <div className="max-w-57.5">
-                            <p className="font-semibold text-slate-900">
+                            <p className="font-semibold text-foreground">
                               {request.title}
                             </p>
-                            <p className="mt-1 text-xs text-slate-500">
+
+                            <p className="mt-1 text-xs text-muted-foreground">
                               ID: {request.id.slice(0, 8)}…
                             </p>
+
                             {request.is_urgent && (
-                              <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-700">
+                              <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2 py-1 text-xs font-semibold text-rose-700 dark:text-rose-300">
                                 <AlertCircle className="size-3" />
                                 Urgent
                               </span>
@@ -450,31 +458,39 @@ export function RequestsJobsClient({
                           </div>
                         </div>
                       </td>
+
                       <td className="px-5 py-4">
-                        <p className="font-medium text-slate-800">
+                        <p className="font-medium text-foreground">
                           {request.customerName}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
+
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {request.customerPhone || "No phone"}
                         </p>
                       </td>
+
                       <td className="px-5 py-4">
-                        <p className="font-medium text-slate-800">
+                        <p className="font-medium text-foreground">
                           {request.serviceName}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
+
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {request.categoryName}
                         </p>
                       </td>
-                      <td className="px-5 py-4 whitespace-nowrap text-slate-700">
+
+                      <td className="whitespace-nowrap px-5 py-4 text-foreground">
                         {formatMoney(request.budget, request.currency)}
                       </td>
+
                       <td className="px-5 py-4">
                         <StatusBadge status={request.status} />
                       </td>
-                      <td className="px-5 py-4 whitespace-nowrap text-slate-500">
+
+                      <td className="whitespace-nowrap px-5 py-4 text-muted-foreground">
                         {formatDate(request.created_at)}
                       </td>
+
                       <td className="px-5 py-4">
                         <button
                           type="button"
@@ -483,42 +499,50 @@ export function RequestsJobsClient({
                               expandedId === request.id ? null : request.id,
                             )
                           }
-                          className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                          className="rounded-lg border border-border px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted"
                         >
                           {expandedId === request.id ? "Hide" : "Inspect"}
                         </button>
                       </td>
                     </tr>
+
                     {expandedId === request.id && (
-                      <tr key={`${request.id}-details`} className="bg-slate-50">
+                      <tr className="bg-muted/50">
                         <td colSpan={7} className="px-5 py-5">
                           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                             <div>
-                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 Description
                               </p>
-                              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700">
+
+                              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
                                 {request.description ||
                                   "No description provided."}
                               </p>
                             </div>
+
                             <div>
-                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 Location
                               </p>
-                              <p className="mt-2 flex items-start gap-2 text-sm text-slate-700">
-                                <MapPin className="mt-0.5 size-4 shrink-0 text-slate-400" />
+
+                              <p className="mt-2 flex items-start gap-2 text-sm text-foreground">
+                                <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground/70" />
+
                                 {[request.address, request.city, request.state]
                                   .filter(Boolean)
                                   .join(", ") || "No location provided"}
                               </p>
                             </div>
+
                             <div>
-                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 Preferred schedule
                               </p>
-                              <p className="mt-2 flex items-center gap-2 text-sm text-slate-700">
-                                <CalendarDays className="size-4 text-slate-400" />
+
+                              <p className="mt-2 flex items-center gap-2 text-sm text-foreground">
+                                <CalendarDays className="size-4 text-muted-foreground/70" />
+
                                 {[
                                   request.preferred_date,
                                   request.preferred_time,
@@ -526,10 +550,12 @@ export function RequestsJobsClient({
                                   .filter(Boolean)
                                   .join(" · ") || "No preference provided"}
                               </p>
-                              <p className="mt-2 break-all text-xs text-slate-500">
+
+                              <p className="mt-2 break-all text-xs text-muted-foreground">
                                 Request ID: {request.id}
                               </p>
                             </div>
+
                             <div className="mt-6 space-y-5">
                               <RequestQuotesList
                                 requestId={request.id}
@@ -566,7 +592,7 @@ export function RequestsJobsClient({
                                 if (acceptedQuote) {
                                   if (!existingJob) {
                                     return (
-                                      <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-800">
+                                      <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-800 dark:text-amber-300">
                                         An accepted quotation exists, but the
                                         corresponding job could not be found.
                                         Please resolve the job record before
@@ -600,14 +626,16 @@ export function RequestsJobsClient({
                 ))}
               </tbody>
             </table>
+
             {filteredRequests.length === 0 && (
               <EmptyState message="No service requests match these filters." />
             )}
           </div>
         ) : (
+          /* JOBS TABLE */
           <div className="overflow-x-auto">
             <table className="w-full min-w-225 text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+              <thead className="bg-muted text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-5 py-4 font-semibold">Job</th>
                   <th className="px-5 py-4 font-semibold">Customer</th>
@@ -618,107 +646,124 @@ export function RequestsJobsClient({
                   <th className="px-5 py-4 font-semibold">Details</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+
+              <tbody className="divide-y divide-border">
                 {filteredJobs.map((job) => (
                   <Fragment key={job.id}>
-                    <tr
-                      key={job.id}
-                      className="transition hover:bg-slate-50/70"
-                    >
+                    <tr className="transition hover:bg-muted/50">
                       <td className="px-5 py-4">
-                        <p className="font-semibold text-slate-900">
+                        <p className="font-semibold text-foreground">
                           {job.requestTitle}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
+
+                        <p className="mt-1 text-xs text-muted-foreground">
                           Job ID: {job.id.slice(0, 8)}…
                         </p>
                       </td>
-                      <td className="px-5 py-4 font-medium text-slate-800">
+
+                      <td className="px-5 py-4 font-medium text-foreground">
                         {job.customerName}
                       </td>
+
                       <td className="px-5 py-4">
-                        <p className="font-medium text-slate-800">
+                        <p className="font-medium text-foreground">
                           {job.workerName}
                         </p>
+
                         {job.workerPhone && (
-                          <p className="mt-1 text-xs text-slate-500">
+                          <p className="mt-1 text-xs text-muted-foreground">
                             {job.workerPhone}
                           </p>
                         )}
                       </td>
-                      <td className="px-5 py-4 whitespace-nowrap text-slate-700">
+
+                      <td className="whitespace-nowrap px-5 py-4 text-foreground">
                         {formatMoney(job.agreed_amount, job.currency)}
                       </td>
-                      <td className="px-5 py-4 whitespace-nowrap text-slate-500">
+
+                      <td className="whitespace-nowrap px-5 py-4 text-muted-foreground">
                         {formatDate(job.scheduled_at)}
                       </td>
+
                       <td className="px-5 py-4">
                         <StatusBadge status={job.status} />
                       </td>
+
                       <td className="px-5 py-4">
                         <button
                           type="button"
                           onClick={() =>
                             setExpandedId(expandedId === job.id ? null : job.id)
                           }
-                          className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                          className="rounded-lg border border-border px-3 py-2 text-xs font-semibold text-foreground transition hover:bg-muted"
                         >
                           {expandedId === job.id ? "Hide" : "Inspect"}
                         </button>
                       </td>
                     </tr>
+
                     {expandedId === job.id && (
-                      <tr key={`${job.id}-details`} className="bg-slate-50">
+                      <tr className="bg-muted/50">
                         <td colSpan={7} className="px-5 py-5">
                           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                             <div>
-                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 Related request
                               </p>
-                              <p className="mt-2 break-all text-sm text-slate-700">
+
+                              <p className="mt-2 break-all text-sm text-foreground">
                                 {job.request_id}
                               </p>
                             </div>
+
                             <div>
-                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 Job created
                               </p>
-                              <p className="mt-2 text-sm text-slate-700">
+
+                              <p className="mt-2 text-sm text-foreground">
                                 {formatDate(job.created_at)}
                               </p>
                             </div>
+
                             <div>
-                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 Started
                               </p>
-                              <p className="mt-2 text-sm text-slate-700">
+
+                              <p className="mt-2 text-sm text-foreground">
                                 {formatDate(job.started_at)}
                               </p>
                             </div>
+
                             <div>
-                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 Completed
                               </p>
-                              <p className="mt-2 flex items-center gap-2 text-sm text-slate-700">
-                                <CheckCircle2 className="size-4 text-slate-400" />
+
+                              <p className="mt-2 flex items-center gap-2 text-sm text-foreground">
+                                <CheckCircle2 className="size-4 text-muted-foreground/70" />
                                 {formatDate(job.completed_at)}
                               </p>
                             </div>
                           </div>
 
-                          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
+                          {/* PAYMENT AND EARNINGS */}
+                          <div className="mt-6 rounded-2xl border border-border bg-card p-5">
                             <div className="flex items-center gap-2">
-                              <BriefcaseBusiness className="size-5 text-emerald-700" />
-                              <h3 className="font-semibold text-slate-900">
+                              <BriefcaseBusiness className="size-5 text-primary" />
+
+                              <h3 className="font-semibold text-foreground">
                                 Payment &amp; Earnings Release
                               </h3>
                             </div>
 
                             <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                               <div>
-                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                   Customer confirmation
                                 </p>
+
                                 <div className="mt-2">
                                   <StatusBadge
                                     status={
@@ -728,39 +773,44 @@ export function RequestsJobsClient({
                                     }
                                   />
                                 </div>
+
                                 {job.customer_confirmed_at && (
-                                  <p className="mt-2 text-xs text-slate-500">
+                                  <p className="mt-2 text-xs text-muted-foreground">
                                     {formatDate(job.customer_confirmed_at)}
                                   </p>
                                 )}
                               </div>
 
                               <div>
-                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                   Payment status
                                 </p>
+
                                 <div className="mt-2">
                                   <StatusBadge status={job.paymentStatus} />
                                 </div>
+
                                 {job.paymentAmount !== null && (
-                                  <p className="mt-2 text-sm text-slate-600">
+                                  <p className="mt-2 text-sm text-muted-foreground">
                                     {formatMoney(
                                       job.paymentAmount,
                                       job.paymentCurrency,
                                     )}
                                   </p>
                                 )}
+
                                 {job.paymentPaidAt && (
-                                  <p className="mt-1 text-xs text-slate-500">
+                                  <p className="mt-1 text-xs text-muted-foreground">
                                     Paid: {formatDate(job.paymentPaidAt)}
                                   </p>
                                 )}
                               </div>
 
                               <div>
-                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                   Earnings release
                                 </p>
+
                                 <div className="mt-2">
                                   <StatusBadge
                                     status={
@@ -770,8 +820,9 @@ export function RequestsJobsClient({
                                     }
                                   />
                                 </div>
+
                                 {job.earnings_release_approved_at && (
-                                  <p className="mt-2 text-xs text-slate-500">
+                                  <p className="mt-2 text-xs text-muted-foreground">
                                     Released:{" "}
                                     {formatDate(
                                       job.earnings_release_approved_at,
@@ -782,32 +833,33 @@ export function RequestsJobsClient({
                             </div>
 
                             {job.earnings_release_approved_at ? (
-                              <p className="mt-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">
+                              <p className="mt-5 rounded-xl bg-emerald-500/10 p-4 text-sm text-emerald-800 dark:text-emerald-300">
                                 Earnings have already been released. No further
                                 approval is needed.
                               </p>
                             ) : job.status.toLowerCase() !== "completed" ? (
-                              <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+                              <p className="mt-5 rounded-xl bg-muted p-4 text-sm text-muted-foreground">
                                 Earnings cannot be released until the job is
                                 completed.
                               </p>
                             ) : !job.customer_confirmed_at ? (
-                              <p className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+                              <p className="mt-5 rounded-xl bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-300">
                                 Waiting for the customer to confirm that the
                                 work is complete.
                               </p>
                             ) : job.paymentStatus.toLowerCase() !== "paid" ? (
-                              <p className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+                              <p className="mt-5 rounded-xl bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-300">
                                 Payment must be verified as paid before earnings
                                 can be released.
                               </p>
                             ) : (
-                              <div className="mt-5 border-t border-slate-100 pt-5">
-                                <p className="mb-3 text-sm text-slate-600">
+                              <div className="mt-5 border-t border-border pt-5">
+                                <p className="mb-3 text-sm text-muted-foreground">
                                   All displayed prerequisites are satisfied.
                                   Approving this action will calculate the
-                                  platform commission and record the worker's
-                                  earnings through the secure database function.
+                                  platform commission and record the
+                                  worker&apos;s earnings through the secure
+                                  database function.
                                 </p>
 
                                 <ApproveEarningsButton jobId={job.id} />
@@ -821,19 +873,22 @@ export function RequestsJobsClient({
                 ))}
               </tbody>
             </table>
+
             {filteredJobs.length === 0 && (
               <EmptyState message="No jobs match these filters." />
             )}
           </div>
         )}
 
-        <div className="flex flex-col gap-2 border-t border-slate-200 px-5 py-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        {/* TABLE FOOTER */}
+        <div className="flex flex-col gap-2 border-t border-border px-5 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span>
             Showing{" "}
             {tab === "requests" ? filteredRequests.length : filteredJobs.length}{" "}
             of {tab === "requests" ? requests.length : jobs.length}{" "}
             {tab === "requests" ? "requests" : "jobs"}
           </span>
+
           <span>Latest records appear first.</span>
         </div>
       </div>
@@ -844,11 +899,13 @@ export function RequestsJobsClient({
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center px-6 py-14 text-center">
-      <div className="rounded-2xl bg-slate-100 p-4 text-slate-400">
+      <div className="rounded-2xl bg-muted p-4 text-muted-foreground">
         <Search className="size-6" />
       </div>
-      <p className="mt-4 font-semibold text-slate-800">{message}</p>
-      <p className="mt-1 text-sm text-slate-500">
+
+      <p className="mt-4 font-semibold text-foreground">{message}</p>
+
+      <p className="mt-1 text-sm text-muted-foreground">
         Try a different search term or clear the filters.
       </p>
     </div>

@@ -86,12 +86,15 @@ export default async function AdminWorkerApplicationsPage() {
   const applicationList = applications ?? [];
 
   const totalApplications = applicationList.length;
+
   const pendingApplications = applicationList.filter(
     (application) => application.status === "pending",
   ).length;
+
   const approvedApplications = applicationList.filter(
     (application) => application.status === "approved",
   ).length;
+
   const rejectedApplications = applicationList.filter(
     (application) => application.status === "rejected",
   ).length;
@@ -140,67 +143,79 @@ export default async function AdminWorkerApplicationsPage() {
 
       {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-muted-foreground">
               All Applications
             </p>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
               <Users className="h-5 w-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-bold tracking-tight">
+
+          <p className="mt-4 text-3xl font-bold tracking-tight text-foreground">
             {totalApplications}
           </p>
+
           <p className="mt-1 text-xs text-muted-foreground">
             Applications received
           </p>
         </div>
 
-        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-muted-foreground">Pending</p>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
               <Clock3 className="h-5 w-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-bold tracking-tight">
+
+          <p className="mt-4 text-3xl font-bold tracking-tight text-foreground">
             {pendingApplications}
           </p>
+
           <p className="mt-1 text-xs text-muted-foreground">
             Awaiting your review
           </p>
         </div>
 
-        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-muted-foreground">
               Approved
             </p>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="h-5 w-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-bold tracking-tight">
+
+          <p className="mt-4 text-3xl font-bold tracking-tight text-foreground">
             {approvedApplications}
           </p>
+
           <p className="mt-1 text-xs text-muted-foreground">
             Successful applications
           </p>
         </div>
 
-        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-muted-foreground">
               Rejected
             </p>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400">
+
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-600 dark:text-red-400">
               <ShieldX className="h-5 w-5" />
             </div>
           </div>
-          <p className="mt-4 text-3xl font-bold tracking-tight">
+
+          <p className="mt-4 text-3xl font-bold tracking-tight text-foreground">
             {rejectedApplications}
           </p>
+
           <p className="mt-1 text-xs text-muted-foreground">
             Unsuccessful applications
           </p>
@@ -208,16 +223,19 @@ export default async function AdminWorkerApplicationsPage() {
       </div>
 
       {/* Applications list */}
-      <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-        <div className="flex flex-col gap-3 border-b p-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-border p-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-bold">Application Records</h2>
+            <h2 className="text-lg font-bold text-foreground">
+              Application Records
+            </h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               Review applicant information and submitted application notes.
             </p>
           </div>
 
-          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground">
             <FileText className="h-3.5 w-3.5" />
             {totalApplications}{" "}
             {totalApplications === 1 ? "application" : "applications"}
@@ -226,11 +244,13 @@ export default async function AdminWorkerApplicationsPage() {
 
         {applicationList.length === 0 ? (
           <div className="px-6 py-16 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 dark:bg-slate-800">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
               <BriefcaseBusiness className="h-8 w-8" />
             </div>
 
-            <h3 className="mt-5 font-semibold">No Worker Applications</h3>
+            <h3 className="mt-5 font-semibold text-foreground">
+              No Worker Applications
+            </h3>
 
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
               New worker applications will appear here when people apply to
@@ -238,7 +258,7 @@ export default async function AdminWorkerApplicationsPage() {
             </p>
           </div>
         ) : (
-          <div className="divide-y">
+          <div className="divide-y divide-border">
             {applicationList.map((application) => {
               const profile = Array.isArray(application.profiles)
                 ? application.profiles[0]
@@ -255,18 +275,20 @@ export default async function AdminWorkerApplicationsPage() {
               return (
                 <div
                   key={application.id}
-                  className="p-5 transition-colors hover:bg-muted/20 sm:p-6"
+                  className="p-5 transition-colors hover:bg-muted/30 sm:p-6"
                 >
                   <div className="flex flex-col gap-5">
                     {/* Applicant heading */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="flex items-start gap-3">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                           <UserRound className="h-6 w-6" />
                         </div>
 
                         <div>
-                          <h3 className="font-semibold">{workerName}</h3>
+                          <h3 className="font-semibold text-foreground">
+                            {workerName}
+                          </h3>
 
                           {profile?.phone && (
                             <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -291,13 +313,13 @@ export default async function AdminWorkerApplicationsPage() {
                     </div>
 
                     {/* Application note */}
-                    <div className="rounded-xl border bg-muted/20 p-4">
+                    <div className="rounded-xl border border-border bg-muted/30 p-4">
                       <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         <FileText className="h-3.5 w-3.5" />
                         Application Note
                       </p>
 
-                      <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
+                      <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-foreground/80">
                         {application.application_note ||
                           "No application note provided."}
                       </p>
@@ -318,7 +340,7 @@ export default async function AdminWorkerApplicationsPage() {
                     )}
 
                     {/* Review action */}
-                    <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
                       {application.reviewed_at ? (
                         <p className="text-xs text-muted-foreground">
                           Reviewed {formatDate(application.reviewed_at)}
@@ -331,7 +353,7 @@ export default async function AdminWorkerApplicationsPage() {
 
                       <Link
                         href={`/dashboard/admin/worker-applications/${application.id}`}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                       >
                         Review Application
                         <ArrowRight className="h-4 w-4" />

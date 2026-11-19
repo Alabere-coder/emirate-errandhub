@@ -251,19 +251,19 @@ export function PublicPopupManager() {
         aria-modal="true"
         aria-labelledby="public-popup-title"
         aria-describedby="public-popup-description"
-        className="relative my-auto w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        className="relative my-auto w-full max-w-lg overflow-hidden rounded-2xl border   border-border bg-card shadow-2xl"
       >
         <button
           type="button"
           onClick={() => dismiss(campaign)}
           aria-label="Close popup"
-          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-md transition hover:bg-slate-100"
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-card/95 text-foreground shadow-md transition hover:bg-muted"
         >
           <X className="h-5 w-5" />
         </button>
 
         {campaign.image_url && (
-          <div className="h-48 w-full overflow-hidden bg-slate-100 sm:h-60">
+          <div className="h-48 w-full overflow-hidden bg-muted sm:h-60">
             <img
               src={campaign.image_url}
               alt=""
@@ -279,7 +279,7 @@ export function PublicPopupManager() {
 
           <h2
             id="public-popup-title"
-            className="text-2xl font-bold tracking-tight text-slate-900"
+            className="text-2xl font-bold tracking-tight text-foreground"
           >
             {campaign.title}
           </h2>
@@ -287,7 +287,7 @@ export function PublicPopupManager() {
           {campaign.description && (
             <p
               id="public-popup-description"
-              className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-600"
+              className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground"
             >
               {campaign.description}
             </p>
@@ -309,7 +309,7 @@ export function PublicPopupManager() {
             <button
               type="button"
               onClick={() => dismiss(campaign)}
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border   border-border px-5 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
             >
               Maybe later
             </button>

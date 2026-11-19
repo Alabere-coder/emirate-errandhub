@@ -77,7 +77,7 @@ export default function PaymentGatewayForm({
             className={`rounded-full px-3 py-1 text-xs font-semibold ${
               isEnabled
                 ? "bg-emerald-100 text-emerald-700"
-                : "bg-slate-100 text-slate-600"
+                : "bg-muted text-muted-foreground"
             }`}
           >
             {isEnabled ? "Enabled" : "Disabled"}

@@ -24,16 +24,16 @@ export default function ResetPasswordPage() {
 
       <main className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-linear-to-br from-emerald-50 via-white to-slate-50 px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-emerald-900/5 sm:p-8">
+          <div className="rounded-2xl border   border-border bg-card p-6 shadow-xl shadow-emerald-900/5 sm:p-8">
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
               <LockKeyhole className="h-7 w-7" />
             </div>
 
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Create a new password
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Choose a strong password for your Emirate ErrandHub account. Make
               sure you can remember it.
             </p>
@@ -69,13 +69,13 @@ export default function ResetPasswordPage() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="mb-2 block text-sm font-semibold text-slate-700"
+                    className="mb-2 block text-sm font-semibold text-foreground"
                   >
                     New password
                   </label>
 
                   <div className="relative">
-                    <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                    <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground/70" />
 
                     <input
                       id="password"
@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
                       minLength={8}
                       autoComplete="new-password"
                       placeholder="Enter your new password"
-                      className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10"
+                      className="h-12 w-full rounded-xl border border-slate-300 bg-card pl-11 pr-12 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10"
                     />
 
                     <button
@@ -94,7 +94,7 @@ export default function ResetPasswordPage() {
                       aria-label={
                         showPassword ? "Hide password" : "Show password"
                       }
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-700"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/70 transition hover:text-foreground"
                     >
                       {showPassword ? (
                         <EyeOff className="h-5 w-5" />
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
                     </button>
                   </div>
 
-                  <p className="mt-2 text-xs text-slate-500">
+                  <p className="mt-2 text-xs text-muted-foreground">
                     Use at least 8 characters.
                   </p>
                 </div>
@@ -112,13 +112,13 @@ export default function ResetPasswordPage() {
                 <div>
                   <label
                     htmlFor="confirmPassword"
-                    className="mb-2 block text-sm font-semibold text-slate-700"
+                    className="mb-2 block text-sm font-semibold text-foreground"
                   >
                     Confirm new password
                   </label>
 
                   <div className="relative">
-                    <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                    <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground/70" />
 
                     <input
                       id="confirmPassword"
@@ -128,7 +128,7 @@ export default function ResetPasswordPage() {
                       minLength={8}
                       autoComplete="new-password"
                       placeholder="Confirm your new password"
-                      className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10"
+                      className="h-12 w-full rounded-xl border border-slate-300 bg-card pl-11 pr-12 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10"
                     />
 
                     <button
@@ -137,7 +137,7 @@ export default function ResetPasswordPage() {
                       aria-label={
                         showConfirmPassword ? "Hide password" : "Show password"
                       }
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-700"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/70 transition hover:text-foreground"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-5 w-5" />
@@ -159,7 +159,7 @@ export default function ResetPasswordPage() {
             )}
 
             {!state.success && (
-              <div className="mt-7 border-t border-slate-100 pt-6">
+              <div className="mt-7 border-t   border-border pt-6">
                 <Link
                   href="/login"
                   className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800 transition hover:text-emerald-900"

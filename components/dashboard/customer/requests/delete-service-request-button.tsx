@@ -55,7 +55,7 @@ export function DeleteServiceRequestButton({ requestId }: Props) {
             aria-modal="true"
             aria-labelledby="delete-request-title"
             aria-describedby="delete-request-description"
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl"
+            className="w-full max-w-md rounded-2xl border   border-border bg-card p-6 shadow-2xl"
           >
             <div className="flex items-start gap-3">
               <div className="rounded-full bg-red-100 p-3 text-red-600">
@@ -65,14 +65,14 @@ export function DeleteServiceRequestButton({ requestId }: Props) {
               <div className="flex-1">
                 <h2
                   id="delete-request-title"
-                  className="text-lg font-semibold text-slate-900"
+                  className="text-lg font-semibold text-foreground"
                 >
                   Delete this request?
                 </h2>
 
                 <p
                   id="delete-request-description"
-                  className="mt-2 text-sm leading-6 text-slate-600"
+                  className="mt-2 text-sm leading-6 text-muted-foreground"
                 >
                   Are you sure you want to delete this service request? This
                   action cannot be undone.
@@ -84,7 +84,7 @@ export function DeleteServiceRequestButton({ requestId }: Props) {
                 aria-label="Close confirmation"
                 disabled={isPending}
                 onClick={() => setIsOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                className="rounded-lg p-1 text-muted-foreground/70 hover:bg-muted hover:text-foreground"
               >
                 <X className="h-5 w-5" />
               </button>

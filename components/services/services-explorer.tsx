@@ -74,7 +74,7 @@ export default function ServicesExplorer({
   );
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-muted">
       {/* Hero */}
       <section className="relative isolate overflow-hidden bg-slate-950">
         <div
@@ -84,7 +84,7 @@ export default function ServicesExplorer({
 
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-8 lg:py-24">
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-teal-200">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/5 px-3 py-1.5 text-xs font-semibold text-teal-200">
               <Sparkles className="h-3.5 w-3.5" />
               Everyday tasks, made easier
             </div>
@@ -114,7 +114,7 @@ export default function ServicesExplorer({
           </div>
 
           {/* Search */}
-          <div className="rounded-3xl border border-white/10 bg-white/[0.07] p-4 shadow-2xl backdrop-blur sm:p-6">
+          <div className="rounded-3xl border border-white/10 bg-card/[0.07] p-4 shadow-2xl backdrop-blur sm:p-6">
             <div className="mb-4">
               <p className="text-lg font-semibold text-white">
                 What do you need help with?
@@ -128,8 +128,8 @@ export default function ServicesExplorer({
               Search service categories
             </label>
 
-            <div className="flex items-center gap-3 rounded-2xl bg-white p-2 pl-4 ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-teal-400">
-              <Search className="h-5 w-5 shrink-0 text-slate-400" />
+            <div className="flex items-center gap-3 rounded-2xl bg-card p-2 pl-4 ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-teal-400">
+              <Search className="h-5 w-5 shrink-0 text-muted-foreground/70" />
 
               <input
                 id="service-search"
@@ -137,7 +137,7 @@ export default function ServicesExplorer({
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="e.g. cleaning, plumbing, delivery"
-                className="min-w-0 flex-1 bg-transparent py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                className="min-w-0 flex-1 bg-transparent py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground/70"
               />
 
               {search && (
@@ -145,14 +145,14 @@ export default function ServicesExplorer({
                   type="button"
                   onClick={() => setSearch("")}
                   aria-label="Clear service search"
-                  className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                  className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
                 </button>
               )}
             </div>
 
-            <p className="mt-3 text-xs leading-5 text-slate-400">
+            <p className="mt-3 text-xs leading-5 text-muted-foreground/70">
               Search matches category names and descriptions. Select a category
               below to explore its services.
             </p>
@@ -173,7 +173,7 @@ export default function ServicesExplorer({
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
               {query ? "Search results" : "Explore service categories"}
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
               {query
                 ? `Results for "${search.trim()}".`
                 : "Choose a category to find the service that suits your needs."}
@@ -184,7 +184,7 @@ export default function ServicesExplorer({
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
+              className="inline-flex w-fit items-center gap-2 rounded-xl border   border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-slate-300 hover:bg-muted"
             >
               <X className="h-4 w-4" />
               Clear search
@@ -192,7 +192,7 @@ export default function ServicesExplorer({
           ) : (
             <Link
               href="/services/categories"
-              className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-700 transition hover:text-teal-700"
+              className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-foreground transition hover:text-teal-700"
             >
               All categories
               <ArrowRight className="h-4 w-4" />
@@ -201,16 +201,16 @@ export default function ServicesExplorer({
         </div>
 
         {filteredCategories.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100">
-              <Search className="h-6 w-6 text-slate-500" />
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-card px-6 py-16 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
+              <Search className="h-6 w-6 text-muted-foreground" />
             </div>
 
-            <h3 className="mt-5 text-lg font-semibold text-slate-900">
+            <h3 className="mt-5 text-lg font-semibold text-foreground">
               No matching categories found
             </h3>
 
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               Try a different search term, such as cleaning, repairs, shopping
               or delivery.
             </p>
@@ -227,7 +227,7 @@ export default function ServicesExplorer({
         ) : (
           <>
             {query && (
-              <p className="mb-5 text-sm text-slate-500">
+              <p className="mb-5 text-sm text-muted-foreground">
                 {resultCount} {resultCount === 1 ? "result" : "results"} found
               </p>
             )}
@@ -264,7 +264,7 @@ export default function ServicesExplorer({
                         </h3>
 
                         {category.description && (
-                          <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">
+                          <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
                             {category.description}
                           </p>
                         )}
@@ -272,7 +272,7 @@ export default function ServicesExplorer({
 
                       <Link
                         href={`/services/${category.slug}`}
-                        className="hidden shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-teal-700 sm:inline-flex"
+                        className="hidden shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground transition hover:bg-card hover:text-teal-700 sm:inline-flex"
                       >
                         View all
                         <ArrowRight className="h-4 w-4" />
@@ -285,9 +285,9 @@ export default function ServicesExplorer({
                           <Link
                             key={child.id}
                             href={`/services/${category.slug}/${child.slug}`}
-                            className="group flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white p-5 transition duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg hover:shadow-slate-200/60"
+                            className="group flex h-full flex-col rounded-2xl border   border-border/80 bg-card p-5 transition duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg hover:shadow-slate-200/60"
                           >
-                            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 text-slate-700 transition group-hover:bg-teal-50 group-hover:text-teal-800">
+                            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-muted text-foreground transition group-hover:bg-teal-50 group-hover:text-teal-800">
                               {child.image_url ? (
                                 <Image
                                   src={child.image_url}
@@ -304,12 +304,12 @@ export default function ServicesExplorer({
                               )}
                             </div>
 
-                            <h4 className="mt-4 font-semibold text-slate-900">
+                            <h4 className="mt-4 font-semibold text-foreground">
                               {child.name}
                             </h4>
 
                             {child.description && (
-                              <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
+                              <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
                                 {child.description}
                               </p>
                             )}
@@ -324,7 +324,7 @@ export default function ServicesExplorer({
                     ) : (
                       <Link
                         href={`/services/${category.slug}`}
-                        className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold text-slate-800 transition hover:border-teal-200 hover:text-teal-800"
+                        className="inline-flex items-center gap-2 rounded-xl border   border-border bg-card px-5 py-4 text-sm font-semibold text-foreground transition hover:border-teal-200 hover:text-teal-800"
                       >
                         Explore {category.name}
                         <ArrowRight className="h-4 w-4" />
@@ -334,7 +334,7 @@ export default function ServicesExplorer({
                     <div className="mt-4 sm:hidden">
                       <Link
                         href={`/services/${category.slug}`}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-teal-800"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-teal-800"
                       >
                         View all {category.name}
                         <ArrowRight className="h-4 w-4" />
@@ -358,7 +358,7 @@ export default function ServicesExplorer({
 
                 <Link
                   href="/services/categories"
-                  className="mt-5 inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-teal-50 sm:mt-0"
+                  className="mt-5 inline-flex shrink-0 items-center gap-2 rounded-xl bg-card px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-teal-50 sm:mt-0"
                 >
                   Browse all categories
                   <ArrowRight className="h-4 w-4" />

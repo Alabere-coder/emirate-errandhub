@@ -39,9 +39,9 @@ function SubmitButton({ disabled }: { disabled?: boolean }) {
 }
 
 const inputClassName =
-  "mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100";
+  "mt-2 w-full rounded-xl border   border-border bg-card px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100";
 
-const labelClassName = "text-sm font-semibold text-slate-800";
+const labelClassName = "text-sm font-semibold text-foreground";
 
 export function PublicSupportForm() {
   const [state, formAction] = useActionState(
@@ -52,7 +52,7 @@ export function PublicSupportForm() {
   return (
     <section
       id="send-message"
-      className="scroll-mt-24 border-y border-slate-100 bg-slate-50"
+      className="scroll-mt-24 border-y   border-border bg-muted"
     >
       <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8 lg:py-20">
         <div className="mx-auto max-w-2xl text-center">
@@ -64,14 +64,14 @@ export function PublicSupportForm() {
             Send us a message
           </h2>
 
-          <p className="mt-4 leading-7 text-slate-600">
+          <p className="mt-4 leading-7 text-muted-foreground">
             Have a question, need assistance, or want to share feedback?
             Complete the form below and our team will respond to you by email.
             You do not need an account to contact us.
           </p>
         </div>
 
-        <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-9">
+        <div className="mt-10 rounded-3xl border   border-border bg-card p-6 shadow-sm sm:p-9">
           {state.success ? (
             <div
               role="status"
@@ -262,7 +262,7 @@ export function PublicSupportForm() {
                   placeholder="Write your message here..."
                   className={`${inputClassName} resize-y`}
                 />
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Please provide enough detail to help our team understand your
                   enquiry.
                 </p>
@@ -280,7 +280,7 @@ export function PublicSupportForm() {
 
               <SubmitButton disabled={!turnstileSiteKey} />
 
-              <p className="text-center text-xs leading-5 text-slate-500">
+              <p className="text-center text-xs leading-5 text-muted-foreground">
                 By submitting this form, you agree that Emirate ErrandHub may
                 use your contact details to respond to your enquiry.
               </p>

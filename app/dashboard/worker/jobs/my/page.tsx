@@ -65,7 +65,7 @@ function getStatusClasses(status: string) {
     case "cancelled":
       return "bg-red-50 text-red-700 ring-red-600/20";
     default:
-      return "bg-slate-100 text-slate-700 ring-slate-600/20";
+      return "bg-muted text-foreground ring-slate-600/20";
   }
 }
 
@@ -206,11 +206,11 @@ export default async function WorkerMyJobsPage() {
             WORKER WORKSPACE
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
             My Jobs
           </h1>
 
-          <p className="mt-2 text-sm text-slate-600 sm:text-base">
+          <p className="mt-2 text-sm text-muted-foreground sm:text-base">
             Keep track of your assignments and manage your service jobs.
           </p>
         </div>
@@ -226,8 +226,8 @@ export default async function WorkerMyJobsPage() {
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardContent className="flex items-center gap-4 p-5">
-            <div className="rounded-xl bg-slate-100 p-3">
-              <Briefcase className="h-5 w-5 text-slate-700" />
+            <div className="rounded-xl bg-muted p-3">
+              <Briefcase className="h-5 w-5 text-foreground" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total jobs</p>
@@ -328,7 +328,7 @@ export default async function WorkerMyJobsPage() {
                         </div>
 
                         <div>
-                          <h3 className="text-lg font-semibold text-slate-900">
+                          <h3 className="text-lg font-semibold text-foreground">
                             {request?.title ?? "Service Job"}
                           </h3>
 
@@ -359,7 +359,7 @@ export default async function WorkerMyJobsPage() {
                       </div>
 
                       <div className="flex flex-col items-start gap-3 border-t pt-4 lg:min-w-52 lg:items-end lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-                        <p className="text-xl font-bold text-slate-900">
+                        <p className="text-xl font-bold text-foreground">
                           {formatCurrency(job.agreed_amount, job.currency)}
                         </p>
 

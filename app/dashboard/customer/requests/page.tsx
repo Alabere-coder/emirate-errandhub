@@ -59,7 +59,7 @@ const statusConfig: Record<
   },
   cancelled: {
     label: "Cancelled",
-    className: "border border-slate-200 bg-slate-100 text-slate-700",
+    className: "border   border-border bg-muted text-foreground",
   },
   rejected: {
     label: "Rejected",
@@ -122,7 +122,7 @@ function getStatusConfig(status: string) {
   return (
     statusConfig[status as RequestStatus] ?? {
       label: status ? status.replaceAll("_", " ") : "Unknown",
-      className: "border border-slate-200 bg-slate-100 text-slate-700",
+      className: "border   border-border bg-muted text-foreground",
     }
   );
 }
@@ -183,10 +183,10 @@ export default async function CustomerRequestsPage() {
           <p className="text-sm font-semibold text-teal-700">
             CUSTOMER DASHBOARD
           </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
             My Requests
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             View and manage the services you have requested.
           </p>
         </div>
@@ -197,11 +197,11 @@ export default async function CustomerRequestsPage() {
               <AlertCircle className="h-7 w-7 text-red-600" />
             </div>
 
-            <h2 className="mt-5 text-lg font-bold text-slate-900">
+            <h2 className="mt-5 text-lg font-bold text-foreground">
               Unable to load your requests
             </h2>
 
-            <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
+            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               Something went wrong while loading your service requests. Please
               refresh the page and try again.
             </p>
@@ -234,7 +234,7 @@ export default async function CustomerRequestsPage() {
       value: totalRequests,
       description: "All requests submitted",
       icon: ClipboardList,
-      iconClass: "bg-slate-100 text-slate-700",
+      iconClass: "bg-muted text-foreground",
     },
     {
       label: "Awaiting response",
@@ -268,7 +268,7 @@ export default async function CustomerRequestsPage() {
 
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-teal-300">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/5 px-3 py-1.5 text-xs font-semibold text-teal-300">
               <ClipboardList className="h-3.5 w-3.5" />
               CUSTOMER DASHBOARD
             </div>
@@ -298,8 +298,10 @@ export default async function CustomerRequestsPage() {
       {/* Summary cards */}
       <section aria-label="Request summary">
         <div className="mb-4">
-          <h2 className="text-lg font-bold text-slate-900">Request overview</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-lg font-bold text-foreground">
+            Request overview
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             A quick summary of your service activity.
           </p>
         </div>
@@ -311,15 +313,15 @@ export default async function CustomerRequestsPage() {
             return (
               <Card
                 key={item.label}
-                className="rounded-2xl border-slate-200 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                className="rounded-2xl   border-border shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-medium text-slate-500">
+                      <p className="text-sm font-medium text-muted-foreground">
                         {item.label}
                       </p>
-                      <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+                      <p className="mt-3 text-3xl font-bold tracking-tight text-foreground">
                         {item.value}
                       </p>
                     </div>
@@ -331,7 +333,7 @@ export default async function CustomerRequestsPage() {
                     </div>
                   </div>
 
-                  <p className="mt-3 text-xs text-slate-500">
+                  <p className="mt-3 text-xs text-muted-foreground">
                     {item.description}
                   </p>
                 </CardContent>
@@ -345,10 +347,10 @@ export default async function CustomerRequestsPage() {
       <section>
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
               Your service requests
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               {totalRequests === 1
                 ? "You have submitted 1 request."
                 : `You have submitted ${totalRequests} requests.`}
@@ -363,11 +365,11 @@ export default async function CustomerRequestsPage() {
                 <Wrench className="h-8 w-8" />
               </div>
 
-              <h3 className="mt-6 text-xl font-bold text-slate-900">
+              <h3 className="mt-6 text-xl font-bold text-foreground">
                 No service requests yet
               </h3>
 
-              <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
+              <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 When you need help with a task, create a service request here.
                 You can describe the work, provide your location, and review
                 quotations from workers.
@@ -382,7 +384,7 @@ export default async function CustomerRequestsPage() {
 
               <Link
                 href="/services"
-                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition-colors hover:text-teal-700"
+                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-teal-700"
               >
                 Explore services
                 <ArrowRight className="h-4 w-4" />
@@ -409,19 +411,19 @@ export default async function CustomerRequestsPage() {
               return (
                 <Card
                   key={request.id}
-                  className="group overflow-hidden rounded-2xl border-slate-200 shadow-sm transition duration-200 hover:border-teal-200 hover:shadow-md"
+                  className="group overflow-hidden rounded-2xl   border-border shadow-sm transition duration-200 hover:border-teal-200 hover:shadow-md"
                 >
                   <CardContent className="p-5 sm:p-6">
                     {/* Title and status */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="flex min-w-0 gap-4">
-                        <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 sm:flex">
+                        <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground sm:flex">
                           <Wrench className="h-5 w-5" />
                         </div>
 
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="text-base font-bold text-slate-900 sm:text-lg">
+                            <h3 className="text-base font-bold text-foreground sm:text-lg">
                               {request.title}
                             </h3>
 
@@ -436,12 +438,12 @@ export default async function CustomerRequestsPage() {
                             )}
                           </div>
 
-                          <p className="mt-1.5 text-sm text-slate-500">
+                          <p className="mt-1.5 text-sm text-muted-foreground">
                             {category?.name ?? "Service category"}
                             {service?.name && (
                               <>
                                 <span className="mx-2 text-slate-300">/</span>
-                                <span className="font-medium text-slate-700">
+                                <span className="font-medium text-foreground">
                                   {service.name}
                                 </span>
                               </>
@@ -458,21 +460,21 @@ export default async function CustomerRequestsPage() {
                     </div>
 
                     {/* Description */}
-                    <p className="mt-5 line-clamp-2 text-sm leading-6 text-slate-600">
+                    <p className="mt-5 line-clamp-2 text-sm leading-6 text-muted-foreground">
                       {request.description || "No description provided."}
                     </p>
 
                     {/* Request details */}
-                    <div className="mt-5 grid gap-4 border-t border-slate-100 pt-5 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="mt-5 grid gap-4 border-t   border-border pt-5 sm:grid-cols-2 xl:grid-cols-4">
                       <div className="flex min-w-0 items-start gap-3">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
                           <CalendarDays className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-medium text-slate-500">
+                          <p className="text-xs font-medium text-muted-foreground">
                             Preferred date
                           </p>
-                          <p className="mt-1 wrap-break-word text-sm font-semibold text-slate-800">
+                          <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                             {formatDate(request.preferred_date)}
                           </p>
                         </div>
@@ -483,10 +485,10 @@ export default async function CustomerRequestsPage() {
                           <Clock3 className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-medium text-slate-500">
+                          <p className="text-xs font-medium text-muted-foreground">
                             Preferred time
                           </p>
-                          <p className="mt-1 wrap-break-word text-sm font-semibold text-slate-800">
+                          <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                             {formatTime(request.preferred_time)}
                           </p>
                         </div>
@@ -497,10 +499,10 @@ export default async function CustomerRequestsPage() {
                           <ClipboardList className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-medium text-slate-500">
+                          <p className="text-xs font-medium text-muted-foreground">
                             Budget
                           </p>
-                          <p className="mt-1 wrap-break-word text-sm font-semibold text-slate-800">
+                          <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                             {formatBudget(request.budget, request.currency)}
                           </p>
                         </div>
@@ -511,11 +513,11 @@ export default async function CustomerRequestsPage() {
                           <MapPin className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-medium text-slate-500">
+                          <p className="text-xs font-medium text-muted-foreground">
                             Location
                           </p>
                           <p
-                            className="mt-1 wrap-break-word text-sm font-semibold text-slate-800"
+                            className="mt-1 wrap-break-word text-sm font-semibold text-foreground"
                             title={
                               request.address || location || "Not specified"
                             }
@@ -527,8 +529,8 @@ export default async function CustomerRequestsPage() {
                     </div>
 
                     {/* Footer */}
-                    <div className="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="text-xs text-slate-500">
+                    <div className="mt-5 flex flex-col gap-3 border-t   border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-xs text-muted-foreground">
                         Submitted {formatCreatedDate(request.created_at)}
                       </p>
 

@@ -99,7 +99,7 @@ function getStatusClasses(status: string) {
     case "cancelled":
       return "bg-red-50 text-red-700 ring-red-600/20";
     default:
-      return "bg-slate-100 text-slate-700 ring-slate-600/20";
+      return "bg-muted text-foreground ring-slate-600/20";
   }
 }
 
@@ -336,7 +336,7 @@ export default async function WorkerJobDetailPage({
             <p className="text-sm font-semibold text-emerald-700">
               WORKER WORKSPACE
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
               {request?.title ?? "Service Job"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">

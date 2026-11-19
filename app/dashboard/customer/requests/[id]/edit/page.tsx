@@ -112,12 +112,12 @@ export default async function EditCustomerRequestPage({
         </Link>
       </Button>
 
-      <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-        <CardHeader className="border-b border-slate-100 px-6 py-5">
+      <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+        <CardHeader className="border-b   border-border px-6 py-5">
           <CardTitle className="text-xl font-bold">
             Edit Service Request
           </CardTitle>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Update the details of your pending request.
           </p>
         </CardHeader>

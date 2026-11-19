@@ -55,7 +55,7 @@ export default async function AdminProfilePage() {
         <div className="pointer-events-none absolute -bottom-32 left-1/3 size-72 rounded-full bg-teal-300/10 blur-3xl" />
 
         <div className="relative flex items-center gap-4">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10">
+          <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-card/10">
             <ShieldCheck className="size-7 text-emerald-100" />
           </div>
 

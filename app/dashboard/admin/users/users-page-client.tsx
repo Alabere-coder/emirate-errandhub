@@ -53,6 +53,12 @@ function initials(user: AdminUser) {
   );
 }
 
+function statusClass(isActive: boolean) {
+  return isActive
+    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+    : "bg-rose-500/10 text-rose-700 dark:text-rose-400";
+}
+
 export function UsersPageClient({ users }: Props) {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -65,7 +71,9 @@ export function UsersPageClient({ users }: Props) {
       total: users.length,
       customers: users.filter((user) => user.role === "customer").length,
       workers: users.filter((user) => user.role === "worker").length,
-      admins: users.filter((user) => user.role === "admin").length,
+      admins: users.filter(
+        (user) => user.role === "admin" || user.role === "super_admin",
+      ).length,
       inactive: users.filter((user) => !user.is_active).length,
     }),
     [users],
@@ -76,7 +84,8 @@ export function UsersPageClient({ users }: Props) {
 
     return users
       .filter((user) => {
-        const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+        const fullName =
+          `${user.first_name ?? ""} ${user.last_name ?? ""}`.toLowerCase();
 
         const matchesSearch =
           !query ||
@@ -111,17 +120,15 @@ export function UsersPageClient({ users }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-7xl space-y-8 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium text-emerald-700">
-              Administration
-            </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
+            <p className="text-sm font-medium text-primary">Administration</p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">
               User management
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
               View customers, service providers and administrators across
               Emirate ErrandHub.
             </p>
@@ -151,7 +158,7 @@ export function UsersPageClient({ users }: Props) {
             title="Administrators"
             value={stats.admins}
             icon={<ShieldCheck className="h-5 w-5" />}
-            description="Admin accounts"
+            description="Admin and super admin accounts"
           />
           <StatCard
             title="Inactive accounts"
@@ -161,20 +168,20 @@ export function UsersPageClient({ users }: Props) {
           />
         </section>
 
-        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-200 p-5 sm:p-6">
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="border-b border-border p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-lg font-semibold text-foreground">
                   All users
                 </h2>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Search profiles and filter accounts by role or status.
                 </p>
               </div>
 
               <div className="relative w-full lg:max-w-sm">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
                   value={search}
                   onChange={(event) => {
@@ -183,7 +190,7 @@ export function UsersPageClient({ users }: Props) {
                   }}
                   placeholder="Search name, email or phone..."
                   aria-label="Search users"
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
+                  className="h-11 w-full rounded-xl border border-input bg-background pl-10 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-ring/10"
                 />
               </div>
             </div>
@@ -196,12 +203,13 @@ export function UsersPageClient({ users }: Props) {
                   resetPage();
                 }}
                 aria-label="Filter by role"
-                className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-emerald-500"
+                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/10"
               >
                 <option value="all">All roles</option>
                 <option value="customer">Customers</option>
                 <option value="worker">Service providers</option>
                 <option value="admin">Administrators</option>
+                <option value="super_admin">Super Administrators</option>
               </select>
 
               <select
@@ -211,7 +219,7 @@ export function UsersPageClient({ users }: Props) {
                   resetPage();
                 }}
                 aria-label="Filter by account status"
-                className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-emerald-500"
+                className="h-10 rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-ring/10"
               >
                 <option value="all">All account statuses</option>
                 <option value="active">Active accounts</option>
@@ -226,7 +234,7 @@ export function UsersPageClient({ users }: Props) {
                   );
                   resetPage();
                 }}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-medium text-foreground transition hover:bg-muted"
               >
                 <ArrowDownUp className="h-4 w-4" />
                 {sortOrder === "newest" ? "Newest first" : "Oldest first"}
@@ -241,7 +249,7 @@ export function UsersPageClient({ users }: Props) {
                   setSortOrder("newest");
                   resetPage();
                 }}
-                className="h-10 rounded-xl px-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                className="h-10 rounded-xl px-3 text-sm font-semibold text-primary transition hover:bg-primary/10"
               >
                 Clear filters
               </button>
@@ -250,8 +258,8 @@ export function UsersPageClient({ users }: Props) {
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-212.5 text-left">
-              <thead className="bg-slate-50">
-                <tr className="border-b border-slate-200 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <thead className="bg-muted/70">
+                <tr className="border-b border-border text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   <th className="px-6 py-4">User</th>
                   <th className="px-6 py-4">Role</th>
                   <th className="px-6 py-4">Account status</th>
@@ -260,23 +268,26 @@ export function UsersPageClient({ users }: Props) {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border">
                 {visibleUsers.map((user) => (
-                  <tr key={user.id} className="transition hover:bg-slate-50/80">
+                  <tr
+                    key={user.id}
+                    className="transition-colors hover:bg-muted/40"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-sm font-bold text-emerald-700">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                           {initials(user)}
                         </div>
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-900">
+                          <p className="truncate text-sm font-semibold text-foreground">
                             {user.first_name} {user.last_name}
                           </p>
-                          <p className="mt-1 max-w-xs truncate text-sm text-slate-500">
+                          <p className="mt-1 max-w-xs truncate text-sm text-muted-foreground">
                             {user.email ?? "No email available"}
                           </p>
                           {user.phone && (
-                            <p className="mt-0.5 text-xs text-slate-400">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                               {user.phone}
                             </p>
                           )}
@@ -285,18 +296,14 @@ export function UsersPageClient({ users }: Props) {
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                      <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
                         {roleLabel(user.role)}
                       </span>
                     </td>
 
                     <td className="px-6 py-4">
                       <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                          user.is_active
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-rose-50 text-rose-700"
-                        }`}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(user.is_active)}`}
                       >
                         {user.is_active ? (
                           <CheckCircle2 className="h-3.5 w-3.5" />
@@ -307,9 +314,9 @@ export function UsersPageClient({ users }: Props) {
                       </span>
                     </td>
 
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground">
                       <span className="inline-flex items-center gap-2">
-                        <Clock3 className="h-4 w-4 text-slate-400" />
+                        <Clock3 className="h-4 w-4 text-muted-foreground" />
                         {formatDate(user.created_at)}
                       </span>
                     </td>
@@ -317,7 +324,7 @@ export function UsersPageClient({ users }: Props) {
                     <td className="px-6 py-4 text-right">
                       <Link
                         href={`/dashboard/admin/users/${user.id}`}
-                        className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                        className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10"
                       >
                         View
                         <ChevronRight className="h-4 w-4" />
@@ -329,13 +336,13 @@ export function UsersPageClient({ users }: Props) {
                 {visibleUsers.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-6 py-16 text-center">
-                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
                         <Search className="h-5 w-5" />
                       </div>
-                      <p className="mt-4 text-sm font-semibold text-slate-900">
+                      <p className="mt-4 text-sm font-semibold text-foreground">
                         No users found
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         Try a different search term or clear your filters.
                       </p>
                     </td>
@@ -345,8 +352,8 @@ export function UsersPageClient({ users }: Props) {
             </table>
           </div>
 
-          <div className="flex flex-col gap-3 border-t border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <p className="text-sm text-slate-500">
+          <div className="flex flex-col gap-3 border-t border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <p className="text-sm text-muted-foreground">
               {filteredUsers.length === 0
                 ? "No matching users"
                 : `Showing ${startIndex + 1}–${Math.min(
@@ -362,12 +369,12 @@ export function UsersPageClient({ users }: Props) {
                   setCurrentPage((current) => Math.max(1, current - 1))
                 }
                 disabled={safePage <= 1}
-                className="inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-9 items-center gap-1 rounded-lg border border-border px-3 text-sm font-medium text-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Previous
               </button>
-              <span className="px-2 text-sm text-slate-500">
+              <span className="px-2 text-sm tabular-nums text-muted-foreground">
                 {safePage} / {totalPages}
               </span>
               <button
@@ -376,7 +383,7 @@ export function UsersPageClient({ users }: Props) {
                   setCurrentPage((current) => Math.min(totalPages, current + 1))
                 }
                 disabled={safePage >= totalPages}
-                className="inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-9 items-center gap-1 rounded-lg border border-border px-3 text-sm font-medium text-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next
                 <ChevronRight className="h-4 w-4" />
@@ -401,19 +408,19 @@ function StatCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <p className="mt-3 text-3xl font-bold tracking-tight text-foreground">
             {value.toLocaleString("en-NG")}
           </p>
         </div>
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
           {icon}
         </div>
       </div>
-      <p className="mt-3 text-xs text-slate-500">{description}</p>
+      <p className="mt-3 text-xs text-muted-foreground">{description}</p>
     </div>
   );
 }

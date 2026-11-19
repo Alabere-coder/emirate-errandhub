@@ -72,7 +72,7 @@ const STATUS_STYLES: Record<WithdrawalStatus, string> = {
   failed:
     "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300",
   cancelled:
-    "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    "  border-border bg-muted text-muted-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
 };
 
 function formatMoney(amount: number | string, currency: string) {
@@ -294,7 +294,7 @@ export default async function AdminWithdrawalsPage({
         <div className="relative">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
                 <Wallet className="h-3.5 w-3.5" />
                 Financial operations
               </div>
@@ -309,8 +309,8 @@ export default async function AdminWithdrawalsPage({
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10">
+            <div className="flex shrink-0 items-center gap-3 rounded-xl border border-white/15 bg-card/10 px-4 py-3 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-card/10">
                 <ShieldCheck className="h-5 w-5 text-emerald-100" />
               </div>
               <div>

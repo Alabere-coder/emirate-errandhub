@@ -228,11 +228,13 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
       {sections.map((section) => (
         <section
           key={section.title}
-          className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+          className="overflow-hidden rounded-2xl border   border-border bg-card shadow-sm"
         >
-          <div className="border-b border-slate-100 px-5 py-4 sm:px-6">
-            <h2 className="font-semibold text-slate-900">{section.title}</h2>
-            <p className="mt-1 text-sm text-slate-500">{section.description}</p>
+          <div className="border-b   border-border px-5 py-4 sm:px-6">
+            <h2 className="font-semibold text-foreground">{section.title}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {section.description}
+            </p>
           </div>
 
           <div className="divide-y divide-slate-100">
@@ -244,7 +246,7 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
               return (
                 <label
                   key={item.name}
-                  className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50 sm:px-6"
+                  className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 transition hover:bg-muted sm:px-6"
                 >
                   <span className="flex min-w-0 items-start gap-3">
                     <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
@@ -252,10 +254,10 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
                     </span>
 
                     <span className="min-w-0">
-                      <span className="block text-sm font-medium text-slate-900">
+                      <span className="block text-sm font-medium text-foreground">
                         {item.label}
                       </span>
-                      <span className="mt-1 block text-xs leading-5 text-slate-500">
+                      <span className="mt-1 block text-xs leading-5 text-muted-foreground">
                         {item.description}
                       </span>
                     </span>
@@ -301,7 +303,7 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
                       className="peer sr-only"
                     />
                     <span className="h-6 w-11 rounded-full bg-slate-300 transition peer-checked:bg-emerald-600 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-emerald-600 peer-disabled:opacity-50" />
-                    <span className="pointer-events-none absolute left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5" />
+                    <span className="pointer-events-none absolute left-0.5 h-5 w-5 rounded-full bg-card shadow-sm transition-transform peer-checked:translate-x-5" />
                   </span>
                 </label>
               );
@@ -311,7 +313,7 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
       ))}
 
       {pushBusy && (
-        <p className="text-sm text-slate-500" role="status">
+        <p className="text-sm text-muted-foreground" role="status">
           Updating browser push settings...
         </p>
       )}

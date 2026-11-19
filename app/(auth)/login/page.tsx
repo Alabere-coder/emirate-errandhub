@@ -11,7 +11,7 @@ import { PublicNavbar } from "@/components/navigation/public-navbar";
 const initialState: LoginState = {};
 
 const inputClassName =
-  "h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10";
+  "h-12 w-full rounded-xl border   border-border bg-card px-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70 hover:border-slate-300 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
@@ -21,7 +21,7 @@ export default function LoginPage() {
   const error = searchParams.get("error");
 
   return (
-    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-50 px-4 py-2 sm:px-6 sm:py-10">
+    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-muted px-4 py-2 sm:px-6 sm:py-10">
       {/* Background decoration */}
       <div
         aria-hidden="true"
@@ -47,21 +47,21 @@ export default function LoginPage() {
             Welcome back
           </h1>
 
-          <p className="mt-3 text-sm leading-7 text-slate-600 max-md:hidden">
+          <p className="mt-3 text-sm leading-7 text-muted-foreground max-md:hidden">
             Sign in to manage your service requests, connect with professionals,
             and keep everything moving.
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5">
+        <div className="overflow-hidden rounded-3xl border   border-border bg-card shadow-xl shadow-slate-900/5">
           <div className="h-1.5 bg-linear-to-r from-emerald-600 via-teal-500 to-emerald-300" />
 
           <div className="p-6 sm:p-8">
             <div className="mb-7">
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-foreground">
                 Sign in to your account
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Enter your email and password to continue.
               </p>
             </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-2 block text-sm font-medium text-slate-700"
+                  className="mb-2 block text-sm font-medium text-foreground"
                 >
                   Email address
                 </label>
@@ -129,7 +129,7 @@ export default function LoginPage() {
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <label
                     htmlFor="password"
-                    className="block text-sm font-medium text-slate-700"
+                    className="block text-sm font-medium text-foreground"
                   >
                     Password
                   </label>
@@ -156,7 +156,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((value) => !value)}
-                    className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-slate-400 transition hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-600"
+                    className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-muted-foreground/70 transition hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-600"
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
@@ -189,8 +189,8 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <div className="mt-7 border-t border-slate-100 pt-6 text-center">
-              <p className="text-sm text-slate-600">
+            <div className="mt-7 border-t   border-border pt-6 text-center">
+              <p className="text-sm text-muted-foreground">
                 Don&apos;t have an account?{" "}
                 <Link
                   href="/signup"
@@ -204,17 +204,17 @@ export default function LoginPage() {
         </div>
 
         {/* Email confirmation reminder */}
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm shadow-slate-900/2">
+        <div className="mt-6 rounded-2xl border   border-border bg-card/80 p-4 shadow-sm shadow-slate-900/2">
           <div className="flex items-start gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
               <MailCheck className="h-5 w-5" />
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-slate-800">
+              <h3 className="text-sm font-semibold text-foreground">
                 New to ErrandHub?
               </h3>
-              <p className="mt-1 text-xs leading-6 text-slate-500">
+              <p className="mt-1 text-xs leading-6 text-muted-foreground">
                 If you just registered, check your inbox and confirm your email
                 address before signing in.
               </p>

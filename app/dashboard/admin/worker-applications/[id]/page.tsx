@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import {
-  ArrowLeft,
   ArrowRight,
   CalendarDays,
   CheckCircle2,
@@ -188,14 +187,16 @@ export default async function WorkerApplicationReviewPage({
       </div>
 
       {/* Applicant information */}
-      <div className="rounded-2xl border bg-card p-6 shadow-sm">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <UserRound className="h-5 w-5" />
           </div>
 
           <div>
-            <h2 className="font-semibold">Applicant Information</h2>
+            <h2 className="font-semibold text-foreground">
+              Applicant Information
+            </h2>
             <p className="text-xs text-muted-foreground">
               Personal details associated with this application
             </p>
@@ -207,7 +208,9 @@ export default async function WorkerApplicationReviewPage({
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Full Name
             </p>
-            <p className="mt-2 text-sm font-semibold">{applicantName}</p>
+            <p className="mt-2 text-sm font-semibold text-foreground">
+              {applicantName}
+            </p>
           </div>
 
           <div>
@@ -215,7 +218,7 @@ export default async function WorkerApplicationReviewPage({
               <Phone className="h-3.5 w-3.5" />
               Phone Number
             </p>
-            <p className="mt-2 text-sm font-semibold">
+            <p className="mt-2 text-sm font-semibold text-foreground">
               {profile?.phone ?? "No phone number"}
             </p>
           </div>
@@ -224,7 +227,7 @@ export default async function WorkerApplicationReviewPage({
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Account Role
             </p>
-            <p className="mt-2 text-sm font-semibold capitalize">
+            <p className="mt-2 text-sm font-semibold capitalize text-foreground">
               {profile?.role?.replaceAll("_", " ") ?? "Unavailable"}
             </p>
           </div>
@@ -237,7 +240,7 @@ export default async function WorkerApplicationReviewPage({
               className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
                 profile?.is_active
                   ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-400"
-                  : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  : "border-border bg-muted text-muted-foreground"
               }`}
             >
               {profile?.is_active ? "Active" : "Inactive"}
@@ -247,22 +250,24 @@ export default async function WorkerApplicationReviewPage({
       </div>
 
       {/* Application statement */}
-      <div className="rounded-2xl border bg-card p-6 shadow-sm">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
             <FileText className="h-5 w-5" />
           </div>
 
           <div>
-            <h2 className="font-semibold">Application Statement</h2>
+            <h2 className="font-semibold text-foreground">
+              Application Statement
+            </h2>
             <p className="text-xs text-muted-foreground">
               Why the applicant wants to become a worker
             </p>
           </div>
         </div>
 
-        <div className="mt-5 rounded-xl border bg-muted/20 p-5">
-          <p className="whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
+        <div className="mt-5 rounded-xl border border-border bg-muted/30 p-5">
+          <p className="whitespace-pre-wrap text-sm leading-7 text-foreground/80">
             {application.application_note ||
               "No application statement provided."}
           </p>
@@ -296,14 +301,16 @@ export default async function WorkerApplicationReviewPage({
       {/* Review actions */}
       {application.status === "pending" ? (
         <div className="overflow-hidden rounded-2xl border border-emerald-200 bg-card shadow-sm dark:border-emerald-900">
-          <div className="border-b bg-emerald-50/70 p-6 dark:bg-emerald-950/20">
+          <div className="border-b border-border bg-emerald-50/70 p-6 dark:bg-emerald-950/20">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
                 <ShieldCheck className="h-5 w-5" />
               </div>
 
               <div>
-                <h2 className="font-semibold">Review Decision</h2>
+                <h2 className="font-semibold text-foreground">
+                  Review Decision
+                </h2>
                 <p className="text-xs text-muted-foreground">
                   Approve or reject this worker application.
                 </p>
@@ -316,11 +323,11 @@ export default async function WorkerApplicationReviewPage({
           </div>
         </div>
       ) : (
-        <div className="rounded-2xl border bg-muted/20 p-5">
+        <div className="rounded-2xl border border-border bg-muted/30 p-5">
           <div className="flex items-start gap-3">
             <CheckCircle2 className="mt-0.5 h-5 w-5 text-muted-foreground" />
             <div>
-              <p className="text-sm font-semibold">
+              <p className="text-sm font-semibold text-foreground">
                 This application has already been reviewed.
               </p>
 
@@ -336,10 +343,10 @@ export default async function WorkerApplicationReviewPage({
       )}
 
       {/* Bottom navigation */}
-      <div className="flex justify-end border-t pt-5">
+      <div className="flex justify-end border-t border-border pt-5">
         <Link
           href="/dashboard/admin/worker-applications"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-emerald-600"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
         >
           Return to Applications
           <ArrowRight className="h-4 w-4" />

@@ -138,14 +138,16 @@ function SectionHeading({
         <h2 className="text-lg font-bold tracking-tight text-slate-950 sm:text-xl">
           {title}
         </h2>
-        <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+        <p className="mt-1 text-sm leading-6 text-muted-foreground">
+          {description}
+        </p>
       </div>
     </div>
   );
 }
 
 function FieldHint({ children }: { children: React.ReactNode }) {
-  return <p className="text-xs leading-5 text-slate-500">{children}</p>;
+  return <p className="text-xs leading-5 text-muted-foreground">{children}</p>;
 }
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
@@ -372,9 +374,9 @@ export default function NewRequestForm({
       )}
 
       {selectedWorkerId && selectedWorkerName && (
-        <div className="overflow-hidden rounded-2xl border border-teal-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-teal-200 bg-card shadow-sm">
           <div className="flex items-start gap-4 bg-teal-50/80 p-5 sm:p-6">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-teal-700 shadow-sm ring-1 ring-teal-100">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-card text-teal-700 shadow-sm ring-1 ring-teal-100">
               <BadgeCheck className="size-6" />
             </div>
 
@@ -389,7 +391,7 @@ export default function NewRequestForm({
                 </span>
               </div>
 
-              <p className="mt-2 text-sm leading-6 text-slate-600">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 Your request will be directed to this worker. The worker must
                 still be eligible for the requested category.
               </p>
@@ -399,7 +401,7 @@ export default function NewRequestForm({
       )}
 
       {/* Step 1: Service selection */}
-      <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+      <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
         <CardContent className="space-y-6 p-5 sm:p-7">
           <SectionHeading
             number="01"
@@ -408,11 +410,11 @@ export default function NewRequestForm({
             description="Tell us what kind of help you need."
           />
 
-          <div className="grid gap-5 border-t border-slate-100 pt-6">
+          <div className="grid gap-5 border-t   border-border pt-6">
             <div className="space-y-2">
               <Label
                 htmlFor="category_id"
-                className="text-sm font-semibold text-slate-800"
+                className="text-sm font-semibold text-foreground"
               >
                 Service category <span className="text-red-500">*</span>
               </Label>
@@ -423,7 +425,7 @@ export default function NewRequestForm({
                 value={selectedCategoryId}
                 onChange={handleCategoryChange}
                 required
-                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
+                className="h-12 w-full rounded-xl border   border-border bg-card px-4 text-sm text-foreground outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
               >
                 <option value="">Select a category</option>
                 {categories.map((category) => (
@@ -441,10 +443,12 @@ export default function NewRequestForm({
             <div className="space-y-2">
               <Label
                 htmlFor="service_id"
-                className="text-sm font-semibold text-slate-800"
+                className="text-sm font-semibold text-foreground"
               >
                 Specific service{" "}
-                <span className="font-normal text-slate-400">(optional)</span>
+                <span className="font-normal text-muted-foreground/70">
+                  (optional)
+                </span>
               </Label>
 
               <select
@@ -453,7 +457,7 @@ export default function NewRequestForm({
                 value={selectedServiceId}
                 onChange={(event) => setSelectedServiceId(event.target.value)}
                 disabled={!selectedCategoryId || filteredServices.length === 0}
-                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                className="h-12 w-full rounded-xl border   border-border bg-card px-4 text-sm text-foreground outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground/70"
               >
                 <option value="">Select a specific service</option>
                 {filteredServices.map((service) => (
@@ -475,7 +479,7 @@ export default function NewRequestForm({
       </Card>
 
       {/* Step 2: Request details */}
-      <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+      <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
         <CardContent className="space-y-6 p-5 sm:p-7">
           <SectionHeading
             number="02"
@@ -484,11 +488,11 @@ export default function NewRequestForm({
             description="A clear description helps workers understand what you need."
           />
 
-          <div className="space-y-5 border-t border-slate-100 pt-6">
+          <div className="space-y-5 border-t   border-border pt-6">
             <div className="space-y-2">
               <Label
                 htmlFor="title"
-                className="text-sm font-semibold text-slate-800"
+                className="text-sm font-semibold text-foreground"
               >
                 Request title <span className="text-red-500">*</span>
               </Label>
@@ -500,14 +504,14 @@ export default function NewRequestForm({
                 placeholder="e.g. Repair my air conditioner"
                 required
                 minLength={3}
-                className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
+                className="h-12 rounded-xl   border-border px-4 focus-visible:ring-teal-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label
                 htmlFor="description"
-                className="text-sm font-semibold text-slate-800"
+                className="text-sm font-semibold text-foreground"
               >
                 Task description <span className="text-red-500">*</span>
               </Label>
@@ -520,7 +524,7 @@ export default function NewRequestForm({
                 required
                 minLength={10}
                 rows={6}
-                className="min-h-36 resize-y rounded-xl border-slate-200 px-4 py-3 leading-6 focus-visible:ring-teal-500"
+                className="min-h-36 resize-y rounded-xl   border-border px-4 py-3 leading-6 focus-visible:ring-teal-500"
               />
 
               <FieldHint>
@@ -533,7 +537,7 @@ export default function NewRequestForm({
       </Card>
 
       {/* Step 3: Photos and videos */}
-      <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+      <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
         <CardContent className="space-y-6 p-5 sm:p-7">
           <SectionHeading
             number="03"
@@ -545,10 +549,10 @@ export default function NewRequestForm({
           {/* {existingMedia.length > 0 && (
             <div className="space-y-3">
               <div>
-                <p className="font-semibold text-slate-900">
+                <p className="font-semibold text-foreground">
                   Existing photos and videos
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Already attached to this request.
                 </p>
               </div>
@@ -557,20 +561,20 @@ export default function NewRequestForm({
                 {existingMedia.map((media) => (
                   <div
                     key={media.id}
-                    className="overflow-hidden rounded-xl border border-slate-200"
+                    className="overflow-hidden rounded-xl border   border-border"
                   >
                     {media.file_type.startsWith("video/") ? (
                       <video
                         src={media.file_url}
                         controls
                         preload="metadata"
-                        className="aspect-square w-full bg-slate-100 object-cover"
+                        className="aspect-square w-full bg-muted object-cover"
                       />
                     ) : (
                       <img
                         src={media.file_url}
                         alt="Existing request attachment"
-                        className="aspect-square w-full bg-slate-100 object-cover"
+                        className="aspect-square w-full bg-muted object-cover"
                       />
                     )}
                   </div>
@@ -582,10 +586,10 @@ export default function NewRequestForm({
           {existingMedia.length > 0 && (
             <div className="space-y-3">
               <div>
-                <p className="font-semibold text-slate-900">
+                <p className="font-semibold text-foreground">
                   Existing photos and videos
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Remove attachments you no longer want to keep.
                 </p>
               </div>
@@ -596,20 +600,20 @@ export default function NewRequestForm({
                   .map((media) => (
                     <div
                       key={media.id}
-                      className="overflow-hidden rounded-xl border border-slate-200"
+                      className="overflow-hidden rounded-xl border   border-border"
                     >
                       {media.file_type.startsWith("video/") ? (
                         <video
                           src={media.file_url}
                           controls
                           preload="metadata"
-                          className="aspect-square w-full bg-slate-100 object-cover"
+                          className="aspect-square w-full bg-muted object-cover"
                         />
                       ) : (
                         <img
                           src={media.file_url}
                           alt="Existing request attachment"
-                          className="aspect-square w-full bg-slate-100 object-cover"
+                          className="aspect-square w-full bg-muted object-cover"
                         />
                       )}
 
@@ -621,7 +625,7 @@ export default function NewRequestForm({
                             media.id,
                           ])
                         }
-                        className="w-full border-t border-slate-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                        className="w-full border-t   border-border px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
                       >
                         Remove
                       </button> */}
@@ -635,7 +639,7 @@ export default function NewRequestForm({
                               : "this image",
                           })
                         }
-                        className="w-full border-t border-slate-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                        className="w-full border-t   border-border px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
                       >
                         Remove
                       </button>
@@ -661,18 +665,18 @@ export default function NewRequestForm({
                 aria-modal="true"
                 aria-labelledby="remove-media-title"
                 aria-describedby="remove-media-description"
-                className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+                className="w-full max-w-md rounded-2xl bg-card p-6 shadow-xl"
               >
                 <h2
                   id="remove-media-title"
-                  className="text-lg font-semibold text-slate-900"
+                  className="text-lg font-semibold text-foreground"
                 >
                   Remove attachment?
                 </h2>
 
                 <p
                   id="remove-media-description"
-                  className="mt-2 text-sm text-slate-600"
+                  className="mt-2 text-sm text-muted-foreground"
                 >
                   Are you sure you want to remove {mediaToRemove.fileName}? You
                   can keep it by cancelling.
@@ -682,7 +686,7 @@ export default function NewRequestForm({
                   <button
                     type="button"
                     onClick={() => setMediaToRemove(null)}
-                    className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
                   >
                     Cancel
                   </button>
@@ -706,7 +710,7 @@ export default function NewRequestForm({
             </div>
           )}
 
-          <div className="space-y-4 border-t border-slate-100 pt-6">
+          <div className="space-y-4 border-t   border-border pt-6">
             <input
               ref={fileInputRef}
               id="media"
@@ -720,19 +724,19 @@ export default function NewRequestForm({
 
             <label
               htmlFor="media"
-              className="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/70 px-5 py-9 text-center transition hover:border-teal-400 hover:bg-teal-50/50 focus-within:ring-4 focus-within:ring-teal-500/10"
+              className="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed   border-border bg-muted/70 px-5 py-9 text-center transition hover:border-teal-400 hover:bg-teal-50/50 focus-within:ring-4 focus-within:ring-teal-500/10"
             >
-              <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-white text-teal-700 shadow-sm ring-1 ring-slate-200 transition group-hover:ring-teal-200">
+              <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-card text-teal-700 shadow-sm ring-1 ring-slate-200 transition group-hover:ring-teal-200">
                 <ImagePlus className="size-6" />
               </div>
 
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-foreground">
                 {selectedFiles.length > 0
                   ? "Add more photos or videos"
                   : "Choose photos or videos"}
               </span>
 
-              <span className="mt-2 text-sm text-slate-500">
+              <span className="mt-2 text-sm text-muted-foreground">
                 Select multiple files · Up to {MAX_MEDIA_FILES} files · 50 MB
                 each
               </span>
@@ -749,13 +753,13 @@ export default function NewRequestForm({
             )}
 
             {selectedFiles.length > 0 && (
-              <div className="space-y-4 rounded-xl border border-slate-200 p-4">
+              <div className="space-y-4 rounded-xl border   border-border p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-foreground">
                       Selected media
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       {selectedFiles.length} of {MAX_MEDIA_FILES} files
                     </p>
                   </div>
@@ -763,7 +767,7 @@ export default function NewRequestForm({
                   <button
                     type="button"
                     onClick={clearSelectedFiles}
-                    className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-500 transition hover:bg-red-50 hover:text-red-600"
+                    className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-red-50 hover:text-red-600"
                   >
                     <X className="size-4" />
                     Clear all
@@ -786,7 +790,7 @@ export default function NewRequestForm({
       </Card>
 
       {/* Step 4: Budget and schedule */}
-      <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+      <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
         <CardContent className="space-y-6 p-5 sm:p-7">
           <SectionHeading
             number="04"
@@ -795,12 +799,12 @@ export default function NewRequestForm({
             description="Share your estimated budget and when you would prefer the work to happen."
           />
 
-          <div className="space-y-5 border-t border-slate-100 pt-6">
+          <div className="space-y-5 border-t   border-border pt-6">
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label
                   htmlFor="budget"
-                  className="text-sm font-semibold text-slate-800"
+                  className="text-sm font-semibold text-foreground"
                 >
                   Estimated budget
                 </Label>
@@ -821,7 +825,7 @@ export default function NewRequestForm({
               <div className="space-y-2">
                 <Label
                   htmlFor="currency"
-                  className="text-sm font-semibold text-slate-800"
+                  className="text-sm font-semibold text-foreground"
                 >
                   Currency
                 </Label>
@@ -829,7 +833,7 @@ export default function NewRequestForm({
                   id="currency"
                   name="currency"
                   defaultValue={initialRequest?.currency ?? "NGN"}
-                  className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
+                  className="h-12 w-full rounded-xl border   border-border bg-card px-4 text-sm outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
                 >
                   <option value="NGN">NGN — Nigerian Naira</option>
                   <option value="USD">USD — US Dollar</option>
@@ -843,9 +847,9 @@ export default function NewRequestForm({
               <div className="space-y-2">
                 <Label
                   htmlFor="preferred_date"
-                  className="flex items-center gap-2 text-sm font-semibold text-slate-800"
+                  className="flex items-center gap-2 text-sm font-semibold text-foreground"
                 >
-                  <CalendarDays className="size-4 text-slate-400" />
+                  <CalendarDays className="size-4 text-muted-foreground/70" />
                   Preferred date
                 </Label>
                 <Input
@@ -853,16 +857,16 @@ export default function NewRequestForm({
                   name="preferred_date"
                   defaultValue={initialRequest?.preferred_date ?? ""}
                   type="date"
-                  className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
+                  className="h-12 rounded-xl   border-border px-4 focus-visible:ring-teal-500"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label
                   htmlFor="preferred_time"
-                  className="flex items-center gap-2 text-sm font-semibold text-slate-800"
+                  className="flex items-center gap-2 text-sm font-semibold text-foreground"
                 >
-                  <Clock3 className="size-4 text-slate-400" />
+                  <Clock3 className="size-4 text-muted-foreground/70" />
                   Preferred time
                 </Label>
                 <Input
@@ -870,7 +874,7 @@ export default function NewRequestForm({
                   name="preferred_time"
                   defaultValue={initialRequest?.preferred_time ?? ""}
                   type="time"
-                  className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
+                  className="h-12 rounded-xl   border-border px-4 focus-visible:ring-teal-500"
                 />
               </div>
             </div>
@@ -883,11 +887,11 @@ export default function NewRequestForm({
                 defaultChecked={initialRequest?.is_urgent ?? false}
               />
               <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-2 font-semibold text-slate-900">
+                <span className="flex items-center gap-2 font-semibold text-foreground">
                   <Zap className="size-4 text-amber-600" />
                   This is an urgent request
                 </span>
-                <span className="mt-1 block text-sm leading-5 text-slate-600">
+                <span className="mt-1 block text-sm leading-5 text-muted-foreground">
                   Let workers know that you need assistance as soon as possible.
                 </span>
               </span>
@@ -897,7 +901,7 @@ export default function NewRequestForm({
       </Card>
 
       {/* Step 5: Location */}
-      <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+      <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
         <CardContent className="space-y-6 p-5 sm:p-7">
           <SectionHeading
             number="05"
@@ -906,12 +910,12 @@ export default function NewRequestForm({
             description="Tell the worker where the task will take place."
           />
 
-          <div className="space-y-5 border-t border-slate-100 pt-6">
+          <div className="space-y-5 border-t   border-border pt-6">
             {savedAddresses.length > 0 && (
               <div className="space-y-2">
                 <Label
                   htmlFor="saved_address_id"
-                  className="text-sm font-semibold text-slate-800"
+                  className="text-sm font-semibold text-foreground"
                 >
                   Use a saved address
                 </Label>
@@ -922,7 +926,7 @@ export default function NewRequestForm({
                   onChange={(event) =>
                     handleSavedAddressChange(event.target.value)
                   }
-                  className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
+                  className="h-12 w-full rounded-xl border   border-border bg-card px-4 text-sm text-foreground outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
                 >
                   <option value="">Enter a new address manually</option>
 
@@ -936,7 +940,7 @@ export default function NewRequestForm({
                 </select>
 
                 {selectedAddressId && (
-                  <p className="text-xs leading-5 text-slate-500">
+                  <p className="text-xs leading-5 text-muted-foreground">
                     The address details below have been filled from your saved
                     address. You can edit them for this request.
                   </p>
@@ -955,7 +959,7 @@ export default function NewRequestForm({
             <div className="space-y-2">
               <Label
                 htmlFor="address"
-                className="text-sm font-semibold text-slate-800"
+                className="text-sm font-semibold text-foreground"
               >
                 Street address or landmark
               </Label>
@@ -965,7 +969,7 @@ export default function NewRequestForm({
                 value={locationAddress}
                 onChange={(event) => setLocationAddress(event.target.value)}
                 placeholder="House number, street, area or nearby landmark"
-                className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
+                className="h-12 rounded-xl   border-border px-4 focus-visible:ring-teal-500"
               />
             </div>
 
@@ -973,7 +977,7 @@ export default function NewRequestForm({
               <div className="space-y-2">
                 <Label
                   htmlFor="city"
-                  className="text-sm font-semibold text-slate-800"
+                  className="text-sm font-semibold text-foreground"
                 >
                   City
                 </Label>
@@ -983,14 +987,14 @@ export default function NewRequestForm({
                   value={locationCity}
                   onChange={(event) => setLocationCity(event.target.value)}
                   placeholder="e.g. Ibadan"
-                  className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
+                  className="h-12 rounded-xl   border-border px-4 focus-visible:ring-teal-500"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label
                   htmlFor="state"
-                  className="text-sm font-semibold text-slate-800"
+                  className="text-sm font-semibold text-foreground"
                 >
                   State
                 </Label>
@@ -1000,7 +1004,7 @@ export default function NewRequestForm({
                   value={locationState}
                   onChange={(event) => setLocationState(event.target.value)}
                   placeholder="e.g. Oyo"
-                  className="h-12 rounded-xl border-slate-200 px-4 focus-visible:ring-teal-500"
+                  className="h-12 rounded-xl   border-border px-4 focus-visible:ring-teal-500"
                 />
               </div>
             </div>
@@ -1012,21 +1016,21 @@ export default function NewRequestForm({
       </Card>
 
       {/* Submission */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <div className="rounded-2xl border   border-border bg-card p-5 shadow-sm sm:p-6">
         <div className="mb-5 flex items-start gap-3">
           <ShieldCheck className="mt-0.5 size-5 shrink-0 text-teal-700" />
           <div>
-            <p className="text-sm font-semibold text-slate-900">
+            <p className="text-sm font-semibold text-foreground">
               Review before submitting
             </p>
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
               Check your details before sending the request. You can review
               worker quotations before deciding which one to accept.
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col-reverse gap-3 border-t   border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
           <Button variant="outline">
             <Link
               href={

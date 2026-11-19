@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 import {
   BriefcaseBusiness,
@@ -33,7 +34,7 @@ import { SupportButton } from "./support-button";
 type NavItem = {
   label: string;
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   badge?: string;
 };
 
@@ -51,7 +52,7 @@ type WorkerDashboardShellProps = {
   platformDescription?: string;
   applicationBadge?: string;
   documentsBadge?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 const overviewItem: NavItem = {
@@ -182,12 +183,17 @@ function SidebarLink({
   const Icon = item.icon;
 
   const badgeStyles: Record<string, string> = {
-    Approved: "bg-emerald-50 text-emerald-700",
-    Pending: "bg-amber-50 text-amber-700",
-    "Under review": "bg-blue-50 text-blue-700",
-    Rejected: "bg-red-50 text-red-700",
-    "Action required": "bg-red-50 text-red-700",
-    "Not submitted": "bg-slate-100 text-slate-500",
+    Approved:
+      "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
+    Pending:
+      "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
+    "Under review":
+      "bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
+    Rejected: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300",
+    "Action required":
+      "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300",
+    "Not submitted":
+      "bg-muted text-muted-foreground dark:bg-slate-700/60 dark:text-slate-300",
   };
 
   return (
@@ -197,19 +203,19 @@ function SidebarLink({
       aria-current={active ? "page" : undefined}
       className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-medium transition-all duration-150 ${
         active
-          ? "bg-emerald-50 text-emerald-800 shadow-sm shadow-emerald-900/3"
-          : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
+          ? "bg-emerald-50 text-emerald-800 shadow-sm shadow-emerald-900/5 dark:bg-emerald-500/15 dark:text-emerald-300 dark:shadow-none"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground"
       }`}
     >
       {active && (
-        <span className="absolute bottom-2.5 left-0 top-2.5 w-0.75 rounded-r-full bg-emerald-700" />
+        <span className="absolute bottom-2.5 left-0 top-2.5 w-0.75 rounded-r-full bg-emerald-700 dark:bg-emerald-400" />
       )}
 
       <Icon
         className={`h-4.5 w-4.5 shrink-0 transition-colors ${
           active
-            ? "text-emerald-700"
-            : "text-slate-400 group-hover:text-slate-700"
+            ? "text-emerald-700 dark:text-emerald-300"
+            : "text-muted-foreground group-hover:text-foreground"
         }`}
       />
 
@@ -218,7 +224,7 @@ function SidebarLink({
       {item.badge && (
         <span
           className={`shrink-0 rounded-full px-2 py-1 text-[9px] font-semibold leading-none ${
-            badgeStyles[item.badge] ?? "bg-slate-100 text-slate-600"
+            badgeStyles[item.badge] ?? "bg-muted text-muted-foreground"
           }`}
         >
           {item.badge}
@@ -226,7 +232,7 @@ function SidebarLink({
       )}
 
       {active && (
-        <ChevronRight className="h-4 w-4 shrink-0 text-emerald-700/70" />
+        <ChevronRight className="h-4 w-4 shrink-0 text-emerald-700/70 dark:text-emerald-300/70" />
       )}
     </Link>
   );
@@ -244,9 +250,9 @@ export function WorkerDashboardShell({
   children,
 }: WorkerDashboardShellProps) {
   const pathname = usePathname();
-  const router = useRouter();
 
   const [mobileOpen, setMobileOpen] = useState(false);
+
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     Work: true,
   });
@@ -285,7 +291,7 @@ export function WorkerDashboardShell({
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f8fb] text-slate-900">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
       {mobileOpen && (
         <button
           type="button"
@@ -296,17 +302,17 @@ export function WorkerDashboardShell({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-70 flex-col border-r border-slate-200/80 bg-white shadow-xl shadow-slate-900/5 transition-transform duration-200 lg:translate-x-0 lg:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-70 flex-col border-r border-border bg-card shadow-xl shadow-black/5 transition-transform duration-200 dark:shadow-black/20 lg:translate-x-0 lg:shadow-none ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-19 shrink-0 items-center justify-between border-b border-slate-100 px-5">
+        <div className="flex h-19 shrink-0 items-center justify-between border-b border-border px-5">
           <Link
             href="/"
             className="group flex min-w-0 items-center gap-3"
             onClick={() => setMobileOpen(false)}
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-emerald-50">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-emerald-50 dark:bg-emerald-500/15">
               {platformLogoUrl ? (
                 <Image
                   src={platformLogoUrl}
@@ -324,10 +330,11 @@ export function WorkerDashboardShell({
             </span>
 
             <span className="min-w-0">
-              <span className="block truncate text-[15px] font-bold tracking-tight text-slate-900">
+              <span className="block truncate text-[15px] font-bold tracking-tight text-foreground">
                 {platformName}
               </span>
-              <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.17em] text-slate-400">
+
+              <span className="mt-0.5 block truncate text-[10px] font-semibold uppercase tracking-[0.17em] text-muted-foreground">
                 {platformDescription}
               </span>
             </span>
@@ -336,37 +343,49 @@ export function WorkerDashboardShell({
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
-            className="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 lg:hidden"
+            className="rounded-xl p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground lg:hidden"
             aria-label="Close navigation"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="mx-4 mt-5 rounded-2xl border border-slate-100 bg-slate-50/90 p-3.5">
+        <div className="mx-4 mt-5 rounded-2xl border border-border bg-muted/60 p-3.5">
           <div className="flex items-center gap-3">
-            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-linear-to-br from-emerald-700 to-emerald-900 text-sm font-bold text-white ring-4 ring-white">
-              {initials || "U"}
+            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-linear-to-br from-emerald-700 to-emerald-900 text-sm font-bold text-white ring-4 ring-background">
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={`${firstName} ${lastName}`}
+                  fill
+                  unoptimized
+                  sizes="44px"
+                  className="object-cover"
+                />
+              ) : (
+                initials || "U"
+              )}
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-slate-900">
+              <p className="truncate text-sm font-semibold text-foreground">
                 {firstName} {lastName}
               </p>
-              <p className="mt-0.5 truncate text-xs text-slate-500">
+
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 Service Provider
               </p>
             </div>
 
             <span
-              className="h-2 w-2 shrink-0 rounded-full bg-emerald-500 ring-4 ring-emerald-100"
+              className="h-2 w-2 shrink-0 rounded-full bg-emerald-500 ring-4 ring-emerald-100 dark:ring-emerald-500/15"
               title="Account"
             />
           </div>
         </div>
 
         <nav className="flex-1 overflow-y-auto px-4 pb-5 pt-6">
-          <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+          <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
             Workspace
           </p>
 
@@ -392,21 +411,21 @@ export function WorkerDashboardShell({
                     aria-expanded={expanded}
                     className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-semibold transition ${
                       groupActive
-                        ? "text-emerald-800"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
+                        ? "text-emerald-800 dark:text-emerald-300"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     <span className="flex-1">{group.label}</span>
 
                     <ChevronDown
-                      className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                      className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
                         expanded ? "rotate-180" : ""
                       }`}
                     />
                   </button>
 
                   {expanded && (
-                    <div className="ml-2 mt-1 space-y-1 border-l border-slate-100 pl-3">
+                    <div className="ml-2 mt-1 space-y-1 border-l border-border pl-3">
                       {group.items.map((item) => {
                         const active = matchingItem?.href === item.href;
 
@@ -452,7 +471,7 @@ export function WorkerDashboardShell({
           />
         </DashboardNavbar>
 
-        <main className="min-h-[calc(100vh-72px)] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-9">
+        <main className="min-h-[calc(100vh-72px)] bg-background px-4 py-6 transition-colors duration-200 sm:px-6 sm:py-8 lg:px-8 lg:py-9">
           <div className="mx-auto w-full max-w-360">{children}</div>
         </main>
 

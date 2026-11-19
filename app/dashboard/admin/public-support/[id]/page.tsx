@@ -16,7 +16,7 @@ const statusStyles: Record<string, string> = {
   open: "bg-blue-50 text-blue-700",
   in_progress: "bg-amber-50 text-amber-700",
   responded: "bg-emerald-50 text-emerald-700",
-  closed: "bg-slate-100 text-slate-600",
+  closed: "bg-muted text-muted-foreground",
 };
 
 const statusLabels: Record<string, string> = {
@@ -95,7 +95,7 @@ export default async function PublicSupportEnquiryPage({
       <div>
         <Link
           href="/dashboard/admin/public-support"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-emerald-800"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-emerald-800"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Public Support
@@ -103,7 +103,7 @@ export default async function PublicSupportEnquiryPage({
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500">
+            <p className="text-sm font-medium text-muted-foreground">
               Public Support Enquiry
             </p>
 
@@ -111,14 +111,14 @@ export default async function PublicSupportEnquiryPage({
               {enquiry.subject}
             </h1>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               Submitted {formatDate(enquiry.created_at)}
             </p>
           </div>
 
           <span
             className={`inline-flex w-fit rounded-full px-3 py-1.5 text-sm font-semibold ${
-              statusStyles[enquiry.status] ?? "bg-slate-100 text-slate-600"
+              statusStyles[enquiry.status] ?? "bg-muted text-muted-foreground"
             }`}
           >
             {statusLabels[enquiry.status] ?? enquiry.status}
@@ -128,25 +128,25 @@ export default async function PublicSupportEnquiryPage({
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-4">
+          <section className="rounded-2xl border   border-border bg-card p-6 sm:p-8">
+            <div className="flex items-center gap-2 border-b   border-border pb-4">
               <MessageSquareText className="h-5 w-5 text-emerald-700" />
               <h2 className="font-bold text-slate-950">s Visitor's message</h2>
             </div>
 
-            <div className="mt-6 whitespace-pre-wrap wrap-break-word text-sm leading-8 text-slate-700">
+            <div className="mt-6 whitespace-pre-wrap wrap-break-word text-sm leading-8 text-foreground">
               {enquiry.message}
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
-            <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <section className="rounded-2xl border   border-border bg-card p-6 sm:p-8">
+            <div className="flex items-center justify-between gap-3 border-b   border-border pb-4">
               <div className="flex items-center gap-2">
                 <Mail className="h-5 w-5 text-emerald-700" />
                 <h2 className="font-bold text-slate-950">Reply history</h2>
               </div>
 
-              <span className="text-xs font-medium text-slate-500">
+              <span className="text-xs font-medium text-muted-foreground">
                 {replies?.length ?? 0}{" "}
                 {(replies?.length ?? 0) === 1 ? "reply" : "replies"}
               </span>
@@ -156,11 +156,11 @@ export default async function PublicSupportEnquiryPage({
               <div className="py-10 text-center">
                 <MessageSquareText className="mx-auto h-8 w-8 text-slate-300" />
 
-                <h3 className="mt-3 font-semibold text-slate-800">
+                <h3 className="mt-3 font-semibold text-foreground">
                   No replies yet
                 </h3>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Your team's email responses will appear here.
                 </p>
               </div>
@@ -169,25 +169,25 @@ export default async function PublicSupportEnquiryPage({
                 {replies.map((reply) => (
                   <div key={reply.id} className="py-5 first:pt-5 last:pb-0">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-sm font-semibold text-slate-800">
+                      <span className="text-sm font-semibold text-foreground">
                         Admin response
                       </span>
 
                       <span
                         className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
                           emailStatusStyles[reply.email_status] ??
-                          "bg-slate-100 text-slate-600"
+                          "bg-muted text-muted-foreground"
                         }`}
                       >
                         Email: {reply.email_status}
                       </span>
                     </div>
 
-                    <p className="mt-3 whitespace-pre-wrap wrap-break-word text-sm leading-7 text-slate-700">
+                    <p className="mt-3 whitespace-pre-wrap wrap-break-word text-sm leading-7 text-foreground">
                       {reply.message}
                     </p>
 
-                    <div className="mt-3 space-y-1 text-xs text-slate-500">
+                    <div className="mt-3 space-y-1 text-xs text-muted-foreground">
                       <p>Created: {formatDate(reply.created_at)}</p>
 
                       {reply.sent_at && (
@@ -218,13 +218,13 @@ export default async function PublicSupportEnquiryPage({
             )}
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
-            <div className="mb-5 border-b border-slate-100 pb-4">
+          <section className="rounded-2xl border   border-border bg-card p-6 sm:p-8">
+            <div className="mb-5 border-b   border-border pb-4">
               <h2 className="font-bold text-slate-950">
                 Reply to this enquiry
               </h2>
 
-              <p className="mt-2 text-sm leading-6 text-slate-500">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 Send your response directly to the visitor's email address. They
                 can reply using their normal email client.
               </p>
@@ -235,26 +235,26 @@ export default async function PublicSupportEnquiryPage({
         </div>
 
         <aside className="space-y-6">
-          <section className="rounded-2xl border border-slate-200 bg-white p-6">
+          <section className="rounded-2xl border   border-border bg-card p-6">
             <h2 className="font-bold text-slate-950">Visitor information</h2>
 
             <div className="mt-5 space-y-5">
               <div className="flex items-start gap-3">
-                <UserRound className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                <UserRound className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-slate-500">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Full name
                   </p>
-                  <p className="mt-1 wrap-break-word text-sm font-semibold text-slate-800">
+                  <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                     {enquiry.full_name}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-slate-500">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Email address
                   </p>
                   <a
@@ -267,22 +267,24 @@ export default async function PublicSupportEnquiryPage({
               </div>
 
               <div className="flex items-start gap-3">
-                <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-slate-500">Category</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-800">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Category
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {categoryLabels[enquiry.category] ?? enquiry.category}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                 <div>
-                  <p className="text-xs font-medium text-slate-500">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Last updated
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-800">
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {formatDate(enquiry.updated_at)}
                   </p>
                 </div>
@@ -290,20 +292,20 @@ export default async function PublicSupportEnquiryPage({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-6">
+          <section className="rounded-2xl border   border-border bg-card p-6">
             <h2 className="font-bold text-slate-950">Enquiry details</h2>
 
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between gap-3">
-                <span className="text-slate-500">Reference</span>
-                <span className="max-w-40 break-all text-right font-medium text-slate-700">
+                <span className="text-muted-foreground">Reference</span>
+                <span className="max-w-40 break-all text-right font-medium text-foreground">
                   {enquiry.id}
                 </span>
               </div>
 
               <div className="flex justify-between gap-3">
-                <span className="text-slate-500">Status</span>
-                <span className="font-semibold text-slate-800">
+                <span className="text-muted-foreground">Status</span>
+                <span className="font-semibold text-foreground">
                   {statusLabels[enquiry.status] ?? enquiry.status}
                 </span>
               </div>

@@ -45,11 +45,11 @@ export default async function CustomerSettingsPage() {
       <div>
         <div className="flex items-center gap-2">
           <Settings className="h-6 w-6 text-emerald-600" />
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Settings
           </h1>
         </div>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           Manage your account notification preferences.
         </p>
       </div>
@@ -57,7 +57,7 @@ export default async function CustomerSettingsPage() {
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <Bell className="h-5 w-5 text-emerald-600" />
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-foreground">
             Notification preferences
           </h2>
         </div>
@@ -65,9 +65,9 @@ export default async function CustomerSettingsPage() {
         <div className="space-y-4">
           <NotificationPreferencesForm initialSettings={preferences} />
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="font-semibold text-slate-900">This browser</h3>
-            <p className="mb-4 mt-1 text-sm text-slate-500">
+          <div className="rounded-2xl border   border-border bg-card p-5 shadow-sm">
+            <h3 className="font-semibold text-foreground">This browser</h3>
+            <p className="mb-4 mt-1 text-sm text-muted-foreground">
               Register this browser to receive push notifications, even when
               Emirate ErrandHub is not open.
             </p>

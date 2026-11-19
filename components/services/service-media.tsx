@@ -37,7 +37,7 @@ export function ServiceMedia({
 
   return (
     <div
-      className={`flex ${config.wrapper} shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-slate-700`}
+      className={`flex ${config.wrapper} shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted text-foreground`}
     >
       {imageUrl ? (
         <Image

@@ -270,7 +270,7 @@ export default async function AdminRefundDetailsPage({
 
           <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Finance &amp; payment operations
               </div>
@@ -290,7 +290,7 @@ export default async function AdminRefundDetailsPage({
             </div>
 
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-card/10">
                 <RefreshCcw className="h-8 w-8 text-emerald-100" />
               </div>
 

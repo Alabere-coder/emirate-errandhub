@@ -46,7 +46,7 @@ const STATUS_STYLES: Record<DisputeStatus, string> = {
   rejected:
     "border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400",
   closed:
-    "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    "  border-border bg-muted text-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
 };
 
 function formatStatus(status: string) {
@@ -175,7 +175,7 @@ export default async function AdminDisputesPage({
 
         <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-center">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
               <ShieldCheck className="size-3.5" />
               Administration / Trust & Safety
             </div>
@@ -190,8 +190,8 @@ export default async function AdminDisputesPage({
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-            <div className="rounded-xl bg-white/10 p-3">
+          <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/15 bg-card/10 p-4 backdrop-blur-sm">
+            <div className="rounded-xl bg-card/10 p-3">
               <Scale className="size-6 text-emerald-200" />
             </div>
             <div>
@@ -289,7 +289,7 @@ export default async function AdminDisputesPage({
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs tabular-nums ${
                     isActive
-                      ? "bg-white/15 text-white"
+                      ? "bg-card/15 text-white"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >

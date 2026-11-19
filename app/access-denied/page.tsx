@@ -30,7 +30,7 @@ export default function AccessDeniedPage() {
         {/* Brand */}
         <Link
           href="/"
-          className="mb-16 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/4 px-5 py-3 backdrop-blur-xl transition hover:border-emerald-400/30 hover:bg-white/[0.07]"
+          className="mb-16 inline-flex items-center gap-3 rounded-full border border-white/10 bg-card/4 px-5 py-3 backdrop-blur-xl transition hover:border-emerald-400/30 hover:bg-card/[0.07]"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
             <ShieldCheck className="h-5 w-5" />
@@ -76,7 +76,7 @@ export default function AccessDeniedPage() {
             Access <span className="text-rose-300">denied.</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-md text-sm leading-7 text-slate-400 sm:text-base">
+          <p className="mx-auto mt-5 max-w-md text-sm leading-7 text-muted-foreground/70 sm:text-base">
             You don't have permission to access this page. It may require a
             different account or a higher level of authorization.
           </p>
@@ -93,7 +93,7 @@ export default function AccessDeniedPage() {
 
             <button
               type="button"
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/4 px-7 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/8 sm:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-card/4 px-7 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-card/8 sm:w-auto"
             >
               <ArrowLeft className="h-4 w-4" />
               Go back
@@ -102,7 +102,7 @@ export default function AccessDeniedPage() {
         </div>
 
         <div className="mt-20 border-t border-white/[0.07] pt-6">
-          <p className="text-xs tracking-wide text-slate-500">
+          <p className="text-xs tracking-wide text-muted-foreground">
             © {new Date().getFullYear()} Emirate ErrandHub.
             <span className="mx-2 text-emerald-500/50">•</span>
             Services made easier.

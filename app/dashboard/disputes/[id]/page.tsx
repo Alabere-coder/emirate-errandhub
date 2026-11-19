@@ -74,7 +74,7 @@ function statusStyles(status: string) {
     case "closed":
       return {
         label: "Closed",
-        className: "border-slate-200 bg-slate-100 text-slate-600",
+        className: "  border-border bg-muted text-muted-foreground",
         icon: ShieldCheck,
       };
     default:
@@ -198,7 +198,7 @@ export default async function ParticipantDisputeDetailPage({
       <Button
         variant="outline"
         size="sm"
-        className="h-9 rounded-xl border-slate-200 bg-white px-4 text-slate-600 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+        className="h-9 rounded-xl   border-border bg-card px-4 text-muted-foreground shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
       >
         <Link
           href="/dashboard/disputes"
@@ -215,7 +215,7 @@ export default async function ParticipantDisputeDetailPage({
         <div className="pointer-events-none absolute -bottom-20 right-1/4 h-40 w-40 rounded-full bg-teal-100/40 blur-3xl" />
 
         <div className="relative z-10">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-100 bg-white text-emerald-700 shadow-sm">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-100 bg-card text-emerald-700 shadow-sm">
             <ShieldAlert className="h-6 w-6" />
           </div>
 
@@ -229,7 +229,7 @@ export default async function ParticipantDisputeDetailPage({
                 Dispute details
               </h1>
 
-              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+              <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
                 Review your reported issue, submitted evidence, and the latest
                 decision from our support team.
               </p>
@@ -245,10 +245,10 @@ export default async function ParticipantDisputeDetailPage({
           </div>
 
           <div className="mt-6 border-t border-emerald-100/80 pt-4">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
               Dispute reference
             </p>
-            <p className="mt-1 break-all font-mono text-xs text-slate-600">
+            <p className="mt-1 break-all font-mono text-xs text-muted-foreground">
               {dispute.id}
             </p>
           </div>
@@ -256,15 +256,15 @@ export default async function ParticipantDisputeDetailPage({
       </div>
 
       {/* Reported issue */}
-      <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
-        <div className="border-b border-slate-100 bg-white px-5 py-4 sm:px-6">
+      <Card className="overflow-hidden rounded-2xl   border-border/80 shadow-sm">
+        <div className="border-b   border-border bg-card px-5 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
               <BriefcaseBusiness className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-900">Reported issue</h2>
-              <p className="mt-0.5 text-xs text-slate-500">
+              <h2 className="font-bold text-foreground">Reported issue</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 Details of the problem you submitted
               </p>
             </div>
@@ -273,42 +273,42 @@ export default async function ParticipantDisputeDetailPage({
 
         <CardContent className="space-y-6 p-5 sm:p-6">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
               Reason
             </p>
-            <p className="mt-2 text-base font-semibold text-slate-900">
+            <p className="mt-2 text-base font-semibold text-foreground">
               {dispute.reason}
             </p>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
               Description
             </p>
-            <div className="mt-2 rounded-xl bg-slate-50 p-4 sm:p-5">
-              <p className="whitespace-pre-wrap text-sm leading-7 text-slate-600">
+            <div className="mt-2 rounded-xl bg-muted p-4 sm:p-5">
+              <p className="whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
                 {dispute.description}
               </p>
             </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-slate-100 bg-white p-4">
-              <p className="flex items-center gap-2 text-xs font-medium text-slate-400">
+            <div className="rounded-xl border   border-border bg-card p-4">
+              <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground/70">
                 <CalendarDays className="h-4 w-4" />
                 Submitted
               </p>
-              <p className="mt-2 text-sm font-semibold text-slate-800">
+              <p className="mt-2 text-sm font-semibold text-foreground">
                 {formatDate(dispute.created_at)}
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-100 bg-white p-4">
-              <p className="flex items-center gap-2 text-xs font-medium text-slate-400">
+            <div className="rounded-xl border   border-border bg-card p-4">
+              <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground/70">
                 <ClipboardList className="h-4 w-4" />
                 Last updated
               </p>
-              <p className="mt-2 text-sm font-semibold text-slate-800">
+              <p className="mt-2 text-sm font-semibold text-foreground">
                 {formatDate(dispute.updated_at)}
               </p>
             </div>
@@ -317,15 +317,15 @@ export default async function ParticipantDisputeDetailPage({
       </Card>
 
       {/* Evidence */}
-      <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
-        <div className="border-b border-slate-100 bg-white px-5 py-4 sm:px-6">
+      <Card className="overflow-hidden rounded-2xl   border-border/80 shadow-sm">
+        <div className="border-b   border-border bg-card px-5 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
               <FileImage className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-900">Dispute evidence</h2>
-              <p className="mt-0.5 text-xs text-slate-500">
+              <h2 className="font-bold text-foreground">Dispute evidence</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 Images and supporting files submitted with your dispute
               </p>
             </div>
@@ -343,14 +343,14 @@ export default async function ParticipantDisputeDetailPage({
               </p>
             </div>
           ) : evidence.length === 0 ? (
-            <div className="flex flex-col items-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-5 py-10 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm">
+            <div className="flex flex-col items-center rounded-2xl border border-dashed   border-border bg-muted/70 px-5 py-10 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-card text-muted-foreground/70 shadow-sm">
                 <FileImage className="h-6 w-6" />
               </div>
-              <p className="mt-3 text-sm font-semibold text-slate-700">
+              <p className="mt-3 text-sm font-semibold text-foreground">
                 No evidence attached
               </p>
-              <p className="mt-1 text-xs leading-5 text-slate-500">
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 No evidence images have been attached to this dispute.
               </p>
             </div>
@@ -359,9 +359,9 @@ export default async function ParticipantDisputeDetailPage({
               {evidence.map((item) => (
                 <div
                   key={item.id}
-                  className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:border-emerald-200 hover:shadow-md"
+                  className="group overflow-hidden rounded-2xl border   border-border bg-card transition hover:border-emerald-200 hover:shadow-md"
                 >
-                  <div className="flex min-h-48 items-center justify-center bg-slate-50 p-3">
+                  <div className="flex min-h-48 items-center justify-center bg-muted p-3">
                     {item.signedUrl && item.fileType.startsWith("image/") ? (
                       <a
                         href={item.signedUrl}
@@ -380,18 +380,18 @@ export default async function ParticipantDisputeDetailPage({
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-center">
                         <FileImage className="h-8 w-8 text-slate-300" />
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-muted-foreground">
                           This evidence image could not be previewed.
                         </p>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-4 py-3">
-                    <span className="text-xs font-medium text-slate-500">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-t   border-border px-4 py-3">
+                    <span className="text-xs font-medium text-muted-foreground">
                       {item.fileType}
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-muted-foreground/70">
                       {formatDate(item.createdAt)}
                     </span>
                   </div>
@@ -403,17 +403,17 @@ export default async function ParticipantDisputeDetailPage({
       </Card>
 
       {/* Status and resolution */}
-      <Card className="overflow-hidden rounded-2xl border-slate-200/80 shadow-sm">
-        <div className="border-b border-slate-100 bg-white px-5 py-4 sm:px-6">
+      <Card className="overflow-hidden rounded-2xl   border-border/80 shadow-sm">
+        <div className="border-b   border-border bg-card px-5 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-900">
+              <h2 className="font-bold text-foreground">
                 Status and resolution
               </h2>
-              <p className="mt-0.5 text-xs text-slate-500">
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 Current progress and administrative decision
               </p>
             </div>
@@ -421,8 +421,8 @@ export default async function ParticipantDisputeDetailPage({
         </div>
 
         <CardContent className="space-y-5 p-5 sm:p-6">
-          <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <div className="rounded-xl border   border-border bg-muted/70 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
               Current status
             </p>
             <div className="mt-3">
@@ -452,7 +452,7 @@ export default async function ParticipantDisputeDetailPage({
                 </div>
               </div>
 
-              <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-700">
+              <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-foreground">
                 {dispute.resolution}
               </p>
 
@@ -478,9 +478,9 @@ export default async function ParticipantDisputeDetailPage({
             </div>
           )}
 
-          <div className="flex items-start gap-2 rounded-xl border border-slate-100 bg-slate-50 p-4">
-            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-            <p className="text-xs leading-6 text-slate-500">
+          <div className="flex items-start gap-2 rounded-xl border   border-border bg-muted p-4">
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
+            <p className="text-xs leading-6 text-muted-foreground">
               This page is read-only. Only an authorized admin can change the
               dispute status or record a resolution.
             </p>

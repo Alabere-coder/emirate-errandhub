@@ -6,7 +6,7 @@ const whatsappNumber = "2348130324506";
 
 export function ContactSection() {
   return (
-    <section className="bg-white">
+    <section className="bg-card">
       <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-24">
         <div className="overflow-hidden rounded-3xl bg-emerald-950 px-6 py-12 text-white shadow-xl sm:px-10 lg:px-14 lg:py-16">
           <div className="mx-auto max-w-3xl text-center">
@@ -27,7 +27,7 @@ export function ContactSection() {
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <a
                 href={`mailto:${supportEmail}`}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-50"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-card px-6 py-3.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-50"
               >
                 <Mail className="h-4 w-4" />
                 Email Us

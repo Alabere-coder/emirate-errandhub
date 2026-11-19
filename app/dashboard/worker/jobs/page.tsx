@@ -33,7 +33,7 @@ export default async function AvailableJobsPage() {
       <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         <Card>
           <CardContent className="py-10 text-center">
-            <h2 className="font-semibold text-slate-900">
+            <h2 className="font-semibold text-foreground">
               Unable to load worker profile
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -50,7 +50,7 @@ export default async function AvailableJobsPage() {
       <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         <Card>
           <CardContent className="py-10 text-center">
-            <h2 className="font-semibold text-slate-900">
+            <h2 className="font-semibold text-foreground">
               Worker profile not found
             </h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
@@ -109,7 +109,7 @@ export default async function AvailableJobsPage() {
       <div className="mx-auto max-w-7xl py-8 sm:px-6 lg:px-8">
         <Card>
           <CardContent className="py-10 text-center">
-            <h2 className="font-semibold text-slate-900">
+            <h2 className="font-semibold text-foreground">
               Unable to load available jobs
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -204,11 +204,11 @@ export default async function AvailableJobsPage() {
           WORKER WORKSPACE
         </p>
 
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
           Available jobs
         </h1>
 
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
           Discover open customer requests that are still available for
           quotations. Requests already assigned to a worker are excluded.
         </p>

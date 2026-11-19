@@ -58,16 +58,16 @@ export default async function NewRequestPage({
   if (categoriesError || servicesError) {
     return (
       <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
-        <div className="rounded-2xl border border-red-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-red-200 bg-card p-6 shadow-sm sm:p-8">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-600">
             <AlertCircle className="h-6 w-6" />
           </div>
 
-          <h1 className="mt-5 text-xl font-bold text-slate-900">
+          <h1 className="mt-5 text-xl font-bold text-foreground">
             Unable to load services
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             We could not load the available service categories and services.
             Please refresh the page and try again.
           </p>
@@ -216,7 +216,7 @@ export default async function NewRequestPage({
           </Link>
 
           <div className="mt-6 flex items-start gap-4">
-            <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-teal-300 sm:flex">
+            <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-card/5 text-teal-300 sm:flex">
               <ClipboardList className="h-7 w-7" />
             </div>
 
@@ -266,7 +266,7 @@ export default async function NewRequestPage({
       )}
 
       {selectedWorker && (
-        <div className="overflow-hidden rounded-2xl border border-teal-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-teal-200 bg-card shadow-sm">
           <div className="flex items-start gap-4 p-5 sm:p-6">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-800">
               <UserRound className="h-6 w-6" />
@@ -284,11 +284,11 @@ export default async function NewRequestPage({
                 </span>
               </div>
 
-              <h2 className="mt-2 text-lg font-bold text-slate-900">
+              <h2 className="mt-2 text-lg font-bold text-foreground">
                 {selectedWorker.name}
               </h2>
 
-              <p className="mt-1 text-sm leading-6 text-slate-600">
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
                 Your request will be directed to this worker. Choose one of
                 their available service categories below.
               </p>
@@ -324,17 +324,17 @@ export default async function NewRequestPage({
       )}
 
       {/* Form section */}
-      <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-100 bg-slate-50/80 px-5 py-5 sm:px-8">
+      <section className="overflow-hidden rounded-3xl border   border-border bg-card shadow-sm">
+        <div className="border-b   border-border bg-muted/80 px-5 py-5 sm:px-8">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-800">
               <Wrench className="h-5 w-5" />
             </div>
 
             <div>
-              <h2 className="font-bold text-slate-900">Request details</h2>
+              <h2 className="font-bold text-foreground">Request details</h2>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Complete the form below to describe the work you need.
               </p>
             </div>
@@ -355,11 +355,11 @@ export default async function NewRequestPage({
       </section>
 
       {/* Helpful note */}
-      <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <div className="flex items-start gap-3 rounded-2xl border   border-border bg-muted p-4">
         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-teal-700" />
 
-        <p className="text-sm leading-6 text-slate-600">
-          <span className="font-semibold text-slate-800">Helpful tip:</span>{" "}
+        <p className="text-sm leading-6 text-muted-foreground">
+          <span className="font-semibold text-foreground">Helpful tip:</span>{" "}
           Include clear job details, your location, and any important scheduling
           preferences. This helps workers assess your request and provide more
           relevant quotations.

@@ -46,7 +46,7 @@ const STATUS_STYLES: Record<DisputeStatus, string> = {
   rejected:
     "border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400",
   closed:
-    "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    "  border-border bg-muted text-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
 };
 
 function isValidUuid(value: string) {
@@ -280,7 +280,7 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
 
         <div className="relative space-y-5">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
               <ShieldCheck className="size-3.5" />
               Trust & Safety
             </span>

@@ -149,7 +149,7 @@ export function JobMediaGallery({ media }: JobMediaGalleryProps) {
           <button
             type="button"
             onClick={() => setSelectedMedia(null)}
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-card/10 text-white hover:bg-card/20"
             aria-label="Close media viewer"
           >
             <X className="h-5 w-5" />

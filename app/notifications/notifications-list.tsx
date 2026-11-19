@@ -262,7 +262,7 @@ export function NotificationsList({
     <div className="space-y-5">
       {/* Notification summary and actions */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm text-slate-600">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <CheckCheck className="h-4 w-4 text-emerald-600" />
           <span>
             {unreadCount} unread notification
@@ -324,7 +324,7 @@ export function NotificationsList({
 
       {/* Category navigation */}
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-800">
+        <h2 className="text-sm font-semibold text-foreground">
           Notification categories
         </h2>
 
@@ -336,11 +336,11 @@ export function NotificationsList({
             className={`shrink-0 rounded-xl border px-4 py-2.5 text-left transition ${
               category === "all"
                 ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                : "border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-slate-50"
+                : "  border-border bg-card text-muted-foreground hover:border-emerald-200 hover:bg-muted"
             }`}
           >
             <span className="block text-sm font-semibold">All</span>
-            <span className="mt-0.5 block text-xs text-slate-500">
+            <span className="mt-0.5 block text-xs text-muted-foreground">
               {notifications.length} total
               {unreadCount > 0 ? ` · ${unreadCount} unread` : ""}
             </span>
@@ -359,14 +359,14 @@ export function NotificationsList({
                 className={`shrink-0 rounded-xl border px-4 py-2.5 text-left transition ${
                   isSelected
                     ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                    : "border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-slate-50"
+                    : "  border-border bg-card text-muted-foreground hover:border-emerald-200 hover:bg-muted"
                 }`}
               >
                 <span className="block text-sm font-semibold">
                   {item.label}
                 </span>
 
-                <span className="mt-0.5 block text-xs text-slate-500">
+                <span className="mt-0.5 block text-xs text-muted-foreground">
                   {counts.total} total
                   {counts.unread > 0 ? ` · ${counts.unread} unread` : ""}
                 </span>
@@ -386,7 +386,7 @@ export function NotificationsList({
             className={`rounded-full px-4 py-2 text-sm font-medium transition ${
               readFilter === "all"
                 ? "bg-emerald-600 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                : "bg-muted text-muted-foreground hover:bg-slate-200"
             }`}
           >
             All
@@ -399,25 +399,25 @@ export function NotificationsList({
             className={`rounded-full px-4 py-2 text-sm font-medium transition ${
               readFilter === "unread"
                 ? "bg-emerald-600 text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                : "bg-muted text-muted-foreground hover:bg-slate-200"
             }`}
           >
             Unread ({unreadCount})
           </button>
         </div>
 
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted-foreground">
           Showing {filteredNotifications.length} of {notifications.length}
         </p>
       </div>
 
       {/* Notification list */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border   border-border bg-card shadow-sm">
         {filteredNotifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
             <Bell className="mb-3 h-8 w-8 text-slate-300" />
 
-            <h2 className="font-semibold text-slate-900">
+            <h2 className="font-semibold text-foreground">
               {readFilter === "unread"
                 ? "You're all caught up"
                 : category === "all"
@@ -425,7 +425,7 @@ export function NotificationsList({
                   : `No ${selectedCategoryLabel.toLowerCase()} notifications`}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               {readFilter === "unread"
                 ? "There are no unread notifications in this view."
                 : category === "all"
@@ -438,7 +438,7 @@ export function NotificationsList({
             {filteredNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`flex gap-4 p-5 transition hover:bg-slate-50 ${
+                className={`flex gap-4 p-5 transition hover:bg-muted ${
                   !notification.is_read ? "bg-emerald-50/40" : ""
                 }`}
               >
@@ -450,19 +450,19 @@ export function NotificationsList({
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                    <h3 className="font-semibold text-slate-900">
+                    <h3 className="font-semibold text-foreground">
                       {notification.title}
                     </h3>
 
                     <time
                       dateTime={notification.created_at}
-                      className="shrink-0 text-xs text-slate-400"
+                      className="shrink-0 text-xs text-muted-foreground/70"
                     >
                       {formatNotificationDate(notification.created_at)}
                     </time>
                   </div>
 
-                  <p className="mt-1 text-sm leading-6 text-slate-600">
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
                     {notification.message}
                   </p>
 
@@ -487,7 +487,7 @@ export function NotificationsList({
                           type="button"
                           onClick={() => void markAsRead(notification.id)}
                           disabled={isPending}
-                          className="text-sm font-medium text-slate-500 hover:text-slate-800 disabled:opacity-50"
+                          className="text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
                         >
                           Mark as read
                         </button>
@@ -524,7 +524,7 @@ export function NotificationsList({
             aria-modal="true"
             aria-labelledby="clear-notifications-title"
             aria-describedby="clear-notifications-description"
-            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+            className="w-full max-w-md rounded-2xl bg-card p-6 shadow-xl"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
@@ -533,14 +533,14 @@ export function NotificationsList({
 
             <h2
               id="clear-notifications-title"
-              className="text-lg font-semibold text-slate-900"
+              className="text-lg font-semibold text-foreground"
             >
               Clear all notifications?
             </h2>
 
             <p
               id="clear-notifications-description"
-              className="mt-2 text-sm leading-6 text-slate-600"
+              className="mt-2 text-sm leading-6 text-muted-foreground"
             >
               This will permanently delete all {notifications.length}{" "}
               notifications in your notification centre. This action cannot be
@@ -552,7 +552,7 @@ export function NotificationsList({
                 type="button"
                 onClick={() => setShowClearConfirm(false)}
                 disabled={isPending}
-                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-xl border   border-border px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-50"
               >
                 Cancel
               </button>

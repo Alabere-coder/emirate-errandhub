@@ -112,7 +112,7 @@ export function PopupManager({ campaigns }: { campaigns: PopupCampaign[] }) {
         aria-modal="true"
         aria-labelledby="popup-campaign-title"
         aria-describedby="popup-campaign-description"
-        className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-white/20 bg-white shadow-2xl"
+        className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-white/20 bg-card shadow-2xl"
       >
         <button
           type="button"
@@ -131,14 +131,14 @@ export function PopupManager({ campaigns }: { campaigns: PopupCampaign[] }) {
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-linear-to-t from-slate-950/70 to-transparent" />
-            <div className="absolute bottom-4 left-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
+            <div className="absolute bottom-4 left-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-card/15 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
               Emirate ErrandHub
             </div>
           </div>
         ) : (
           <div className="relative overflow-hidden bg-linear-to-br from-emerald-900 via-emerald-800 to-slate-950 px-7 pb-8 pt-12 text-white sm:px-9">
             <div className="absolute -right-16 -top-20 size-64 rounded-full bg-emerald-400/20 blur-3xl" />
-            <div className="relative inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-emerald-100">
+            <div className="relative inline-flex items-center gap-2 rounded-full border border-white/20 bg-card/10 px-3 py-1.5 text-xs font-semibold text-emerald-100">
               Emirate ErrandHub
             </div>
           </div>
@@ -155,7 +155,7 @@ export function PopupManager({ campaigns }: { campaigns: PopupCampaign[] }) {
           {visibleCampaign.description && (
             <p
               id="popup-campaign-description"
-              className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-600 sm:text-base"
+              className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground sm:text-base"
             >
               {visibleCampaign.description}
             </p>
@@ -177,7 +177,7 @@ export function PopupManager({ campaigns }: { campaigns: PopupCampaign[] }) {
             <button
               type="button"
               onClick={() => setVisibleCampaign(null)}
-              className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+              className="rounded-xl border   border-border px-5 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted"
             >
               Maybe later
             </button>

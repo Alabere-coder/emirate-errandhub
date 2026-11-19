@@ -157,15 +157,14 @@ function StatusBadge({ active }: { active: boolean }) {
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
         active
-          ? "bg-emerald-50 text-emerald-700"
-          : "bg-slate-100 text-slate-500"
+          ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+          : "bg-muted text-muted-foreground"
       }`}
     >
       {active ? "Active" : "Inactive"}
     </span>
   );
 }
-
 /* =========================================================
    MAIN MANAGER
 ========================================================= */
@@ -422,15 +421,15 @@ export function ServiceCategoryManager({
       {/* Header */}
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             Admin
           </p>
 
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Service Management
           </h1>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Manage categories, subcategories, and services from one hierarchy.
           </p>
         </div>
@@ -439,7 +438,7 @@ export function ServiceCategoryManager({
           <button
             type="button"
             onClick={openCreateCategory}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
           >
             <Plus className="h-4 w-4" />
             Add category
@@ -448,7 +447,7 @@ export function ServiceCategoryManager({
           <button
             type="button"
             onClick={() => openCreateService()}
-            className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" />
             Add service
@@ -478,47 +477,47 @@ export function ServiceCategoryManager({
       </div>
 
       {/* Unified hierarchy */}
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <section className="overflow-hidden rounded-2xl border   border-border bg-card shadow-sm">
         {/* Header */}
-        <div className="border-b border-slate-200 p-5 sm:p-6">
+        <div className="border-b   border-border p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-foreground">
                 Service hierarchy
               </h2>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Category → Subcategory → Service
               </p>
             </div>
 
             <div className="relative w-full sm:max-w-sm">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
 
               <input
                 type="search"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search categories or services..."
-                className="w-full rounded-xl border border-slate-300 bg-white py-2.5 pl-9 pr-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+                className="w-full rounded-xl border border-input bg-background py-2.5 pl-9 pr-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/20"
               />
             </div>
           </div>
         </div>
 
         {/* Tree */}
-        <div className="divide-y divide-slate-200">
+        <div className="divide-y divide-border">
           {rootCategories.length === 0 ? (
             <div className="px-6 py-16 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground/70">
                 <FolderTree className="h-7 w-7" />
               </div>
 
-              <h3 className="mt-4 text-sm font-semibold text-slate-900">
+              <h3 className="mt-4 text-sm font-semibold text-foreground">
                 No results found
               </h3>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Try a different search.
               </p>
             </div>
@@ -588,16 +587,16 @@ function SummaryCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border   border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-foreground">
           {icon}
         </div>
 
-        <span className="text-2xl font-bold text-slate-900">{value}</span>
+        <span className="text-2xl font-bold text-foreground">{value}</span>
       </div>
 
-      <p className="mt-4 text-sm font-medium text-slate-500">{label}</p>
+      <p className="mt-4 text-sm font-medium text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -695,7 +694,7 @@ function CategoryTreeRow({
             <button
               type="button"
               onClick={() => onToggle(category.id)}
-              className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
               aria-label={
                 isExpanded
                   ? `Collapse ${category.name}`
@@ -721,17 +720,17 @@ function CategoryTreeRow({
                   className="h-9 w-9 shrink-0 rounded-lg object-cover"
                 />
               ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <CategoryIcon className="h-5 w-5" />
                 </div>
               )}
 
-              <h3 className="font-semibold text-slate-900">{category.name}</h3>
+              <h3 className="font-semibold text-foreground">{category.name}</h3>
 
               <StatusBadge active={category.is_active} />
 
               {hasChildren && (
-                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">
+                <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
                   {children.length}{" "}
                   {children.length === 1 ? "subcategory" : "subcategories"}
                 </span>
@@ -739,12 +738,12 @@ function CategoryTreeRow({
             </div>
 
             {category.description && (
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {category.description}
               </p>
             )}
 
-            <p className="mt-1 truncate text-xs text-slate-400">
+            <p className="mt-1 truncate text-xs text-muted-foreground/70">
               /services/{category.slug}
             </p>
           </div>
@@ -753,7 +752,7 @@ function CategoryTreeRow({
             <button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border   border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
               title="Category actions"
               aria-label="Category actions"
               aria-expanded={menuOpen}
@@ -762,7 +761,7 @@ function CategoryTreeRow({
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 top-11 z-50 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute right-0 top-11 z-50 w-52 overflow-hidden rounded-xl border border-border bg-popover py-1 text-popover-foreground shadow-lg animate-in fade-in zoom-in-95 duration-150">
                 {/* Add subcategory */}
                 <button
                   type="button"
@@ -770,9 +769,9 @@ function CategoryTreeRow({
                     setMenuOpen(false);
                     onAddSubcategory(category);
                   }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground transition hover:bg-muted"
                 >
-                  <Plus className="h-4 w-4 text-slate-500" />
+                  <Plus className="h-4 w-4 text-muted-foreground" />
                   Add subcategory
                 </button>
 
@@ -783,9 +782,9 @@ function CategoryTreeRow({
                     setMenuOpen(false);
                     onEditCategory(category);
                   }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground transition hover:bg-muted"
                 >
-                  <Edit3 className="h-4 w-4 text-slate-500" />
+                  <Edit3 className="h-4 w-4 text-muted-foreground" />
                   Edit category
                 </button>
 
@@ -796,13 +795,13 @@ function CategoryTreeRow({
                     setMenuOpen(false);
                     handleToggle();
                   }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground transition hover:bg-muted"
                 >
-                  <Power className="h-4 w-4 text-slate-500" />
+                  <Power className="h-4 w-4 text-muted-foreground" />
                   {category.is_active ? "Deactivate" : "Activate"}
                 </button>
 
-                <div className="my-1 border-t border-slate-100" />
+                <div className="my-1 border-t   border-border" />
 
                 {/* Delete category */}
                 <button
@@ -811,7 +810,7 @@ function CategoryTreeRow({
                     setMenuOpen(false);
                     handleDelete();
                   }}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-destructive transition hover:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete category
@@ -824,7 +823,7 @@ function CategoryTreeRow({
 
       {/* Subcategories */}
       {isExpanded && hasChildren && (
-        <div className="border-t border-slate-100 bg-slate-50/60">
+        <div className="border-t   border-border bg-muted/50">
           {children.map((subcategory) => (
             <SubcategoryTreeRow
               key={subcategory.id}
@@ -930,13 +929,13 @@ function SubcategoryTreeRow({
 
   return (
     <div>
-      <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:px-6 sm:pl-20">
+      <div className="flex flex-col gap-3 border-b   border-border px-5 py-4 sm:px-6 sm:pl-20">
         <div className="flex items-start gap-3">
           {hasServices ? (
             <button
               type="button"
               onClick={() => onToggle(category.id)}
-              className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-white hover:text-slate-900"
+              className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-card hover:text-foreground"
               aria-label={
                 isExpanded
                   ? `Collapse ${category.name}`
@@ -962,32 +961,32 @@ function SubcategoryTreeRow({
                   className="h-8 w-8 shrink-0 rounded-lg object-cover"
                 />
               ) : (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-slate-500 ring-1 ring-slate-200">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card text-muted-foreground ring-1 ring-slate-200">
                   <CategoryIcon className="h-4 w-4" />
                 </div>
               )}
 
-              <h4 className="font-medium text-slate-800">{category.name}</h4>
+              <h4 className="font-medium text-foreground">{category.name}</h4>
 
               <StatusBadge active={category.is_active} />
 
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-500 ring-1 ring-slate-200">
+              <span className="rounded-full bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-slate-200">
                 Subcategory
               </span>
 
               {hasServices && (
-                <span className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-500 ring-1 ring-slate-200">
+                <span className="rounded-full bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-slate-200">
                   {services.length}{" "}
                   {services.length === 1 ? "service" : "services"}
                 </span>
               )}
             </div>
 
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-muted-foreground/70">
               {parent.name} → {category.name}
             </p>
 
-            <p className="mt-1 truncate text-xs text-slate-400">
+            <p className="mt-1 truncate text-xs text-muted-foreground/70">
               /services/{parent.slug}/{category.slug}
             </p>
           </div>
@@ -1004,24 +1003,24 @@ function SubcategoryTreeRow({
               title="Category actions"
               className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition ${
                 menuOpen
-                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                  : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               <MoreHorizontal className="h-5 w-5" />
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 top-11 z-50 w-52 origin-top-right animate-in fade-in zoom-in-95 duration-150 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-200/50">
+              <div className="absolute right-0 top-11 z-50 w-52 overflow-hidden rounded-xl border border-border bg-popover py-1 text-popover-foreground shadow-lg animate-in fade-in zoom-in-95 duration-150">
                 <button
                   type="button"
                   onClick={() => {
                     setMenuOpen(false);
                     onAddService(category);
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground transition hover:bg-muted"
                 >
-                  <Plus className="h-4 w-4 text-slate-400" />
+                  <Plus className="h-4 w-4 text-muted-foreground/70" />
                   Add service
                 </button>
 
@@ -1031,9 +1030,9 @@ function SubcategoryTreeRow({
                     setMenuOpen(false);
                     onEditCategory(category);
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground transition hover:bg-muted"
                 >
-                  <Edit3 className="h-4 w-4 text-slate-400" />
+                  <Edit3 className="h-4 w-4 text-muted-foreground/70" />
                   Edit subcategory
                 </button>
 
@@ -1043,13 +1042,13 @@ function SubcategoryTreeRow({
                     setMenuOpen(false);
                     handleToggle();
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground transition hover:bg-muted"
                 >
-                  <Power className="h-4 w-4 text-slate-400" />
+                  <Power className="h-4 w-4 text-muted-foreground/70" />
                   {category.is_active ? "Deactivate" : "Activate"}
                 </button>
 
-                <div className="my-1 border-t border-slate-100" />
+                <div className="my-1 border-t   border-border" />
 
                 <button
                   type="button"
@@ -1057,7 +1056,7 @@ function SubcategoryTreeRow({
                     setMenuOpen(false);
                     handleDelete();
                   }}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-destructive transition hover:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete subcategory
@@ -1070,7 +1069,7 @@ function SubcategoryTreeRow({
 
       {/* Services */}
       {isExpanded && hasServices && (
-        <div className="border-b border-slate-100 bg-white">
+        <div className="border-b   border-border bg-card">
           {services.map((service) => (
             <ServiceTreeRow
               key={service.id}
@@ -1153,7 +1152,7 @@ function ServiceTreeRow({
   const ServiceIcon = getIcon(service.icon, Wrench);
 
   return (
-    <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 last:border-b-0 sm:flex-row sm:items-center sm:pl-32 sm:pr-6">
+    <div className="flex flex-col gap-3 border-b   border-border px-5 py-4 last:border-b-0 sm:flex-row sm:items-center sm:pl-32 sm:pr-6">
       <div className="flex min-w-0 flex-1 items-start gap-3">
         {service.image_url ? (
           <img
@@ -1162,14 +1161,14 @@ function ServiceTreeRow({
             className="mt-0.5 h-8 w-8 shrink-0 rounded-lg object-cover"
           />
         ) : (
-          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+          <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
             <ServiceIcon className="h-4 w-4" />
           </div>
         )}
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h5 className="font-medium text-slate-900">{service.name}</h5>
+            <h5 className="font-medium text-foreground">{service.name}</h5>
 
             <StatusBadge active={service.is_active} />
 
@@ -1187,12 +1186,12 @@ function ServiceTreeRow({
           </div>
 
           {service.description && (
-            <p className="mt-1 line-clamp-2 text-sm text-slate-500">
+            <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
               {service.description}
             </p>
           )}
 
-          <p className="mt-1 truncate text-xs text-slate-400">
+          <p className="mt-1 truncate text-xs text-muted-foreground/70">
             /services/{parent.slug}/{subcategory.slug}/{service.slug}
           </p>
         </div>
@@ -1206,24 +1205,24 @@ function ServiceTreeRow({
           aria-expanded={menuOpen}
           className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border transition ${
             menuOpen
-              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-              : "border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+              ? "border-primary/30 bg-primary/10 text-primary"
+              : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
           }`}
         >
           <MoreHorizontal className="h-5 w-5" />
         </button>
 
         {menuOpen && (
-          <div className="absolute right-0 top-11 z-50 w-48 origin-top-right animate-in fade-in zoom-in-95 duration-150 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-200/50">
+          <div className="absolute right-0 top-11 z-50 w-52 overflow-hidden rounded-xl border border-border bg-popover py-1 text-popover-foreground shadow-lg animate-in fade-in zoom-in-95 duration-150">
             <button
               type="button"
               onClick={() => {
                 setMenuOpen(false);
                 onEdit();
               }}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground transition hover:bg-muted"
             >
-              <Edit3 className="h-4 w-4 text-slate-400" />
+              <Edit3 className="h-4 w-4 text-muted-foreground/70" />
               Edit service
             </button>
 
@@ -1233,13 +1232,13 @@ function ServiceTreeRow({
                 setMenuOpen(false);
                 handleToggle();
               }}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-foreground transition hover:bg-muted"
             >
-              <Power className="h-4 w-4 text-slate-400" />
+              <Power className="h-4 w-4 text-muted-foreground/70" />
               {service.is_active ? "Deactivate" : "Activate"}
             </button>
 
-            <div className="my-1 border-t border-slate-100" />
+            <div className="my-1 border-t   border-border" />
 
             <button
               type="button"
@@ -1247,7 +1246,7 @@ function ServiceTreeRow({
                 setMenuOpen(false);
                 handleDelete();
               }}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-destructive transition hover:bg-destructive/10"
             >
               <Trash2 className="h-4 w-4" />
               Delete service

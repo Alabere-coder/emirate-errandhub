@@ -44,7 +44,7 @@ const accountTypes = [
 
 export default function SignupPage() {
   return (
-    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-slate-50 px-4 py-2 sm:px-6 sm:py-12">
+    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-muted px-4 py-2 sm:px-6 sm:py-12">
       {/* Decorative background */}
       <div
         aria-hidden="true"
@@ -73,7 +73,7 @@ export default function SignupPage() {
             <span className="mt-1 block text-emerald-700">use ErrandHub?</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base max-md:hidden">
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base max-md:hidden">
             Whether you need a helping hand or want to offer your expertise,
             there&apos;s a place for you here.
           </p>
@@ -87,10 +87,10 @@ export default function SignupPage() {
             return (
               <section
                 key={account.theme}
-                className={`group relative flex flex-col overflow-hidden rounded-3xl border bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8 ${
+                className={`group relative flex flex-col overflow-hidden rounded-3xl border bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8 ${
                   isWorker
                     ? "border-emerald-200/80 hover:border-emerald-300"
-                    : "border-slate-200 hover:border-slate-300"
+                    : "  border-border hover:border-slate-300"
                 }`}
               >
                 <div
@@ -107,7 +107,7 @@ export default function SignupPage() {
                     className={`flex h-14 w-14 items-center justify-center rounded-2xl transition duration-300 group-hover:scale-105 ${
                       isWorker
                         ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                        : "bg-slate-100 text-slate-800 ring-1 ring-slate-200"
+                        : "bg-muted text-foreground ring-1 ring-slate-200"
                     }`}
                   >
                     <Icon className="h-7 w-7" strokeWidth={1.8} />
@@ -117,7 +117,7 @@ export default function SignupPage() {
                     className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
                       isWorker
                         ? "bg-emerald-50 text-emerald-800"
-                        : "bg-slate-100 text-slate-600"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {account.subtitle}
@@ -128,19 +128,21 @@ export default function SignupPage() {
                   {account.title}
                 </h2>
 
-                <p className="mt-3 min-h-14 text-sm leading-7 text-slate-600">
+                <p className="mt-3 min-h-14 text-sm leading-7 text-muted-foreground">
                   {account.description}
                 </p>
 
-                <ul className="mt-6 space-y-3 border-t border-slate-100 pt-6">
+                <ul className="mt-6 space-y-3 border-t   border-border pt-6">
                   {account.features.map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-start gap-3 text-sm text-slate-700"
+                      className="flex items-start gap-3 text-sm text-foreground"
                     >
                       <CheckCircle2
                         className={`mt-0.5 h-4 w-4 shrink-0 ${
-                          isWorker ? "text-emerald-600" : "text-slate-500"
+                          isWorker
+                            ? "text-emerald-600"
+                            : "text-muted-foreground"
                         }`}
                       />
                       <span>{feature}</span>
@@ -164,7 +166,7 @@ export default function SignupPage() {
           })}
         </div>
 
-        <p className="mt-9 text-center text-sm text-slate-600">
+        <p className="mt-9 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link
             href="/login"

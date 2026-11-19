@@ -21,7 +21,7 @@ import { PublicNavbar } from "@/components/navigation/public-navbar";
 const initialState: SignUpState = {};
 
 const inputClassName =
-  "h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10";
+  "h-12 w-full rounded-xl border   border-border bg-card px-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70 hover:border-slate-300 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10";
 
 export default function WorkerSignupPage() {
   const [state, formAction, isPending] = useActionState(signUp, initialState);
@@ -31,7 +31,7 @@ export default function WorkerSignupPage() {
 
   if (state.success) {
     return (
-      <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 px-4 py-12">
+      <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-muted px-4 py-12">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-96 bg-linear-to-b from-emerald-100/70 to-transparent"
@@ -45,12 +45,12 @@ export default function WorkerSignupPage() {
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-lg shadow-emerald-900/15">
               <Zap className="h-6 w-6 fill-current" />
             </span>
-            <span className="text-xl font-extrabold tracking-tight text-slate-900">
+            <span className="text-xl font-extrabold tracking-tight text-foreground">
               Emirate <span className="text-emerald-700">ErrandHub</span>
             </span>
           </Link>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-900/5 sm:p-10">
+          <div className="rounded-3xl border   border-border bg-card p-8 text-center shadow-xl shadow-slate-900/5 sm:p-10">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 ring-1 ring-emerald-100">
               <CheckCircle2 className="h-8 w-8 text-emerald-700" />
             </div>
@@ -64,15 +64,15 @@ export default function WorkerSignupPage() {
               Check your email
             </h1>
 
-            <p className="mt-3 text-sm leading-7 text-slate-600">
+            <p className="mt-3 text-sm leading-7 text-muted-foreground">
               Your registration was submitted successfully. We sent a
               confirmation link to your email address.
             </p>
 
-            <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-left">
+            <div className="mt-6 rounded-2xl border   border-border bg-muted p-4 text-left">
               <div className="flex items-start gap-3">
                 <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
-                <p className="text-sm leading-6 text-slate-600">
+                <p className="text-sm leading-6 text-muted-foreground">
                   Open the email and follow the confirmation link before signing
                   in. If you can&apos;t find it, check your spam folder.
                 </p>
@@ -89,13 +89,13 @@ export default function WorkerSignupPage() {
 
             <Link
               href="/"
-              className="mt-5 inline-block text-sm font-medium text-slate-500 transition hover:text-slate-900"
+              className="mt-5 inline-block text-sm font-medium text-muted-foreground transition hover:text-foreground"
             >
               Back to home
             </Link>
           </div>
 
-          <p className="mt-6 text-center text-xs text-slate-500">
+          <p className="mt-6 text-center text-xs text-muted-foreground">
             © {new Date().getFullYear()} Emirate ErrandHub
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function WorkerSignupPage() {
   }
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-slate-50 px-4 py-2 sm:px-6 sm:py-10">
+    <main className="relative isolate min-h-screen overflow-hidden bg-muted px-4 py-2 sm:px-6 sm:py-10">
       {/* Background decoration */}
       <div
         aria-hidden="true"
@@ -131,13 +131,13 @@ export default function WorkerSignupPage() {
             <span className="text-emerald-700">ErrandHub</span>
           </h1>
 
-          <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600 sm:text-base max-md:hidden">
+          <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-muted-foreground sm:text-base max-md:hidden">
             Create your provider account to connect with customers, showcase
             your skills, and discover new opportunities.
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5">
+        <div className="overflow-hidden rounded-3xl border   border-border bg-card shadow-xl shadow-slate-900/5">
           <div className="h-1.5 bg-linear-to-r from-emerald-600 via-teal-500 to-emerald-300" />
 
           <div className="p-6 sm:p-9">
@@ -146,10 +146,10 @@ export default function WorkerSignupPage() {
                 <BriefcaseBusiness className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="font-bold text-slate-900">
+                <h2 className="font-bold text-foreground">
                   Create your provider account
                 </h2>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Enter your details to get started.
                 </p>
               </div>
@@ -171,7 +171,7 @@ export default function WorkerSignupPage() {
               <input type="hidden" name="role" value="worker" />
 
               <div>
-                <h3 className="mb-4 text-sm font-semibold text-slate-800">
+                <h3 className="mb-4 text-sm font-semibold text-foreground">
                   Personal information
                 </h3>
 
@@ -179,7 +179,7 @@ export default function WorkerSignupPage() {
                   <div>
                     <label
                       htmlFor="firstName"
-                      className="mb-2 block text-sm font-medium text-slate-700"
+                      className="mb-2 block text-sm font-medium text-foreground"
                     >
                       First name <span className="text-emerald-700">*</span>
                     </label>
@@ -197,7 +197,7 @@ export default function WorkerSignupPage() {
                   <div>
                     <label
                       htmlFor="lastName"
-                      className="mb-2 block text-sm font-medium text-slate-700"
+                      className="mb-2 block text-sm font-medium text-foreground"
                     >
                       Last name <span className="text-emerald-700">*</span>
                     </label>
@@ -217,10 +217,12 @@ export default function WorkerSignupPage() {
               <div>
                 <label
                   htmlFor="phone"
-                  className="mb-2 block text-sm font-medium text-slate-700"
+                  className="mb-2 block text-sm font-medium text-foreground"
                 >
                   Phone number{" "}
-                  <span className="font-normal text-slate-400">(optional)</span>
+                  <span className="font-normal text-muted-foreground/70">
+                    (optional)
+                  </span>
                 </label>
                 <input
                   id="phone"
@@ -232,8 +234,8 @@ export default function WorkerSignupPage() {
                 />
               </div>
 
-              <div className="border-t border-slate-100 pt-5">
-                <h3 className="mb-4 text-sm font-semibold text-slate-800">
+              <div className="border-t   border-border pt-5">
+                <h3 className="mb-4 text-sm font-semibold text-foreground">
                   Login details
                 </h3>
 
@@ -241,7 +243,7 @@ export default function WorkerSignupPage() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="mb-2 block text-sm font-medium text-slate-700"
+                      className="mb-2 block text-sm font-medium text-foreground"
                     >
                       Email address <span className="text-emerald-700">*</span>
                     </label>
@@ -254,7 +256,7 @@ export default function WorkerSignupPage() {
                       placeholder="you@example.com"
                       className={inputClassName}
                     />
-                    <p className="mt-2 text-xs leading-5 text-slate-500">
+                    <p className="mt-2 text-xs leading-5 text-muted-foreground">
                       Use an email address you can access to confirm your
                       account.
                     </p>
@@ -263,7 +265,7 @@ export default function WorkerSignupPage() {
                   <div>
                     <label
                       htmlFor="password"
-                      className="mb-2 block text-sm font-medium text-slate-700"
+                      className="mb-2 block text-sm font-medium text-foreground"
                     >
                       Password <span className="text-emerald-700">*</span>
                     </label>
@@ -282,7 +284,7 @@ export default function WorkerSignupPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword((value) => !value)}
-                        className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-slate-400 transition hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-600"
+                        className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-muted-foreground/70 transition hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-600"
                         aria-label={
                           showPassword ? "Hide password" : "Show password"
                         }
@@ -294,7 +296,7 @@ export default function WorkerSignupPage() {
                         )}
                       </button>
                     </div>
-                    <p className="mt-2 text-xs text-slate-500">
+                    <p className="mt-2 text-xs text-muted-foreground">
                       Use at least 8 characters.
                     </p>
                   </div>
@@ -302,7 +304,7 @@ export default function WorkerSignupPage() {
                   <div>
                     <label
                       htmlFor="confirmPassword"
-                      className="mb-2 block text-sm font-medium text-slate-700"
+                      className="mb-2 block text-sm font-medium text-foreground"
                     >
                       Confirm password{" "}
                       <span className="text-emerald-700">*</span>
@@ -324,7 +326,7 @@ export default function WorkerSignupPage() {
                         onClick={() =>
                           setShowConfirmPassword((value) => !value)
                         }
-                        className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-slate-400 transition hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-600"
+                        className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-muted-foreground/70 transition hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-600"
                         aria-label={
                           showConfirmPassword
                             ? "Hide confirm password"
@@ -345,7 +347,7 @@ export default function WorkerSignupPage() {
               <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
-                  <p className="text-xs leading-6 text-slate-600">
+                  <p className="text-xs leading-6 text-muted-foreground">
                     Your account details are used to set up your ErrandHub
                     profile. You&apos;ll need to confirm your email before
                     signing in.
@@ -371,14 +373,14 @@ export default function WorkerSignupPage() {
                 )}
               </button>
 
-              <p className="text-center text-xs leading-5 text-slate-500">
+              <p className="text-center text-xs leading-5 text-muted-foreground">
                 By creating an account, you agree to use ErrandHub responsibly
                 and provide accurate information.
               </p>
             </form>
 
-            <div className="mt-7 border-t border-slate-100 pt-6 text-center">
-              <p className="text-sm text-slate-600">
+            <div className="mt-7 border-t   border-border pt-6 text-center">
+              <p className="text-sm text-muted-foreground">
                 Already have an account?{" "}
                 <Link
                   href="/login"

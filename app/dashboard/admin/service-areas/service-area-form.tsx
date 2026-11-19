@@ -52,14 +52,14 @@ export default function ServiceAreaForm({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+      <div className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-2xl dark:bg-slate-900">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-foreground dark:text-white">
               {editing ? `Edit ${levelName}` : `Add ${levelName}`}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-sm text-muted-foreground dark:text-muted-foreground/70">
               {level === 1
                 ? "Add a state to your service coverage locations."
                 : level === 2
@@ -71,7 +71,7 @@ export default function ServiceAreaForm({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="rounded-lg p-2 text-muted-foreground hover:bg-muted dark:hover:bg-slate-800"
             aria-label="Close"
           >
             ✕
@@ -97,7 +97,7 @@ export default function ServiceAreaForm({
           <div>
             <label
               htmlFor="service-area-name"
-              className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="mb-2 block text-sm font-medium text-foreground dark:text-slate-300"
             >
               {levelName} name
             </label>
@@ -116,11 +116,11 @@ export default function ServiceAreaForm({
                     ? "e.g. Ilorin West"
                     : "e.g. Adewole"
               }
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+              className="w-full rounded-xl border   border-border bg-card px-4 py-3 text-sm text-foreground outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
             />
           </div>
 
-          <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-4 dark:border-slate-700">
+          <label className="flex cursor-pointer items-center gap-3 rounded-xl border   border-border p-4 dark:border-slate-700">
             <input
               type="checkbox"
               name="isActive"
@@ -129,10 +129,10 @@ export default function ServiceAreaForm({
             />
 
             <span>
-              <span className="block text-sm font-medium text-slate-800 dark:text-white">
+              <span className="block text-sm font-medium text-foreground dark:text-white">
                 Active
               </span>
-              <span className="block text-xs text-slate-500 dark:text-slate-400">
+              <span className="block text-xs text-muted-foreground dark:text-muted-foreground/70">
                 Allow this location to be selected by workers.
               </span>
             </span>
@@ -144,12 +144,12 @@ export default function ServiceAreaForm({
             </div>
           )}
 
-          <div className="flex justify-end gap-3 border-t border-slate-100 pt-5 dark:border-slate-800">
+          <div className="flex justify-end gap-3 border-t   border-border pt-5 dark:border-slate-800">
             <button
               type="button"
               onClick={onClose}
               disabled={pending}
-              className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="rounded-xl border   border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               Cancel
             </button>

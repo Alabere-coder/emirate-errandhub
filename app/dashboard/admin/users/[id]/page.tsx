@@ -39,8 +39,22 @@ function roleLabel(role: string) {
       return "Service provider";
     case "admin":
       return "Administrator";
+    case "super_admin":
+      return "Super Administrator";
     default:
       return role;
+  }
+}
+
+function documentStatusClass(status: string) {
+  switch (status) {
+    case "approved":
+    case "verified":
+      return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400";
+    case "rejected":
+      return "bg-destructive/10 text-destructive";
+    default:
+      return "bg-amber-500/10 text-amber-700 dark:text-amber-400";
   }
 }
 
@@ -165,9 +179,9 @@ export default async function AdminUserDetailsPage({ params }: Props) {
   const fullName = `${profile.first_name} ${profile.last_name}`.trim();
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-5xl space-y-8 py-8 sm:px-6 lg:px-8">
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <section className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-center gap-4">
               {profile.avatar_url ? (
@@ -175,22 +189,20 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                 <img
                   src={profile.avatar_url}
                   alt=""
-                  className="h-16 w-16 rounded-2xl object-cover"
+                  className="h-16 w-16 rounded-2xl border border-border object-cover"
                 />
               ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <CircleUserRound className="h-8 w-8" />
                 </div>
               )}
 
-              <div>
-                <p className="text-sm font-medium text-emerald-700">
-                  User profile
-                </p>
-                <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-primary">User profile</p>
+                <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
                   {fullName || "Unnamed user"}
                 </h1>
-                <p className="mt-1 break-all text-sm text-slate-500">
+                <p className="mt-1 break-all text-sm text-muted-foreground">
                   {authUser.email ?? "No email address"}
                 </p>
               </div>
@@ -199,8 +211,8 @@ export default async function AdminUserDetailsPage({ params }: Props) {
             <span
               className={`inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold ${
                 profile.is_active
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-rose-50 text-rose-700"
+                  ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                  : "bg-destructive/10 text-destructive"
               }`}
             >
               {profile.is_active ? (
@@ -214,11 +226,11 @@ export default async function AdminUserDetailsPage({ params }: Props) {
         </section>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-foreground">
               Account information
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Identity and registration details.
             </p>
 
@@ -257,27 +269,27 @@ export default async function AdminUserDetailsPage({ params }: Props) {
           </section>
 
           <div className="space-y-6">
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-slate-900">
+            <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-foreground">
                 Email verification
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Confirmation status recorded by Supabase Auth.
               </p>
 
-              <div className="mt-5 flex items-start gap-3 rounded-xl bg-slate-50 p-4">
+              <div className="mt-5 flex items-start gap-3 rounded-xl bg-muted p-4">
                 {authUser.email_confirmed_at ? (
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-600" />
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 ) : (
-                  <Mail className="mt-0.5 h-5 w-5 text-amber-600" />
+                  <Mail className="mt-0.5 h-5 w-5 text-amber-600 dark:text-amber-400" />
                 )}
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">
+                  <p className="text-sm font-semibold text-foreground">
                     {authUser.email_confirmed_at
                       ? "Email confirmed"
                       : "Email not confirmed"}
                   </p>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {authUser.email_confirmed_at
                       ? `Confirmed ${formatDate(authUser.email_confirmed_at)}`
                       : "This account has not confirmed its email address."}
@@ -286,11 +298,11 @@ export default async function AdminUserDetailsPage({ params }: Props) {
               </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-slate-900">
+            <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-foreground">
                 Account status
               </h2>
-              <p className="mt-1 text-sm leading-6 text-slate-500">
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
                 Deactivation should be used for routine account restrictions.
                 Permanent deletion is a separate, protected operation.
               </p>
@@ -308,18 +320,18 @@ export default async function AdminUserDetailsPage({ params }: Props) {
         </div>
 
         {profile.role === "worker" && (
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <BriefcaseBusiness className="h-5 w-5" />
                 </div>
 
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900">
+                  <h2 className="text-lg font-semibold text-foreground">
                     Worker verification
                   </h2>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Review the worker profile and submitted verification
                     documents.
                   </p>
@@ -329,7 +341,7 @@ export default async function AdminUserDetailsPage({ params }: Props) {
               {workerProfile && (
                 <Link
                   href={`/dashboard/admin/worker-verification/${workerProfile.id}`}
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted"
                 >
                   Review worker
                   <ExternalLink className="h-4 w-4" />
@@ -338,11 +350,11 @@ export default async function AdminUserDetailsPage({ params }: Props) {
             </div>
 
             {!workerProfile ? (
-              <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
-                <p className="font-medium text-amber-900">
+              <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+                <p className="font-medium text-amber-800 dark:text-amber-300">
                   No worker profile found
                 </p>
-                <p className="mt-1 text-sm text-amber-800">
+                <p className="mt-1 text-sm text-amber-700 dark:text-amber-400">
                   This account has the service provider role but does not have a
                   corresponding worker profile.
                 </p>
@@ -350,44 +362,48 @@ export default async function AdminUserDetailsPage({ params }: Props) {
             ) : (
               <>
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="rounded-xl border border-slate-200 p-4">
-                    <p className="text-sm text-slate-500">
+                  <div className="rounded-xl border border-border bg-card p-4">
+                    <p className="text-sm text-muted-foreground">
                       Verification status
                     </p>
-                    <p className="mt-2 font-semibold capitalize text-slate-900">
+                    <p className="mt-2 font-semibold capitalize text-foreground">
                       {(
                         workerProfile.verification_status ?? "pending"
                       ).replaceAll("_", " ")}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-slate-200 p-4">
-                    <p className="text-sm text-slate-500">
+                  <div className="rounded-xl border border-border bg-card p-4">
+                    <p className="text-sm text-muted-foreground">
                       Documents submitted
                     </p>
-                    <p className="mt-2 text-2xl font-bold text-slate-900">
+                    <p className="mt-2 text-2xl font-bold text-foreground">
                       {documents.length}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-slate-200 p-4">
-                    <p className="text-sm text-slate-500">Approved documents</p>
-                    <p className="mt-2 text-2xl font-bold text-emerald-700">
+                  <div className="rounded-xl border border-border bg-card p-4">
+                    <p className="text-sm text-muted-foreground">
+                      Approved documents
+                    </p>
+                    <p className="mt-2 text-2xl font-bold text-emerald-700 dark:text-emerald-400">
                       {approvedDocuments}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-slate-200 p-4">
-                    <p className="text-sm text-slate-500">Pending / rejected</p>
-                    <p className="mt-2 text-2xl font-bold text-slate-900">
+                  <div className="rounded-xl border border-border bg-card p-4">
+                    <p className="text-sm text-muted-foreground">
+                      Pending / rejected
+                    </p>
+                    <p className="mt-2 text-2xl font-bold text-foreground">
                       {pendingDocuments} / {rejectedDocuments}
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-6 grid gap-6 lg:grid-cols-2">
-                  <div className="rounded-xl bg-slate-50 p-5">
-                    <h3 className="font-semibold text-slate-900">
+                  <div className="rounded-xl bg-muted p-5">
+                    <h3 className="font-semibold text-foreground">
                       Professional information
                     </h3>
 
@@ -414,10 +430,10 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                     </div>
 
                     <div className="mt-5">
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Professional bio
                       </p>
-                      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-700">
+                      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
                         {workerProfile.bio || "No professional bio provided."}
                       </p>
                     </div>
@@ -425,21 +441,21 @@ export default async function AdminUserDetailsPage({ params }: Props) {
 
                   <div>
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="font-semibold text-slate-900">
+                      <h3 className="font-semibold text-foreground">
                         Submitted documents
                       </h3>
-                      <span className="text-sm text-slate-500">
+                      <span className="text-sm text-muted-foreground">
                         {documents.length} total
                       </span>
                     </div>
 
                     {documents.length === 0 ? (
-                      <div className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-center">
-                        <FileText className="mx-auto h-8 w-8 text-slate-400" />
-                        <p className="mt-3 text-sm font-medium text-slate-700">
+                      <div className="mt-4 rounded-xl border border-dashed border-border p-6 text-center">
+                        <FileText className="mx-auto h-8 w-8 text-muted-foreground" />
+                        <p className="mt-3 text-sm font-medium text-foreground">
                           No documents submitted
                         </p>
-                        <p className="mt-1 text-sm text-slate-500">
+                        <p className="mt-1 text-sm text-muted-foreground">
                           This worker has not submitted any verification
                           documents.
                         </p>
@@ -449,40 +465,33 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                         {documents.map((document) => (
                           <div
                             key={document.id}
-                            className="rounded-xl border border-slate-200 p-4"
+                            className="rounded-xl border border-border bg-card p-4"
                           >
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex min-w-0 items-start gap-3">
-                                <FileText className="mt-0.5 h-5 w-5 shrink-0 text-slate-400" />
+                                <FileText className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
                                 <div className="min-w-0">
-                                  <p className="wrap-break-word text-sm font-semibold capitalize text-slate-900">
+                                  <p className="wrap-break-word text-sm font-semibold capitalize text-foreground">
                                     {document.document_type.replaceAll(
                                       "_",
                                       " ",
                                     )}
                                   </p>
-                                  <p className="mt-1 text-xs text-slate-500">
+                                  <p className="mt-1 text-xs text-muted-foreground">
                                     Submitted {formatDate(document.created_at)}
                                   </p>
                                 </div>
                               </div>
 
                               <span
-                                className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
-                                  document.status === "approved" ||
-                                  document.status === "verified"
-                                    ? "bg-emerald-50 text-emerald-700"
-                                    : document.status === "rejected"
-                                      ? "bg-rose-50 text-rose-700"
-                                      : "bg-amber-50 text-amber-700"
-                                }`}
+                                className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${documentStatusClass(document.status)}`}
                               >
                                 {document.status.replaceAll("_", " ")}
                               </span>
                             </div>
 
                             {document.rejection_reason && (
-                              <p className="mt-3 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">
+                              <p className="mt-3 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
                                 Rejection reason: {document.rejection_reason}
                               </p>
                             )}
@@ -494,7 +503,7 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                     {documents.length > 0 && (
                       <Link
                         href={`/dashboard/admin/worker-verification/${workerProfile.id}`}
-                        className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800"
+                        className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:opacity-80"
                       >
                         Inspect documents and review pending submissions
                         <ExternalLink className="h-4 w-4" />
@@ -503,7 +512,7 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                   </div>
                 </div>
 
-                <p className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+                <p className="mt-6 rounded-xl border border-border bg-muted p-4 text-sm leading-6 text-muted-foreground">
                   Worker verification is separate from account activation.
                   Activating this account does not approve the worker or
                   authorize them to accept jobs.
@@ -512,11 +521,14 @@ export default async function AdminUserDetailsPage({ params }: Props) {
             )}
           </section>
         )}
+
         {isWorker && (
-          <section className="rounded-xl border bg-card p-5 shadow-sm sm:p-6">
+          <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold">Worker Application</h2>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Worker application
+                </h2>
 
                 <p className="mt-1 text-sm text-muted-foreground">
                   Application history and administrative review.
@@ -525,15 +537,17 @@ export default async function AdminUserDetailsPage({ params }: Props) {
 
               <Link
                 href="/dashboard/admin/worker-applications"
-                className="text-sm font-medium text-primary hover:underline"
+                className="text-sm font-medium text-primary transition hover:underline"
               >
                 All applications
               </Link>
             </div>
 
             {!workerApplications || workerApplications.length === 0 ? (
-              <div className="mt-5 rounded-lg border border-dashed p-5 text-center">
-                <p className="font-medium">No worker application found</p>
+              <div className="mt-5 rounded-lg border border-dashed border-border p-5 text-center">
+                <p className="font-medium text-foreground">
+                  No worker application found
+                </p>
 
                 <p className="mt-1 text-sm text-muted-foreground">
                   This account does not currently have an application recorded
@@ -551,10 +565,15 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                         : "border-border bg-muted text-muted-foreground";
 
                   return (
-                    <div key={application.id} className="rounded-lg border p-4">
+                    <div
+                      key={application.id}
+                      className="rounded-xl border border-border bg-card p-4"
+                    >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                          <p className="font-medium">Application submitted</p>
+                          <p className="font-medium text-foreground">
+                            Application submitted
+                          </p>
 
                           <p className="mt-1 text-sm text-muted-foreground">
                             {formatDate(application.created_at)}
@@ -570,7 +589,7 @@ export default async function AdminUserDetailsPage({ params }: Props) {
 
                       <div className="mt-4 space-y-4">
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="text-sm font-medium text-foreground">
                             Application note
                           </p>
 
@@ -582,7 +601,7 @@ export default async function AdminUserDetailsPage({ params }: Props) {
 
                         {application.rejection_reason && (
                           <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
-                            <p className="text-sm font-medium">
+                            <p className="text-sm font-medium text-destructive">
                               Rejection reason
                             </p>
 
@@ -593,7 +612,9 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                         )}
 
                         <div>
-                          <p className="text-sm font-medium">Reviewed at</p>
+                          <p className="text-sm font-medium text-foreground">
+                            Reviewed at
+                          </p>
 
                           <p className="mt-1 text-sm text-muted-foreground">
                             {formatDate(application.reviewed_at)}
@@ -603,7 +624,7 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                         <div className="pt-1">
                           <Link
                             href={`/dashboard/admin/worker-applications/${application.id}`}
-                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+                            className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
                           >
                             Review application
                           </Link>
@@ -632,12 +653,12 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="mt-0.5 text-slate-400">{icon}</div>
+      <div className="mt-0.5 text-muted-foreground">{icon}</div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {label}
         </p>
-        <p className="mt-1 wrap-break-word text-sm font-medium text-slate-900">
+        <p className="mt-1 wrap-break-word text-sm font-medium text-foreground">
           {value}
         </p>
       </div>

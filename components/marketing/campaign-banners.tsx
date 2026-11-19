@@ -74,7 +74,7 @@ export async function CampaignBanners({
             )}
 
             <div className="relative max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-100 backdrop-blur">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-card/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-100 backdrop-blur">
                 Emirate ErrandHub
               </div>
 
@@ -95,7 +95,7 @@ export async function CampaignBanners({
                       href={safeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50"
+                      className="inline-flex items-center gap-2 rounded-xl bg-card px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50"
                     >
                       {campaign.button_text}
                       <ArrowUpRight className="h-4 w-4" />
@@ -103,7 +103,7 @@ export async function CampaignBanners({
                   ) : (
                     <Link
                       href={safeUrl}
-                      className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50"
+                      className="inline-flex items-center gap-2 rounded-xl bg-card px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50"
                     >
                       {campaign.button_text}
                       <ArrowUpRight className="h-4 w-4" />

@@ -349,7 +349,7 @@ export default async function AdminDashboardPage() {
 
           <div className="relative flex flex-col justify-between gap-7 sm:flex-row sm:items-center">
             <div className="max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/5 px-3 py-1.5 text-xs font-medium text-slate-200">
                 <LayoutDashboard className="size-3.5" />
                 Admin control centre
               </div>

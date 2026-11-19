@@ -130,68 +130,68 @@ export default function AvailableJobsList({ jobs }: Props) {
     <div className="space-y-6">
       {/* Overview cards */}
       <section className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border   border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500">Customer requests</p>
+            <p className="text-sm text-muted-foreground">Customer requests</p>
             <span className="rounded-lg bg-emerald-50 p-2 text-emerald-700">
               <Wrench className="h-5 w-5" />
             </span>
           </div>
-          <p className="mt-4 text-3xl font-bold text-slate-900">
+          <p className="mt-4 text-3xl font-bold text-foreground">
             {jobs.length}
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted-foreground">
             Requests returned by the current query
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border   border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500">Urgent requests</p>
+            <p className="text-sm text-muted-foreground">Urgent requests</p>
             <span className="rounded-lg bg-rose-50 p-2 text-rose-700">
               <Clock3 className="h-5 w-5" />
             </span>
           </div>
-          <p className="mt-4 text-3xl font-bold text-slate-900">
+          <p className="mt-4 text-3xl font-bold text-foreground">
             {urgentCount}
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted-foreground">
             Marked urgent by customers
           </p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border   border-border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500">Direct requests</p>
+            <p className="text-sm text-muted-foreground">Direct requests</p>
             <span className="rounded-lg bg-blue-50 p-2 text-blue-700">
               <MapPin className="h-5 w-5" />
             </span>
           </div>
-          <p className="mt-4 text-3xl font-bold text-slate-900">
+          <p className="mt-4 text-3xl font-bold text-foreground">
             {directCount}
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted-foreground">
             Requests assigned directly to you
           </p>
         </div>
       </section>
 
       {/* Search and filters */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <section className="rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-5">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="h-5 w-5 text-emerald-700" />
-          <h2 className="font-semibold text-slate-900">Find the right job</h2>
+          <h2 className="font-semibold text-foreground">Find the right job</h2>
         </div>
 
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           <label className="relative block">
             <span className="sr-only">Search jobs</span>
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/70" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search title, service or location..."
-              className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+              className="h-11 w-full rounded-lg border   border-border bg-card pl-10 pr-3 text-sm outline-none transition placeholder:text-muted-foreground/70 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
             />
           </label>
 
@@ -200,7 +200,7 @@ export default function AvailableJobsList({ jobs }: Props) {
             <select
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value)}
-              className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+              className="h-11 w-full rounded-lg border   border-border bg-card px-3 text-sm text-foreground outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
             >
               <option value="all">All categories</option>
               {categories.map((category) => (
@@ -213,7 +213,7 @@ export default function AvailableJobsList({ jobs }: Props) {
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-sm text-slate-500">Priority:</span>
+          <span className="mr-1 text-sm text-muted-foreground">Priority:</span>
 
           {[
             { value: "all", label: "All requests" },
@@ -227,7 +227,7 @@ export default function AvailableJobsList({ jobs }: Props) {
               className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
                 urgencyFilter === option.value
                   ? "border-emerald-700 bg-emerald-700 text-white"
-                  : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  : "  border-border bg-card text-muted-foreground hover:bg-muted"
               }`}
             >
               {option.label}
@@ -249,10 +249,10 @@ export default function AvailableJobsList({ jobs }: Props) {
       {/* Results heading */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-foreground">
             Customer requests
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {filteredJobs.length}{" "}
             {filteredJobs.length === 1 ? "request" : "requests"} found
           </p>
@@ -265,7 +265,7 @@ export default function AvailableJobsList({ jobs }: Props) {
           {filteredJobs.map((job) => (
             <article
               key={job.id}
-              className="flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md sm:p-6"
+              className="flex min-w-0 flex-col rounded-2xl border   border-border bg-card p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md sm:p-6"
             >
               <div className="flex items-start gap-3">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
@@ -273,10 +273,10 @@ export default function AvailableJobsList({ jobs }: Props) {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h3 className="wrap-break-word text-base font-semibold text-slate-900">
+                  <h3 className="wrap-break-word text-base font-semibold text-foreground">
                     {job.title}
                   </h3>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {job.category?.name ?? "Service request"}
                     {job.service?.name ? ` · ${job.service.name}` : ""}
                   </p>
@@ -297,26 +297,28 @@ export default function AvailableJobsList({ jobs }: Props) {
                 </div>
               </div>
 
-              <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600">
+              <p className="mt-4 line-clamp-3 text-sm leading-6 text-muted-foreground">
                 {job.description || "No additional description provided."}
               </p>
 
-              <div className="mt-5 grid gap-4 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
+              <div className="mt-5 grid gap-4 rounded-xl bg-muted p-4 sm:grid-cols-2">
                 <div className="flex min-w-0 items-start gap-2">
-                  <Wallet className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                  <Wallet className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                   <div className="min-w-0">
-                    <p className="text-xs text-slate-500">Customer budget</p>
-                    <p className="mt-1 wrap-break-word text-sm font-semibold text-slate-900">
+                    <p className="text-xs text-muted-foreground">
+                      Customer budget
+                    </p>
+                    <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                       {formatCurrency(job.budget, job.currency)}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex min-w-0 items-start gap-2">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                   <div className="min-w-0">
-                    <p className="text-xs text-slate-500">Location</p>
-                    <p className="mt-1 wrap-break-word text-sm font-medium text-slate-800">
+                    <p className="text-xs text-muted-foreground">Location</p>
+                    <p className="mt-1 wrap-break-word text-sm font-medium text-foreground">
                       {[job.city, job.state].filter(Boolean).join(", ") ||
                         "Location not specified"}
                     </p>
@@ -325,12 +327,12 @@ export default function AvailableJobsList({ jobs }: Props) {
 
                 {(job.preferred_date || job.preferred_time) && (
                   <div className="flex items-start gap-2 sm:col-span-2">
-                    <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                    <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
                     <div>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         Customer preference
                       </p>
-                      <p className="mt-1 text-sm text-slate-700">
+                      <p className="mt-1 text-sm text-foreground">
                         {job.preferred_date
                           ? formatDate(job.preferred_date)
                           : "Date flexible"}
@@ -341,8 +343,8 @@ export default function AvailableJobsList({ jobs }: Props) {
                 )}
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
-                <p className="text-xs text-slate-500">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t   border-border pt-4">
+                <p className="text-xs text-muted-foreground">
                   Posted {formatDate(job.created_at)}
                 </p>
 
@@ -358,18 +360,18 @@ export default function AvailableJobsList({ jobs }: Props) {
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-card px-6 py-12 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
             <Search className="h-6 w-6" />
           </div>
 
-          <h3 className="mt-4 font-semibold text-slate-900">
+          <h3 className="mt-4 font-semibold text-foreground">
             {jobs.length === 0
               ? "No customer requests yet"
               : "No matching requests"}
           </h3>
 
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
             {jobs.length === 0
               ? "New requests will appear here when customers submit service requests."
               : "Try a different search, choose another category, or clear your filters."}
@@ -379,7 +381,7 @@ export default function AvailableJobsList({ jobs }: Props) {
             <button
               type="button"
               onClick={clearFilters}
-              className="mt-5 inline-flex h-10 items-center justify-center rounded-lg border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="mt-5 inline-flex h-10 items-center justify-center rounded-lg border   border-border px-4 text-sm font-semibold text-foreground transition hover:bg-muted"
             >
               Clear filters
             </button>

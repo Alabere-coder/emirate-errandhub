@@ -44,7 +44,7 @@ export default async function AdminServicesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-muted sm:p-6 lg:p-8">
       <ServiceCategoryManager
         categories={categories ?? []}
         services={services ?? []}

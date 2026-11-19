@@ -32,7 +32,7 @@ const statusStyles: Record<string, string> = {
   resolved:
     "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400",
   dismissed:
-    "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    "  border-border bg-muted text-muted-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
 };
 
 const reasonLabels: Record<string, string> = {
@@ -173,7 +173,7 @@ export default async function AdminReviewReportsPage() {
 
         <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-center">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
               <ShieldCheck className="size-3.5" />
               Trust & Safety
             </div>
@@ -188,8 +188,8 @@ export default async function AdminReviewReportsPage() {
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-            <div className="rounded-xl bg-white/10 p-3">
+          <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/15 bg-card/10 p-4 backdrop-blur-sm">
+            <div className="rounded-xl bg-card/10 p-3">
               <FileWarning className="size-6 text-emerald-200" />
             </div>
             <div>
@@ -342,7 +342,7 @@ export default async function AdminReviewReportsPage() {
                             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
                               review.is_visible
                                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
-                                : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                                : "bg-muted text-muted-foreground dark:bg-slate-800 dark:text-slate-300"
                             }`}
                           >
                             {review.is_visible ? "Public" : "Hidden"}

@@ -48,10 +48,10 @@ export default async function ServiceSubcategoryPage({
   const services = await getServicesByCategoryId(subcategory.id);
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-muted">
       <PublicNavbar />
       {/* Hero */}
-      <section className="relative isolate overflow-hidden border-b border-slate-200 bg-slate-950">
+      <section className="relative isolate overflow-hidden border-b   border-border bg-slate-950">
         <div
           aria-hidden="true"
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.2),transparent_50%)]"
@@ -70,7 +70,7 @@ export default async function ServiceSubcategoryPage({
               All services
             </Link>
 
-            <span aria-hidden="true" className="text-slate-600">
+            <span aria-hidden="true" className="text-muted-foreground">
               /
             </span>
 
@@ -81,7 +81,7 @@ export default async function ServiceSubcategoryPage({
               {parentCategory.name}
             </Link>
 
-            <span aria-hidden="true" className="text-slate-600">
+            <span aria-hidden="true" className="text-muted-foreground">
               /
             </span>
 
@@ -112,7 +112,7 @@ export default async function ServiceSubcategoryPage({
               )}
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-card/5 px-4 py-2 text-sm font-medium text-slate-200">
                   <Layers3 className="h-4 w-4 text-teal-300" />
                   {services.length}{" "}
                   {services.length === 1 ? "service" : "services"}
@@ -120,7 +120,7 @@ export default async function ServiceSubcategoryPage({
 
                 <Link
                   href={`/services/${parentCategory.slug}`}
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-slate-300 transition hover:bg-card/10 hover:text-white"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   {parentCategory.name}
@@ -129,7 +129,7 @@ export default async function ServiceSubcategoryPage({
             </div>
 
             <div className="flex sm:justify-end">
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-3 shadow-xl">
+              <div className="rounded-3xl border border-white/10 bg-card/5 p-3 shadow-xl">
                 <ServiceMedia
                   icon={subcategory.icon}
                   imageUrl={subcategory.image_url}
@@ -153,22 +153,22 @@ export default async function ServiceSubcategoryPage({
             Available services
           </h2>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
             Compare the available options and select the service you need.
           </p>
         </div>
 
         {services.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100">
-              <Layers3 className="h-7 w-7 text-slate-500" />
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-card px-6 py-16 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
+              <Layers3 className="h-7 w-7 text-muted-foreground" />
             </div>
 
-            <h3 className="mt-5 text-lg font-semibold text-slate-900">
+            <h3 className="mt-5 text-lg font-semibold text-foreground">
               No services available yet
             </h3>
 
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               Services will appear here when they become available. You can
               return to the parent category to explore other options.
             </p>
@@ -187,9 +187,9 @@ export default async function ServiceSubcategoryPage({
               <Link
                 key={service.id}
                 href={`/services/${parentCategory.slug}/${subcategory.slug}/${service.slug}`}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg hover:shadow-slate-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2"
+                className="group flex h-full flex-col overflow-hidden rounded-2xl border   border-border/80 bg-card transition duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg hover:shadow-slate-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2"
               >
-                <div className="relative aspect-16/10 overflow-hidden bg-slate-100">
+                <div className="relative aspect-16/10 overflow-hidden bg-muted">
                   {service.image_url ? (
                     <Image
                       src={service.image_url}
@@ -214,24 +214,24 @@ export default async function ServiceSubcategoryPage({
 
                 <div className="flex flex-1 flex-col p-5 sm:p-6">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-semibold text-slate-900 transition group-hover:text-teal-800">
+                    <h3 className="font-semibold text-foreground transition group-hover:text-teal-800">
                       {service.name}
                     </h3>
 
-                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 transition group-hover:translate-x-1 group-hover:text-teal-800" />
+                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70 transition group-hover:translate-x-1 group-hover:text-teal-800" />
                   </div>
 
                   {service.description ? (
-                    <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-500">
+                    <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
                       {service.description}
                     </p>
                   ) : (
-                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground/70">
                       Explore this service to learn more.
                     </p>
                   )}
 
-                  <div className="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-slate-700 transition group-hover:text-teal-800">
+                  <div className="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-foreground transition group-hover:text-teal-800">
                     <CheckCircle2 className="h-4 w-4" />
                     View service details
                     <ArrowRight className="ml-auto h-4 w-4" />

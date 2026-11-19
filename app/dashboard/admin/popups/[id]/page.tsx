@@ -166,7 +166,7 @@ export default async function PopupDetailsPage({
 
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
                 <Megaphone className="size-3.5" />
                 Popup campaign details
               </div>
@@ -184,7 +184,7 @@ export default async function PopupDetailsPage({
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-medium text-white">
+            <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-white/15 bg-card/10 px-3 py-2 text-sm font-medium text-white">
               <span
                 className={`size-2 rounded-full ${
                   status === "active"

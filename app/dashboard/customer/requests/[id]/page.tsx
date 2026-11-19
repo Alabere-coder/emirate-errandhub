@@ -216,17 +216,17 @@ export default async function CustomerRequestDetailsPage({
           </Link>
         </Button>
 
-        <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+        <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
           <CardContent className="px-6 py-14 text-center sm:px-10">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600">
               <AlertCircle className="h-7 w-7" />
             </div>
 
-            <h1 className="mt-5 text-xl font-bold tracking-tight text-slate-900">
+            <h1 className="mt-5 text-xl font-bold tracking-tight text-foreground">
               Unable to load request
             </h1>
 
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               Something went wrong while loading this request.
             </p>
           </CardContent>
@@ -501,7 +501,7 @@ upfront_amount,
       {/* Back navigation */}
       <Button
         variant="ghost"
-        className="-ml-2 rounded-xl text-slate-600 hover:bg-white hover:text-teal-700"
+        className="-ml-2 rounded-xl text-muted-foreground hover:bg-card hover:text-teal-700"
       >
         <Link href="/dashboard/customer/requests">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -517,7 +517,7 @@ upfront_amount,
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200">
+                <span className="inline-flex items-center rounded-full border border-white/10 bg-card/10 px-3 py-1 text-xs font-semibold text-slate-200">
                   Request details
                 </span>
 
@@ -541,13 +541,13 @@ upfront_amount,
 
                 {service?.name && (
                   <>
-                    <span className="text-slate-500">/</span>
+                    <span className="text-muted-foreground">/</span>
                     <span>{service.name}</span>
                   </>
                 )}
               </div>
 
-              <p className="mt-4 text-sm text-slate-400">
+              <p className="mt-4 text-sm text-muted-foreground/70">
                 Request reference:{" "}
                 <span className="font-mono text-slate-300">{request.id}</span>
               </p>
@@ -558,7 +558,7 @@ upfront_amount,
                 <div className="flex flex-wrap gap-2">
                   <Button
                     variant="outline"
-                    className="rounded-xl border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                    className="rounded-xl border-white/20 bg-card/10 text-white hover:bg-card/20 hover:text-white"
                   >
                     <Link
                       href={`/dashboard/customer/requests/${request.id}/edit`}
@@ -578,8 +578,8 @@ upfront_amount,
                 {getStatusLabel(request.status)}
               </Badge>
 
-              <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 sm:min-w-48">
-                <p className="text-xs font-medium text-slate-400">
+              <div className="rounded-xl border border-white/10 bg-card/5 px-4 py-3 sm:min-w-48">
+                <p className="text-xs font-medium text-muted-foreground/70">
                   Your budget
                 </p>
                 <p className="mt-1 text-xl font-bold text-white">
@@ -595,14 +595,14 @@ upfront_amount,
         {/* Main content */}
         <div className="min-w-0 space-y-6 lg:col-span-2">
           {/* Quotations */}
-          <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader className="border-b border-slate-100 bg-white px-5 py-5 sm:px-6">
+          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+            <CardHeader className="border-b   border-border bg-card px-5 py-5 sm:px-6">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <CardTitle className="text-lg font-bold text-slate-900">
+                  <CardTitle className="text-lg font-bold text-foreground">
                     Quotations
                   </CardTitle>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Review the offers submitted for your request.
                   </p>
                 </div>
@@ -623,14 +623,14 @@ upfront_amount,
                   </p>
                 </div>
               ) : !quotes || quotes.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/70 px-5 py-10 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-200">
+                <div className="rounded-xl border border-dashed   border-border bg-muted/70 px-5 py-10 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-card text-muted-foreground/70 shadow-sm ring-1 ring-slate-200">
                     <Wallet className="h-5 w-5" />
                   </div>
-                  <h3 className="mt-4 font-semibold text-slate-900">
+                  <h3 className="mt-4 font-semibold text-foreground">
                     No quotations yet
                   </h3>
-                  <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
+                  <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
                     Service providers have not submitted any quotations for this
                     request yet.
                   </p>
@@ -640,16 +640,16 @@ upfront_amount,
                   {quotes.map((quote) => (
                     <div
                       key={quote.id}
-                      className="overflow-hidden rounded-xl border border-slate-200 transition-colors hover:border-teal-200"
+                      className="overflow-hidden rounded-xl border   border-border transition-colors hover:border-teal-200"
                     >
                       <div className="p-4 sm:p-5">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-slate-900">
+                            <p className="text-sm font-semibold text-foreground">
                               Service Provider
                             </p>
 
-                            <p className="mt-1 break-all font-mono text-xs text-slate-400">
+                            <p className="mt-1 break-all font-mono text-xs text-muted-foreground/70">
                               {quote.worker_id}
                             </p>
                           </div>
@@ -669,23 +669,23 @@ upfront_amount,
                           </Badge>
                         </div>
 
-                        <div className="mt-5 grid gap-4 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
+                        <div className="mt-5 grid gap-4 rounded-xl bg-muted p-4 sm:grid-cols-2">
                           <div>
-                            <p className="text-xs font-medium text-slate-500">
+                            <p className="text-xs font-medium text-muted-foreground">
                               Quotation amount
                             </p>
 
-                            <p className="mt-1 text-xl font-bold tracking-tight text-slate-900">
+                            <p className="mt-1 text-xl font-bold tracking-tight text-foreground">
                               {formatCurrency(quote.amount, quote.currency)}
                             </p>
                           </div>
 
                           <div>
-                            <p className="text-xs font-medium text-slate-500">
+                            <p className="text-xs font-medium text-muted-foreground">
                               Estimated duration
                             </p>
 
-                            <p className="mt-1 text-sm font-semibold text-slate-800">
+                            <p className="mt-1 text-sm font-semibold text-foreground">
                               {quote.estimated_duration_minutes === null
                                 ? "Not specified"
                                 : quote.estimated_duration_minutes >= 60
@@ -716,17 +716,17 @@ upfront_amount,
 
                         {quote.message && (
                           <div className="mt-4">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                               Provider message
                             </p>
 
-                            <p className="mt-2 whitespace-pre-wrap wrap-break-word text-sm leading-6 text-slate-600">
+                            <p className="mt-2 whitespace-pre-wrap wrap-break-word text-sm leading-6 text-muted-foreground">
                               {quote.message}
                             </p>
                           </div>
                         )}
 
-                        <div className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-400">
+                        <div className="mt-4 border-t   border-border pt-3 text-xs text-muted-foreground/70">
                           Submitted{" "}
                           {new Intl.DateTimeFormat("en-NG", {
                             dateStyle: "medium",
@@ -735,7 +735,7 @@ upfront_amount,
                       </div>
 
                       {quote.status === "pending" && (
-                        <div className="border-t border-slate-100 bg-slate-50/70 p-4 sm:px-5">
+                        <div className="border-t   border-border bg-muted/70 p-4 sm:px-5">
                           <QuoteActions quoteId={quote.id} />
                         </div>
                       )}
@@ -747,29 +747,29 @@ upfront_amount,
           </Card>
 
           {/* Request details */}
-          <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader className="border-b border-slate-100 px-5 py-5 sm:px-6">
-              <CardTitle className="text-lg font-bold text-slate-900">
+          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+            <CardHeader className="border-b   border-border px-5 py-5 sm:px-6">
+              <CardTitle className="text-lg font-bold text-foreground">
                 Request Details
               </CardTitle>
             </CardHeader>
 
             <CardContent className="p-5 sm:p-6">
-              <p className="whitespace-pre-wrap wrap-break-word text-sm leading-7 text-slate-600">
+              <p className="whitespace-pre-wrap wrap-break-word text-sm leading-7 text-muted-foreground">
                 {request.description}
               </p>
             </CardContent>
           </Card>
 
           {/* Request media */}
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+          <div className="overflow-hidden rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-6">
             <RequestMediaGallery media={requestMedia} />
           </div>
 
           {/* Service information */}
-          <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader className="border-b border-slate-100 px-5 py-5 sm:px-6">
-              <CardTitle className="text-lg font-bold text-slate-900">
+          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+            <CardHeader className="border-b   border-border px-5 py-5 sm:px-6">
+              <CardTitle className="text-lg font-bold text-foreground">
                 Service Information
               </CardTitle>
             </CardHeader>
@@ -781,31 +781,33 @@ upfront_amount,
                 </div>
 
                 <div className="min-w-0 pt-0.5">
-                  <p className="text-xs font-medium text-slate-500">Category</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Category
+                  </p>
 
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {category?.name ?? "Not specified"}
                   </p>
                 </div>
               </div>
 
               {service && (
-                <div className="flex items-start gap-3 border-t border-slate-100 pt-5">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+                <div className="flex items-start gap-3 border-t   border-border pt-5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                     <Wrench className="h-5 w-5" />
                   </div>
 
                   <div className="min-w-0 pt-0.5">
-                    <p className="text-xs font-medium text-slate-500">
+                    <p className="text-xs font-medium text-muted-foreground">
                       Specific service
                     </p>
 
-                    <p className="mt-1 text-sm font-semibold text-slate-900">
+                    <p className="mt-1 text-sm font-semibold text-foreground">
                       {service.name}
                     </p>
 
                     {service.description && (
-                      <p className="mt-2 text-sm leading-6 text-slate-500">
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
                         {service.description}
                       </p>
                     )}
@@ -818,9 +820,9 @@ upfront_amount,
           {/* Job tracking */}
           {job && (
             <>
-              <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-                <CardHeader className="border-b border-slate-100 px-5 py-5 sm:px-6">
-                  <CardTitle className="text-lg font-bold text-slate-900">
+              <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+                <CardHeader className="border-b   border-border px-5 py-5 sm:px-6">
+                  <CardTitle className="text-lg font-bold text-foreground">
                     Job Tracking
                   </CardTitle>
                 </CardHeader>
@@ -837,12 +839,12 @@ upfront_amount,
 
                   {(job.status === "assigned" ||
                     job.status === "completed") && (
-                    <div className="mt-5 border-t border-slate-100 pt-5">
-                      <h3 className="font-semibold text-slate-900">
+                    <div className="mt-5 border-t   border-border pt-5">
+                      <h3 className="font-semibold text-foreground">
                         Job Payment
                       </h3>
 
-                      <p className="mt-1 mb-4 text-sm leading-6 text-slate-500">
+                      <p className="mt-1 mb-4 text-sm leading-6 text-muted-foreground">
                         {job.status === "completed"
                           ? "This job is complete, but payment has not been recorded. Complete payment to finalize the job's payment record."
                           : "Complete the required upfront payment before your service provider starts the job."}
@@ -858,7 +860,7 @@ upfront_amount,
                   )}
 
                   {job.status === "completed" && (
-                    <div className="mt-5 border-t border-slate-100 pt-5">
+                    <div className="mt-5 border-t   border-border pt-5">
                       {job.customer_confirmed_at ? (
                         <div className="rounded-xl border border-green-200 bg-green-50 p-4">
                           <div className="flex items-center gap-2 text-sm font-semibold text-green-800">
@@ -882,14 +884,14 @@ upfront_amount,
 
               {job && <JobStatusTimeline history={jobStatusHistory} />}
 
-              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+              <div className="overflow-hidden rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-6">
                 <AssignedWorkerCard
                   worker={assignedWorker}
                   workerProfile={assignedWorkerProfile}
                 />
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+              <div className="overflow-hidden rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-6">
                 <JobMediaGallery media={jobMedia} />
               </div>
             </>
@@ -897,7 +899,7 @@ upfront_amount,
 
           {/* Conversation */}
           {conversation && (
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <div className="overflow-hidden rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-6">
               <ChatBox
                 conversationId={conversation.id}
                 currentUserId={user.id}
@@ -907,9 +909,9 @@ upfront_amount,
           )}
 
           {/* Service location */}
-          <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader className="border-b border-slate-100 px-5 py-5 sm:px-6">
-              <CardTitle className="text-lg font-bold text-slate-900">
+          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+            <CardHeader className="border-b   border-border px-5 py-5 sm:px-6">
+              <CardTitle className="text-lg font-bold text-foreground">
                 Service Location
               </CardTitle>
             </CardHeader>
@@ -921,26 +923,28 @@ upfront_amount,
                 </div>
 
                 <div className="min-w-0 pt-0.5">
-                  <p className="text-xs font-medium text-slate-500">Address</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Address
+                  </p>
 
-                  <p className="mt-1 wrap-break-word text-sm font-semibold leading-6 text-slate-800">
+                  <p className="mt-1 wrap-break-word text-sm font-semibold leading-6 text-foreground">
                     {request.address ?? "Not specified"}
                   </p>
                 </div>
               </div>
 
               {(request.city || request.state) && (
-                <div className="flex items-start gap-3 border-t border-slate-100 pt-5">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+                <div className="flex items-start gap-3 border-t   border-border pt-5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                     <MapPin className="h-5 w-5" />
                   </div>
 
                   <div className="min-w-0 pt-0.5">
-                    <p className="text-xs font-medium text-slate-500">
+                    <p className="text-xs font-medium text-muted-foreground">
                       City / State
                     </p>
 
-                    <p className="mt-1 text-sm font-semibold text-slate-800">
+                    <p className="mt-1 text-sm font-semibold text-foreground">
                       {[request.city, request.state].filter(Boolean).join(", ")}
                     </p>
                   </div>
@@ -952,12 +956,12 @@ upfront_amount,
 
         {/* Sidebar */}
         <aside className="space-y-5 lg:sticky lg:top-6">
-          <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader className="border-b border-slate-100 px-5 py-5">
-              <CardTitle className="text-base font-bold text-slate-900">
+          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+            <CardHeader className="border-b   border-border px-5 py-5">
+              <CardTitle className="text-base font-bold text-foreground">
                 Schedule
               </CardTitle>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 Your preferred service timing.
               </p>
             </CardHeader>
@@ -969,27 +973,27 @@ upfront_amount,
                 </div>
 
                 <div className="min-w-0 pt-0.5">
-                  <p className="text-xs font-medium text-slate-500">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Preferred date
                   </p>
 
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {formatDate(request.preferred_date)}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <Clock3 className="h-4 w-4" />
                 </div>
 
                 <div className="min-w-0 pt-0.5">
-                  <p className="text-xs font-medium text-slate-500">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Preferred time
                   </p>
 
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {formatTime(request.preferred_time)}
                   </p>
                 </div>
@@ -997,8 +1001,8 @@ upfront_amount,
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader className="border-b border-slate-100 bg-slate-950 px-5 py-4 text-white">
+          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+            <CardHeader className="border-b   border-border bg-slate-950 px-5 py-4 text-white">
               <CardTitle className="flex items-center gap-2 text-base font-bold">
                 <Wallet className="h-4 w-4 text-teal-300" />
                 Budget
@@ -1006,48 +1010,52 @@ upfront_amount,
             </CardHeader>
 
             <CardContent className="p-5">
-              <p className="text-xs font-medium text-slate-500">
+              <p className="text-xs font-medium text-muted-foreground">
                 Estimated budget
               </p>
 
-              <p className="mt-2 wrap-break-word text-2xl font-bold tracking-tight text-slate-900">
+              <p className="mt-2 wrap-break-word text-2xl font-bold tracking-tight text-foreground">
                 {formatCurrency(request.budget, request.currency)}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden rounded-2xl border-slate-200 shadow-sm">
-            <CardHeader className="border-b border-slate-100 px-5 py-5">
-              <CardTitle className="text-base font-bold text-slate-900">
+          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+            <CardHeader className="border-b   border-border px-5 py-5">
+              <CardTitle className="text-base font-bold text-foreground">
                 Request Information
               </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-4 p-5 text-sm">
               <div>
-                <p className="text-xs font-medium text-slate-500">Request ID</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Request ID
+                </p>
 
-                <p className="mt-1 break-all font-mono text-xs leading-5 text-slate-700">
+                <p className="mt-1 break-all font-mono text-xs leading-5 text-foreground">
                   {request.id}
                 </p>
               </div>
 
-              <div className="border-t border-slate-100 pt-4">
-                <p className="text-xs font-medium text-slate-500">Created</p>
+              <div className="border-t   border-border pt-4">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Created
+                </p>
 
-                <p className="mt-1 font-medium text-slate-800">
+                <p className="mt-1 font-medium text-foreground">
                   {new Intl.DateTimeFormat("en-NG", {
                     dateStyle: "medium",
                   }).format(new Date(request.created_at))}
                 </p>
               </div>
 
-              <div className="border-t border-slate-100 pt-4">
-                <p className="text-xs font-medium text-slate-500">
+              <div className="border-t   border-border pt-4">
+                <p className="text-xs font-medium text-muted-foreground">
                   Last updated
                 </p>
 
-                <p className="mt-1 font-medium text-slate-800">
+                <p className="mt-1 font-medium text-foreground">
                   {new Intl.DateTimeFormat("en-NG", {
                     dateStyle: "medium",
                   }).format(new Date(request.updated_at))}
@@ -1057,15 +1065,15 @@ upfront_amount,
           </Card>
 
           <div className="rounded-2xl border border-teal-100 bg-linear-to-br from-teal-50 to-white p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-teal-700 shadow-sm ring-1 ring-teal-100">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-card text-teal-700 shadow-sm ring-1 ring-teal-100">
               <Wrench className="h-5 w-5" />
             </div>
 
-            <h3 className="mt-4 text-sm font-bold text-slate-900">
+            <h3 className="mt-4 text-sm font-bold text-foreground">
               Your service, at a glance
             </h3>
 
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Review quotations, check your preferred schedule, and follow your
               job&apos;s progress from this page.
             </p>
