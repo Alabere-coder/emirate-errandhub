@@ -88,10 +88,8 @@ export function NotificationsList({
   initialNotifications,
 }: NotificationsListProps) {
   const [notifications, setNotifications] = useState(initialNotifications);
-
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [readFilter, setReadFilter] = useState<ReadFilter>("all");
-
   const [isPending, startTransition] = useTransition();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -259,14 +257,17 @@ export function NotificationsList({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Notification summary and actions */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <CheckCheck className="h-4 w-4 text-emerald-600" />
+          <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <CheckCheck className="size-4" />
+          </span>
+
           <span>
-            {unreadCount} unread notification
-            {unreadCount === 1 ? "" : "s"}
+            <span className="font-semibold text-foreground">{unreadCount}</span>{" "}
+            unread notification{unreadCount === 1 ? "" : "s"}
           </span>
         </div>
 
@@ -275,12 +276,12 @@ export function NotificationsList({
             type="button"
             onClick={markAllAsRead}
             disabled={unreadCount === 0 || isPending}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition hover:text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-emerald-400 dark:hover:text-emerald-300"
           >
             {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <CheckCheck className="h-4 w-4" />
+              <CheckCheck className="size-4" />
             )}
             Mark all as read
           </button>
@@ -290,9 +291,9 @@ export function NotificationsList({
               type="button"
               onClick={() => setShowClearConfirm(true)}
               disabled={isPending}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-red-600 hover:text-red-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-red-600 transition hover:text-red-700 disabled:opacity-50 dark:text-red-400 dark:hover:text-red-300"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="size-4" />
               Clear all
             </button>
           )}
@@ -303,21 +304,21 @@ export function NotificationsList({
       {feedback && (
         <div
           role={feedback.type === "error" ? "alert" : "status"}
-          className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm ${
+          className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm ${
             feedback.type === "success"
-              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-              : "border-red-200 bg-red-50 text-red-700"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+              : "border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
           }`}
         >
-          {feedback.message}
+          <span className="flex-1">{feedback.message}</span>
 
           <button
             type="button"
             onClick={() => setFeedback(null)}
             aria-label="Dismiss message"
-            className="ml-auto rounded-md p-1 hover:bg-black/5"
+            className="rounded-md p-1 transition hover:bg-black/5 dark:hover:bg-white/10"
           >
-            <X className="h-4 w-4" />
+            <X className="size-4" />
           </button>
         </div>
       )}
@@ -335,8 +336,8 @@ export function NotificationsList({
             aria-pressed={category === "all"}
             className={`shrink-0 rounded-xl border px-4 py-2.5 text-left transition ${
               category === "all"
-                ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                : "  border-border bg-card text-muted-foreground hover:border-emerald-200 hover:bg-muted"
+                ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:border-emerald-500 dark:bg-emerald-950/50 dark:text-emerald-300"
+                : "border-border bg-card text-muted-foreground hover:border-emerald-300 hover:bg-muted"
             }`}
           >
             <span className="block text-sm font-semibold">All</span>
@@ -358,8 +359,8 @@ export function NotificationsList({
                 aria-pressed={isSelected}
                 className={`shrink-0 rounded-xl border px-4 py-2.5 text-left transition ${
                   isSelected
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-800"
-                    : "  border-border bg-card text-muted-foreground hover:border-emerald-200 hover:bg-muted"
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:border-emerald-500 dark:bg-emerald-950/50 dark:text-emerald-300"
+                    : "border-border bg-card text-muted-foreground hover:border-emerald-300 hover:bg-muted"
                 }`}
               >
                 <span className="block text-sm font-semibold">
@@ -385,8 +386,8 @@ export function NotificationsList({
             aria-pressed={readFilter === "all"}
             className={`rounded-full px-4 py-2 text-sm font-medium transition ${
               readFilter === "all"
-                ? "bg-emerald-600 text-white"
-                : "bg-muted text-muted-foreground hover:bg-slate-200"
+                ? "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700"
+                : "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground"
             }`}
           >
             All
@@ -398,8 +399,8 @@ export function NotificationsList({
             aria-pressed={readFilter === "unread"}
             className={`rounded-full px-4 py-2 text-sm font-medium transition ${
               readFilter === "unread"
-                ? "bg-emerald-600 text-white"
-                : "bg-muted text-muted-foreground hover:bg-slate-200"
+                ? "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700"
+                : "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground"
             }`}
           >
             Unread ({unreadCount})
@@ -412,10 +413,12 @@ export function NotificationsList({
       </div>
 
       {/* Notification list */}
-      <div className="overflow-hidden rounded-2xl border   border-border bg-card shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         {filteredNotifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-            <Bell className="mb-3 h-8 w-8 text-slate-300" />
+            <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
+              <Bell className="size-7 text-muted-foreground/60" />
+            </span>
 
             <h2 className="font-semibold text-foreground">
               {readFilter === "unread"
@@ -425,7 +428,7 @@ export function NotificationsList({
                   : `No ${selectedCategoryLabel.toLowerCase()} notifications`}
             </h2>
 
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 max-w-sm text-sm leading-6 text-muted-foreground">
               {readFilter === "unread"
                 ? "There are no unread notifications in this view."
                 : category === "all"
@@ -434,29 +437,37 @@ export function NotificationsList({
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-border">
             {filteredNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`flex gap-4 p-5 transition hover:bg-muted ${
-                  !notification.is_read ? "bg-emerald-50/40" : ""
+                className={`flex gap-4 p-5 transition-colors hover:bg-muted/60 ${
+                  !notification.is_read
+                    ? "bg-emerald-50/60 dark:bg-emerald-950/20"
+                    : "bg-card"
                 }`}
               >
-                <div className="mt-1 h-2.5 w-2.5 shrink-0">
+                <div className="mt-1 flex size-2.5 shrink-0 items-center justify-center">
                   {!notification.is_read && (
-                    <span className="block h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                    <span className="block size-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/10" />
                   )}
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                    <h3 className="font-semibold text-foreground">
+                    <h3
+                      className={`font-semibold ${
+                        notification.is_read
+                          ? "text-foreground"
+                          : "text-emerald-950 dark:text-emerald-100"
+                      }`}
+                    >
                       {notification.title}
                     </h3>
 
                     <time
                       dateTime={notification.created_at}
-                      className="shrink-0 text-xs text-muted-foreground/70"
+                      className="shrink-0 text-xs text-muted-foreground"
                     >
                       {formatNotificationDate(notification.created_at)}
                     </time>
@@ -476,7 +487,7 @@ export function NotificationsList({
                               void markAsRead(notification.id);
                             }
                           }}
-                          className="text-sm font-semibold text-emerald-700 hover:text-emerald-800"
+                          className="text-sm font-semibold text-emerald-700 transition hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
                         >
                           View details →
                         </Link>
@@ -487,7 +498,7 @@ export function NotificationsList({
                           type="button"
                           onClick={() => void markAsRead(notification.id)}
                           disabled={isPending}
-                          className="text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
+                          className="text-sm font-medium text-muted-foreground transition hover:text-foreground disabled:opacity-50"
                         >
                           Mark as read
                         </button>
@@ -499,9 +510,9 @@ export function NotificationsList({
                       onClick={() => void deleteNotification(notification.id)}
                       disabled={isPending}
                       aria-label={`Delete notification: ${notification.title}`}
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-red-950/40 dark:hover:text-red-400"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="size-4" />
                     </button>
                   </div>
                 </div>
@@ -514,7 +525,7 @@ export function NotificationsList({
       {/* Clear all confirmation */}
       {showClearConfirm && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
           onClick={() => {
             if (!isPending) setShowClearConfirm(false);
           }}
@@ -524,11 +535,11 @@ export function NotificationsList({
             aria-modal="true"
             aria-labelledby="clear-notifications-title"
             aria-describedby="clear-notifications-description"
-            className="w-full max-w-md rounded-2xl bg-card p-6 shadow-xl"
+            className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
+            <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-red-50 dark:bg-red-950/40">
+              <AlertTriangle className="size-6 text-red-600 dark:text-red-400" />
             </div>
 
             <h2
@@ -552,7 +563,7 @@ export function NotificationsList({
                 type="button"
                 onClick={() => setShowClearConfirm(false)}
                 disabled={isPending}
-                className="rounded-xl border   border-border px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-50"
+                className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -561,9 +572,9 @@ export function NotificationsList({
                 type="button"
                 onClick={() => void clearAllNotifications()}
                 disabled={isPending}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isPending && <Loader2 className="size-4 animate-spin" />}
                 Clear all notifications
               </button>
             </div>

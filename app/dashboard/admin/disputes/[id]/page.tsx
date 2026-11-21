@@ -1,14 +1,15 @@
+import type { ElementType, ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import {
   ArrowLeft,
+  ArrowUpRight,
   CalendarDays,
   ClipboardList,
   ShieldAlert,
   UserRound,
   BriefcaseBusiness,
-  Clock3,
   CheckCircle2,
   FileImage,
   ImageIcon,
@@ -45,8 +46,7 @@ const STATUS_STYLES: Record<DisputeStatus, string> = {
     "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400",
   rejected:
     "border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400",
-  closed:
-    "  border-border bg-muted text-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  closed: "border-border bg-muted text-muted-foreground",
 };
 
 function isValidUuid(value: string) {
@@ -85,7 +85,7 @@ function SectionHeading({
   title,
   description,
 }: {
-  icon: React.ElementType;
+  icon: ElementType;
   title: string;
   description?: string;
 }) {
@@ -96,7 +96,10 @@ function SectionHeading({
       </div>
 
       <div>
-        <h2 className="font-semibold tracking-tight">{title}</h2>
+        <h2 className="font-semibold tracking-tight text-foreground">
+          {title}
+        </h2>
+
         {description && (
           <p className="mt-1 text-sm leading-5 text-muted-foreground">
             {description}
@@ -113,14 +116,15 @@ function DetailItem({
   mono = false,
 }: {
   label: string;
-  value: React.ReactNode;
+  value: ReactNode;
   mono?: boolean;
 }) {
   return (
     <div className="min-w-0">
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
+
       <div
-        className={`mt-1.5 text-sm ${
+        className={`mt-1.5 text-sm text-foreground ${
           mono ? "break-all font-mono text-xs" : "font-medium"
         }`}
       >
@@ -280,7 +284,7 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
 
         <div className="relative space-y-5">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
               <ShieldCheck className="size-3.5" />
               Trust & Safety
             </span>
@@ -303,6 +307,7 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
 
               <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-lg border border-white/10 bg-black/10 px-3 py-2">
                 <Hash className="size-3.5 shrink-0 text-emerald-200" />
+
                 <span className="break-all font-mono text-xs text-emerald-100/80">
                   {dispute.id}
                 </span>
@@ -320,8 +325,8 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
       </section>
 
       {/* Reported issue */}
-      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-        <div className="border-b bg-muted/20 p-5 md:p-6">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border bg-muted/30 p-5 md:p-6">
           <SectionHeading
             icon={ClipboardList}
             title="Reported issue"
@@ -334,19 +339,23 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Reason
             </p>
-            <p className="mt-2 text-base font-semibold">{dispute.reason}</p>
+
+            <p className="mt-2 text-base font-semibold text-foreground">
+              {dispute.reason}
+            </p>
           </div>
 
-          <div className="rounded-xl bg-muted/40 p-4 md:p-5">
+          <div className="rounded-xl bg-muted/50 p-4 md:p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Description
             </p>
+
             <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-foreground/90">
               {dispute.description}
             </p>
           </div>
 
-          <div className="grid gap-5 border-t pt-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 border-t border-border pt-5 sm:grid-cols-2 lg:grid-cols-4">
             <DetailItem
               label="Submitted"
               value={formatDate(dispute.created_at)}
@@ -381,8 +390,8 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
       </section>
 
       {/* Evidence */}
-      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-        <div className="border-b bg-muted/20 p-5 md:p-6">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border bg-muted/30 p-5 md:p-6">
           <SectionHeading
             icon={FileImage}
             title="Dispute evidence"
@@ -401,17 +410,21 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
               className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400"
             >
               <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+
               <p>
                 Evidence could not be loaded. Refresh the page and try again.
               </p>
             </div>
           ) : evidence.length === 0 ? (
-            <div className="rounded-xl border border-dashed px-5 py-10 text-center">
+            <div className="rounded-xl border border-dashed border-border px-5 py-10 text-center">
               <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                 <ImageIcon className="size-6" />
               </div>
 
-              <p className="mt-3 font-medium">No evidence attached</p>
+              <p className="mt-3 font-medium text-foreground">
+                No evidence attached
+              </p>
+
               <p className="mt-1 text-sm text-muted-foreground">
                 No evidence files have been submitted for this dispute.
               </p>
@@ -421,7 +434,7 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
               {evidence.map((item) => (
                 <div
                   key={item.id}
-                  className="overflow-hidden rounded-2xl border bg-background"
+                  className="overflow-hidden rounded-2xl border border-border bg-background"
                 >
                   <div className="flex min-h-48 items-center justify-center bg-muted/40 p-3">
                     {item.signedUrl && item.fileType.startsWith("image/") ? (
@@ -442,6 +455,7 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-center">
                         <FileImage className="size-9 text-muted-foreground/60" />
+
                         <p className="text-xs text-muted-foreground">
                           This evidence file could not be previewed.
                         </p>
@@ -468,7 +482,7 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
                         className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 underline-offset-4 hover:underline dark:text-emerald-400"
                       >
                         Open full image
-                        <ArrowLeft className="size-3.5 rotate-180" />
+                        <ArrowUpRight className="size-3.5" />
                       </a>
                     )}
                   </div>
@@ -480,8 +494,8 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
       </section>
 
       {/* Related job */}
-      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-        <div className="border-b bg-muted/20 p-5 md:p-6">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border bg-muted/30 p-5 md:p-6">
           <SectionHeading
             icon={BriefcaseBusiness}
             title="Related job"
@@ -540,8 +554,8 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
       </section>
 
       {/* Participants */}
-      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-        <div className="border-b bg-muted/20 p-5 md:p-6">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border bg-muted/30 p-5 md:p-6">
           <SectionHeading
             icon={UserRound}
             title="Job participants"
@@ -550,7 +564,8 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
         </div>
 
         <div className="grid gap-4 p-5 md:grid-cols-2 md:p-6">
-          <div className="rounded-2xl border p-5">
+          {/* Customer */}
+          <div className="rounded-2xl border border-border bg-background p-5">
             <div className="flex items-center gap-3">
               <div className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400">
                 <UserRound className="size-5" />
@@ -560,13 +575,14 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Customer
                 </p>
-                <p className="mt-1 font-semibold">
+
+                <p className="mt-1 font-semibold text-foreground">
                   {participantName(customer)}
                 </p>
               </div>
             </div>
 
-            <div className="mt-5 space-y-3 border-t pt-4">
+            <div className="mt-5 space-y-3 border-t border-border pt-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="size-4" />
                 {customer?.phone || "No phone number"}
@@ -578,7 +594,8 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          <div className="rounded-2xl border p-5">
+          {/* Worker */}
+          <div className="rounded-2xl border border-border bg-background p-5">
             <div className="flex items-center gap-3">
               <div className="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
                 <BriefcaseBusiness className="size-5" />
@@ -588,11 +605,14 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Worker
                 </p>
-                <p className="mt-1 font-semibold">{participantName(worker)}</p>
+
+                <p className="mt-1 font-semibold text-foreground">
+                  {participantName(worker)}
+                </p>
               </div>
             </div>
 
-            <div className="mt-5 space-y-3 border-t pt-4">
+            <div className="mt-5 space-y-3 border-t border-border pt-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="size-4" />
                 {worker?.phone || "No phone number"}
@@ -658,8 +678,8 @@ export default async function AdminDisputeDetailPage({ params }: PageProps) {
       </section>
 
       {/* Decision form */}
-      <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-        <div className="border-b bg-muted/20 p-5 md:p-6">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border bg-muted/30 p-5 md:p-6">
           <SectionHeading
             icon={ShieldCheck}
             title="Administrative decision"

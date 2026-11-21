@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { usePublicBranding } from "@/components/providers/public-branding-provider";
+import { ThemeSelector } from "@/components/theme/theme-selector";
 import { createClient } from "@/lib/supabase/client";
 
 type PublicNavbarProps = {
@@ -70,10 +72,10 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b   border-border/80 bg-card/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/90 backdrop-blur-xl">
       <nav
         aria-label="Main navigation"
-        className="mx-auto flex h-16 max-w-7xl items-center justify-between sm:px-6 lg:h-20 lg:px-8"
+        className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-20 lg:px-8"
       >
         {/* Brand */}
         <Link
@@ -82,7 +84,7 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
           className="flex shrink-0 items-center gap-2.5"
           aria-label={`${platformName} home`}
         >
-          <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-50">
+          <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-500/10 dark:bg-emerald-400/10">
             {platformLogoUrl ? (
               <Image
                 src={platformLogoUrl}
@@ -93,7 +95,11 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
                 className="h-full w-full object-contain"
               />
             ) : (
-              <Zap size={22} fill="currentColor" className="text-emerald-600" />
+              <Zap
+                size={22}
+                fill="currentColor"
+                className="text-emerald-600 dark:text-emerald-400"
+              />
             )}
           </span>
 
@@ -115,7 +121,7 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-emerald-700"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
               >
                 {link.label}
               </Link>
@@ -125,11 +131,13 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
 
         {/* Desktop actions */}
         <div className="hidden items-center gap-3 md:flex">
+          <ThemeSelector />
+
           {!authLoading &&
             (isLoggedIn ? (
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
               >
                 Go to Dashboard
                 <ArrowRight size={16} />
@@ -138,7 +146,7 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
               <>
                 <Link
                   href="/login"
-                  className="rounded-xl px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted hover:text-emerald-700"
+                  className="rounded-xl px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted hover:text-emerald-700 dark:hover:text-emerald-400"
                 >
                   Log in
                 </Link>
@@ -161,7 +169,7 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileMenuOpen}
           aria-controls="public-mobile-menu"
-          className="flex size-10 items-center justify-center rounded-xl border   border-border text-foreground transition-colors hover:bg-muted md:hidden"
+          className="flex size-10 items-center justify-center rounded-xl border border-border text-foreground transition-colors hover:bg-muted md:hidden"
         >
           {mobileMenuOpen ? <X size={21} /> : <Menu size={21} />}
         </button>
@@ -171,7 +179,7 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
       {mobileMenuOpen && (
         <div
           id="public-mobile-menu"
-          className="border-t   border-border bg-card px-4 py-4 shadow-lg md:hidden"
+          className="border-t border-border bg-background px-4 py-4 shadow-lg md:hidden"
         >
           <div className="mx-auto flex max-w-7xl flex-col gap-1">
             {!isAuthPage &&
@@ -183,23 +191,33 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
                     key={link.href}
                     href={link.href}
                     onClick={closeMobileMenu}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-emerald-50 hover:text-emerald-700"
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-400"
                   >
-                    <Icon size={18} />
+                    <Icon size={18} className="text-muted-foreground" />
                     {link.label}
                   </Link>
                 );
               })}
 
+            <div className="my-2 border-t border-border" />
+
+            {/* Mobile appearance selector */}
+            <div className="rounded-xl border border-border bg-card p-3">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Appearance
+              </p>
+              <ThemeSelector showLabel />
+            </div>
+
             {!authLoading && (
               <>
-                <div className="my-2 border-t   border-border" />
+                <div className="my-2 border-t border-border" />
 
                 {isLoggedIn ? (
                   <Link
                     href="/dashboard"
                     onClick={closeMobileMenu}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-2  text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+                    className="flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
                   >
                     Go to Dashboard
                     <ArrowRight size={16} />
@@ -209,7 +227,7 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
                     <Link
                       href="/login"
                       onClick={closeMobileMenu}
-                      className="rounded-xl px-3 py-3 text-sm font-semibold text-foreground hover:bg-muted"
+                      className="rounded-xl px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
                     >
                       Log in
                     </Link>

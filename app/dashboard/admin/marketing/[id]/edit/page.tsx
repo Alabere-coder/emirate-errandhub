@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Megaphone } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -33,25 +33,33 @@ export default async function EditMarketingCampaignPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
+      <div className="space-y-3">
         <Link
           href="/dashboard/admin/marketing"
-          className="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
           Back to marketing
         </Link>
 
-        <h1 className="text-2xl font-bold tracking-tight">
-          Edit marketing campaign
-        </h1>
+        <div className="flex items-start gap-3">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <Megaphone className="size-5" />
+          </div>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Update your campaign details and promotional banner.
-        </p>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Edit marketing campaign
+            </h1>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              Update your campaign details and promotional banner.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="rounded-xl border bg-card p-5 sm:p-7">
+      <div className="rounded-xl border border-border bg-card p-5 shadow-sm sm:p-7">
         <MarketingEditForm campaign={campaign} />
       </div>
     </div>

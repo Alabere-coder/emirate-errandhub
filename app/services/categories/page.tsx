@@ -1,5 +1,4 @@
 import Link from "next/link";
-
 import { ArrowLeft, ArrowRight, BriefcaseBusiness, Search } from "lucide-react";
 
 import { ServiceMedia } from "@/components/services/service-media";
@@ -10,19 +9,20 @@ export default async function ServiceCategoriesPage() {
   const categories = await getActiveServiceCategories();
 
   return (
-    <main className="min-h-screen bg-muted">
+    <main className="min-h-screen bg-background text-foreground">
       <PublicNavbar />
+
       {/* Header */}
-      <section className="relative isolate overflow-hidden border-b   border-border bg-slate-950">
+      <section className="relative isolate overflow-hidden border-b border-border bg-slate-950">
         <div
           aria-hidden="true"
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.2),transparent_50%)]"
         />
 
-        <div className="mx-auto max-w-7xl py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mx-auto max-w-7xl px-5 py-12 sm:px-6 sm:py-16 lg:px-8">
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 rounded-lg text-sm font-medium text-slate-300 transition hover:text-white"
+            className="inline-flex items-center gap-2 rounded-lg text-sm font-medium text-slate-300 transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to services
@@ -43,7 +43,7 @@ export default async function ServiceCategoriesPage() {
               deliveries and more.
             </p>
 
-            <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-card/5 px-4 py-2 text-sm text-slate-200">
+            <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200">
               <BriefcaseBusiness className="h-4 w-4 text-teal-300" />
               {categories.length}{" "}
               {categories.length === 1 ? "category" : "categories"} available
@@ -53,12 +53,13 @@ export default async function ServiceCategoriesPage() {
       </section>
 
       {/* Category directory */}
-      <section className="mx-auto max-w-7xl py-10 sm:px-6 sm:py-14 lg:px-8">
+      <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
               Browse all categories
             </h2>
+
             <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
               Select a category to explore its available services.
             </p>
@@ -66,7 +67,7 @@ export default async function ServiceCategoriesPage() {
         </div>
 
         {categories.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-card px-6 py-16 text-center">
+          <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-16 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
               <BriefcaseBusiness className="h-7 w-7 text-muted-foreground" />
             </div>
@@ -82,7 +83,7 @@ export default async function ServiceCategoriesPage() {
 
             <Link
               href="/services"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500"
             >
               Return to services
               <ArrowRight className="h-4 w-4" />
@@ -90,8 +91,8 @@ export default async function ServiceCategoriesPage() {
           </div>
         ) : (
           <>
-            <div className="mb-6 flex items-center gap-3 rounded-2xl border   border-border bg-card px-4 py-3">
-              <Search className="h-5 w-5 shrink-0 text-muted-foreground/70" />
+            <div className="mb-6 flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+              <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
 
               <p className="text-sm leading-6 text-muted-foreground">
                 Looking for a particular service? Use your browser&apos;s Find
@@ -105,10 +106,10 @@ export default async function ServiceCategoriesPage() {
                 <Link
                   key={category.id}
                   href={`/services/${category.slug}`}
-                  className="group flex min-h-56 flex-col rounded-2xl border   border-border/80 bg-card p-5 transition duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg hover:shadow-slate-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 sm:p-6"
+                  className="group flex min-h-56 flex-col rounded-2xl border border-border bg-card p-5 transition duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-950/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:hover:border-emerald-800 dark:hover:shadow-black/20 sm:p-6"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <div className="rounded-2xl bg-muted p-1 ring-1 ring-slate-100 transition group-hover:bg-teal-50 group-hover:ring-teal-100">
+                    <div className="rounded-2xl bg-muted p-1 ring-1 ring-border transition-colors group-hover:bg-emerald-50 group-hover:ring-emerald-200 dark:group-hover:bg-emerald-400/10 dark:group-hover:ring-emerald-800">
                       <ServiceMedia
                         icon={category.icon}
                         imageUrl={category.image_url}
@@ -117,12 +118,12 @@ export default async function ServiceCategoriesPage() {
                       />
                     </div>
 
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border   border-border text-muted-foreground/70 transition group-hover:border-teal-200 group-hover:bg-teal-50 group-hover:text-teal-800">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors group-hover:border-emerald-200 group-hover:bg-emerald-50 group-hover:text-emerald-800 dark:group-hover:border-emerald-800 dark:group-hover:bg-emerald-400/10 dark:group-hover:text-emerald-300">
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                     </span>
                   </div>
 
-                  <h3 className="mt-5 font-semibold text-foreground transition group-hover:text-teal-800">
+                  <h3 className="mt-5 font-semibold text-foreground transition-colors group-hover:text-emerald-800 dark:group-hover:text-emerald-400">
                     {category.name}
                   </h3>
 
@@ -131,12 +132,12 @@ export default async function ServiceCategoriesPage() {
                       {category.description}
                     </p>
                   ) : (
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground/70">
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       Explore services in this category.
                     </p>
                   )}
 
-                  <div className="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-foreground transition group-hover:text-teal-800">
+                  <div className="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-foreground transition-colors group-hover:text-emerald-800 dark:group-hover:text-emerald-400">
                     Explore category
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
@@ -149,12 +150,13 @@ export default async function ServiceCategoriesPage() {
 
       {/* Bottom call to action */}
       {categories.length > 0 && (
-        <section className="mx-auto max-w-7xl pb-12 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border   border-border bg-card p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
+        <section className="mx-auto max-w-7xl px-5 pb-12 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-border bg-card p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
             <div>
-              <h2 className="text-lg font-bold text-slate-950">
+              <h2 className="text-lg font-bold text-foreground">
                 Ready to get started?
               </h2>
+
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 Choose a service category and discover the options available to
                 you.
@@ -163,7 +165,7 @@ export default async function ServiceCategoriesPage() {
 
             <Link
               href="/services"
-              className="mt-5 inline-flex shrink-0 items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:mt-0"
+              className="mt-5 inline-flex shrink-0 items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 sm:mt-0"
             >
               Explore services
               <ArrowRight className="h-4 w-4" />

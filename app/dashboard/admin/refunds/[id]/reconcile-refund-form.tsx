@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { RefreshCw, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 import {
   reconcilePaystackRefund,
@@ -37,37 +38,68 @@ export function ReconcileRefundForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reconcile Paystack refund</CardTitle>
+        <div className="flex items-center gap-2">
+          <RefreshCw className="size-5 text-emerald-600 dark:text-emerald-400" />
+          <CardTitle>Reconcile Paystack refund</CardTitle>
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Retrieve the latest refund status from Paystack and compare it with
           the original payment before updating the local record.
         </p>
 
         {providerReference ? (
-          <p className="text-sm">**Paystack refund ID:** {providerReference}</p>
+          <div className="rounded-lg border border-border bg-muted/40 p-3">
+            <p className="text-xs font-medium text-muted-foreground">
+              Paystack refund ID
+            </p>
+            <p className="mt-1 break-all text-sm font-medium text-foreground">
+              {providerReference}
+            </p>
+          </div>
         ) : (
-          <p className="text-sm text-destructive">
-            No Paystack refund ID is saved. This request requires manual
-            reconciliation. Do not retry the refund.
-          </p>
+          <div className="flex gap-3 rounded-lg border border-destructive/25 bg-destructive/10 p-3">
+            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-destructive" />
+            <p className="text-sm leading-relaxed text-destructive">
+              No Paystack refund ID is saved. This request requires manual
+              reconciliation. Do not retry the refund.
+            </p>
+          </div>
         )}
 
         {state.error && (
-          <p className="text-sm text-destructive">{state.error}</p>
+          <div
+            role="alert"
+            className="rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+          >
+            {state.error}
+          </div>
         )}
 
         {state.success && (
-          <p className="text-sm text-green-600">{state.success}</p>
+          <div
+            role="status"
+            className="flex gap-2 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-700 dark:text-emerald-400"
+          >
+            <CheckCircle2 className="size-4 shrink-0" />
+            {state.success}
+          </div>
         )}
 
         {providerReference && (
           <form action={formAction}>
             <input type="hidden" name="refundId" value={refundId} />
 
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-full sm:w-auto"
+            >
+              <RefreshCw
+                className={`mr-2 size-4 ${isPending ? "animate-spin" : ""}`}
+              />
               {isPending ? "Checking Paystack..." : "Check refund status"}
             </Button>
           </form>

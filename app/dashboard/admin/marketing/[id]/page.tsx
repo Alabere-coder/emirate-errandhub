@@ -10,9 +10,11 @@ import {
   ExternalLink,
   ImageIcon,
   LayoutDashboard,
+  Megaphone,
   Monitor,
   Smartphone,
   Sparkles,
+  Layers3,
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
@@ -98,11 +100,13 @@ function getStatusBadge(status: string) {
 
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="space-y-1.5">
+    <div className="min-w-0 space-y-1.5">
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className="wrap-break-word text-sm font-medium">{value}</p>
+      <p className="wrap-break-word text-sm font-medium text-foreground">
+        {value}
+      </p>
     </div>
   );
 }
@@ -118,13 +122,13 @@ function CampaignPreview({
     <div
       className={
         mobile
-          ? "mx-auto w-full max-w-75 overflow-hidden rounded-[2rem] border-[5px] border-slate-800 bg-background shadow-xl dark:border-slate-700"
+          ? "mx-auto w-full max-w-75 overflow-hidden rounded-[2rem] border-[5px] border-slate-800 bg-background shadow-xl dark:border-slate-600"
           : "w-full overflow-hidden rounded-2xl border border-border bg-background shadow-sm"
       }
     >
       {mobile && (
-        <div className="flex h-6 items-center justify-center bg-slate-800">
-          <div className="h-1.5 w-12 rounded-full bg-card/30" />
+        <div className="flex h-6 items-center justify-center bg-slate-800 dark:bg-slate-700">
+          <div className="h-1.5 w-12 rounded-full bg-white/30" />
         </div>
       )}
 
@@ -141,7 +145,7 @@ function CampaignPreview({
             <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/35 to-transparent" />
 
             <div className="absolute inset-0 flex flex-col items-start justify-center p-5 text-white sm:p-8">
-              <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-card/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
+              <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
                 <Sparkles className="h-3 w-3" />
                 Emirate ErrandHub
               </span>
@@ -157,7 +161,7 @@ function CampaignPreview({
               )}
 
               {campaign.button_text && (
-                <span className="mt-4 inline-flex items-center gap-2 rounded-lg bg-card px-4 py-2 text-xs font-semibold text-emerald-950 shadow-sm sm:text-sm">
+                <span className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-xs font-semibold text-emerald-950 shadow-sm sm:text-sm">
                   {campaign.button_text}
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </span>
@@ -166,7 +170,7 @@ function CampaignPreview({
           </div>
         ) : (
           <div className="flex min-h-55 flex-col justify-center p-6 text-white sm:min-h-70 sm:p-10">
-            <span className="mb-4 inline-flex w-fit items-center gap-1.5 rounded-full border border-white/20 bg-card/10 px-3 py-1.5 text-xs font-medium">
+            <span className="mb-4 inline-flex w-fit items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium">
               <Sparkles className="h-3.5 w-3.5" />
               Emirate ErrandHub
             </span>
@@ -182,7 +186,7 @@ function CampaignPreview({
             )}
 
             {campaign.button_text && (
-              <span className="mt-5 inline-flex w-fit items-center gap-2 rounded-lg bg-card px-4 py-2.5 text-sm font-semibold text-emerald-950">
+              <span className="mt-5 inline-flex w-fit items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-emerald-950">
                 {campaign.button_text}
                 <ArrowUpRight className="h-4 w-4" />
               </span>
@@ -195,6 +199,7 @@ function CampaignPreview({
         <span className="text-[10px] font-medium text-muted-foreground">
           Campaign preview
         </span>
+
         <span className="text-[10px] capitalize text-muted-foreground">
           {campaign.placement.replaceAll("_", " ")}
         </span>
@@ -234,19 +239,21 @@ export default async function MarketingCampaignDetailsPage({
   const campaign = data as Campaign;
   const status = getCampaignStatus(campaign);
 
+  const isInternalDestination = campaign.button_url?.startsWith("/") ?? false;
+
   return (
     <div className="space-y-8">
       {/* Header */}
       <section className="relative overflow-hidden rounded-3xl border border-emerald-900/10 bg-linear-to-br from-emerald-950 via-emerald-900 to-emerald-800 px-6 py-8 text-white shadow-lg sm:px-8">
-        <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
-        <div className="absolute -bottom-24 right-1/3 h-56 w-56 rounded-full bg-teal-300/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 right-1/3 h-56 w-56 rounded-full bg-teal-300/10 blur-3xl" />
 
         <div className="relative space-y-6">
           <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
             <div className="min-w-0">
               <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
-                  <MegaphoneIcon />
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
+                  <Megaphone className="h-3.5 w-3.5" />
                   Campaign overview
                 </span>
 
@@ -262,7 +269,7 @@ export default async function MarketingCampaignDetailsPage({
                 its publishing settings.
               </p>
 
-              <p className="mt-4 text-xs text-emerald-100/60">
+              <p className="mt-4 break-all text-xs text-emerald-100/60">
                 Campaign ID: {campaign.id}
               </p>
             </div>
@@ -284,9 +291,10 @@ export default async function MarketingCampaignDetailsPage({
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="h-5 w-5" />
             </div>
+
             <div>
               <p className="text-xs text-muted-foreground">Campaign status</p>
-              <p className="mt-1 font-semibold">{status}</p>
+              <p className="mt-1 font-semibold text-foreground">{status}</p>
             </div>
           </CardContent>
         </Card>
@@ -296,9 +304,10 @@ export default async function MarketingCampaignDetailsPage({
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
               <LayoutDashboard className="h-5 w-5" />
             </div>
+
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Placement</p>
-              <p className="mt-1 truncate font-semibold capitalize">
+              <p className="mt-1 truncate font-semibold capitalize text-foreground">
                 {campaign.placement.replaceAll("_", " ")}
               </p>
             </div>
@@ -308,11 +317,14 @@ export default async function MarketingCampaignDetailsPage({
         <Card className="border-border/60 shadow-sm">
           <CardContent className="flex items-center gap-3 p-5">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400">
-              <Layers3Icon />
+              <Layers3 className="h-5 w-5" />
             </div>
+
             <div>
               <p className="text-xs text-muted-foreground">Display order</p>
-              <p className="mt-1 font-semibold">#{campaign.sort_order}</p>
+              <p className="mt-1 font-semibold text-foreground">
+                #{campaign.sort_order}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -322,9 +334,10 @@ export default async function MarketingCampaignDetailsPage({
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
               <CalendarDays className="h-5 w-5" />
             </div>
+
             <div>
               <p className="text-xs text-muted-foreground">Created</p>
-              <p className="mt-1 text-sm font-semibold">
+              <p className="mt-1 text-sm font-semibold text-foreground">
                 {formatDate(campaign.created_at)}
               </p>
             </div>
@@ -335,7 +348,10 @@ export default async function MarketingCampaignDetailsPage({
       {/* Preview */}
       <section className="space-y-5">
         <div>
-          <h2 className="text-xl font-bold tracking-tight">Campaign preview</h2>
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
+            Campaign preview
+          </h2>
+
           <p className="mt-1 text-sm text-muted-foreground">
             See how the saved campaign content can appear across different
             screen sizes. This is an administrative preview, not a live
@@ -347,7 +363,7 @@ export default async function MarketingCampaignDetailsPage({
           <Card className="min-w-0 overflow-hidden border-border/60 shadow-sm">
             <CardHeader className="border-b border-border/60 bg-muted/20">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Monitor className="h-4 w-4 text-emerald-600" />
+                <Monitor className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 Desktop preview
               </CardTitle>
             </CardHeader>
@@ -360,7 +376,7 @@ export default async function MarketingCampaignDetailsPage({
           <Card className="overflow-hidden border-border/60 shadow-sm">
             <CardHeader className="border-b border-border/60 bg-muted/20">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Smartphone className="h-4 w-4 text-emerald-600" />
+                <Smartphone className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 Mobile preview
               </CardTitle>
             </CardHeader>
@@ -377,7 +393,7 @@ export default async function MarketingCampaignDetailsPage({
         <Card className="border-border/60 shadow-sm">
           <CardHeader className="border-b border-border/60">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Sparkles className="h-4 w-4 text-emerald-600" />
+              <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               Campaign information
             </CardTitle>
           </CardHeader>
@@ -404,7 +420,8 @@ export default async function MarketingCampaignDetailsPage({
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Subtitle
               </p>
-              <p className="text-sm leading-6">
+
+              <p className="text-sm leading-6 text-foreground">
                 {campaign.subtitle || "No subtitle provided."}
               </p>
             </div>
@@ -413,6 +430,7 @@ export default async function MarketingCampaignDetailsPage({
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Image URL
               </p>
+
               {campaign.image_url ? (
                 <a
                   href={campaign.image_url}
@@ -435,7 +453,7 @@ export default async function MarketingCampaignDetailsPage({
         <Card className="border-border/60 shadow-sm">
           <CardHeader className="border-b border-border/60">
             <CardTitle className="flex items-center gap-2 text-base">
-              <CalendarDays className="h-4 w-4 text-emerald-600" />
+              <CalendarDays className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               Scheduling and call to action
             </CardTitle>
           </CardHeader>
@@ -474,15 +492,9 @@ export default async function MarketingCampaignDetailsPage({
                 </p>
 
                 <a
-                  href={
-                    campaign.button_url.startsWith("/")
-                      ? campaign.button_url
-                      : campaign.button_url
-                  }
-                  target={
-                    campaign.button_url.startsWith("/") ? undefined : "_blank"
-                  }
-                  rel="noreferrer"
+                  href={campaign.button_url}
+                  target={isInternalDestination ? undefined : "_blank"}
+                  rel={isInternalDestination ? undefined : "noreferrer"}
                   className="mt-2 inline-flex max-w-full items-center gap-2 break-all text-sm font-semibold text-emerald-700 hover:underline dark:text-emerald-400"
                 >
                   {campaign.button_url}
@@ -494,10 +506,12 @@ export default async function MarketingCampaignDetailsPage({
             <div className="rounded-xl bg-muted/50 p-4">
               <div className="flex items-start gap-3">
                 <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+
                 <div>
-                  <p className="text-sm font-semibold">
+                  <p className="text-sm font-semibold text-foreground">
                     Scheduling information
                   </p>
+
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
                     Campaign visibility depends on its enabled status and
                     configured start and end dates. An enabled campaign may
@@ -511,12 +525,4 @@ export default async function MarketingCampaignDetailsPage({
       </section>
     </div>
   );
-}
-
-function MegaphoneIcon() {
-  return <ImageIcon className="h-3.5 w-3.5" />;
-}
-
-function Layers3Icon() {
-  return <LayoutDashboard className="h-5 w-5" />;
 }

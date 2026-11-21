@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
 import {
   ArrowLeft,
   CalendarDays,
@@ -9,13 +10,16 @@ import {
 } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
+
 import { PublicSupportReplyForm } from "@/components/dashboard/admin/public-support-reply-form";
 import { PublicSupportRetryButton } from "@/components/dashboard/admin/public-support-retry-button";
 
 const statusStyles: Record<string, string> = {
-  open: "bg-blue-50 text-blue-700",
-  in_progress: "bg-amber-50 text-amber-700",
-  responded: "bg-emerald-50 text-emerald-700",
+  open: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300",
+  in_progress:
+    "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
+  responded:
+    "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
   closed: "bg-muted text-muted-foreground",
 };
 
@@ -33,9 +37,10 @@ const categoryLabels: Record<string, string> = {
 };
 
 const emailStatusStyles: Record<string, string> = {
-  pending: "bg-amber-50 text-amber-700",
-  sent: "bg-emerald-50 text-emerald-700",
-  failed: "bg-red-50 text-red-700",
+  pending:
+    "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
+  sent: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+  failed: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300",
 };
 
 function formatDate(value: string) {
@@ -51,6 +56,7 @@ export default async function PublicSupportEnquiryPage({
   params: Promise<{ id: string }>;
 }) {
   const { supabase } = await requireRole(["admin", "super_admin"]);
+
   const { id } = await params;
 
   const uuidRegex =
@@ -92,22 +98,23 @@ export default async function PublicSupportEnquiryPage({
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
+      {/* Page heading */}
       <div>
         <Link
           href="/dashboard/admin/public-support"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-emerald-800"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Public Support
         </Link>
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
+          <div className="min-w-0">
             <p className="text-sm font-medium text-muted-foreground">
               Public Support Enquiry
             </p>
 
-            <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+            <h1 className="mt-2 wrap-break-word text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               {enquiry.subject}
             </h1>
 
@@ -117,7 +124,7 @@ export default async function PublicSupportEnquiryPage({
           </div>
 
           <span
-            className={`inline-flex w-fit rounded-full px-3 py-1.5 text-sm font-semibold ${
+            className={`inline-flex w-fit shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ${
               statusStyles[enquiry.status] ?? "bg-muted text-muted-foreground"
             }`}
           >
@@ -127,11 +134,15 @@ export default async function PublicSupportEnquiryPage({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="space-y-6">
-          <section className="rounded-2xl border   border-border bg-card p-6 sm:p-8">
-            <div className="flex items-center gap-2 border-b   border-border pb-4">
-              <MessageSquareText className="h-5 w-5 text-emerald-700" />
-              <h2 className="font-bold text-slate-950">s Visitor's message</h2>
+        {/* Main content */}
+        <div className="min-w-0 space-y-6">
+          {/* Visitor message */}
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+            <div className="flex items-center gap-2 border-b border-border pb-4">
+              <MessageSquareText className="h-5 w-5 text-primary" />
+              <h2 className="font-bold text-foreground">
+                Visitor&apos;s message
+              </h2>
             </div>
 
             <div className="mt-6 whitespace-pre-wrap wrap-break-word text-sm leading-8 text-foreground">
@@ -139,11 +150,12 @@ export default async function PublicSupportEnquiryPage({
             </div>
           </section>
 
-          <section className="rounded-2xl border   border-border bg-card p-6 sm:p-8">
-            <div className="flex items-center justify-between gap-3 border-b   border-border pb-4">
+          {/* Reply history */}
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+            <div className="flex items-center justify-between gap-3 border-b border-border pb-4">
               <div className="flex items-center gap-2">
-                <Mail className="h-5 w-5 text-emerald-700" />
-                <h2 className="font-bold text-slate-950">Reply history</h2>
+                <Mail className="h-5 w-5 text-primary" />
+                <h2 className="font-bold text-foreground">Reply history</h2>
               </div>
 
               <span className="text-xs font-medium text-muted-foreground">
@@ -154,18 +166,20 @@ export default async function PublicSupportEnquiryPage({
 
             {!replies?.length ? (
               <div className="py-10 text-center">
-                <MessageSquareText className="mx-auto h-8 w-8 text-slate-300" />
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
+                  <MessageSquareText className="h-6 w-6 text-muted-foreground" />
+                </div>
 
                 <h3 className="mt-3 font-semibold text-foreground">
                   No replies yet
                 </h3>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Your team's email responses will appear here.
+                  Your team&apos;s email responses will appear here.
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-border">
                 {replies.map((reply) => (
                   <div key={reply.id} className="py-5 first:pt-5 last:pb-0">
                     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -203,7 +217,7 @@ export default async function PublicSupportEnquiryPage({
                       {reply.email_status === "failed" && (
                         <div className="mt-3 space-y-2">
                           {reply.email_error && (
-                            <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                            <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm leading-6 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
                               Delivery error: {reply.email_error}
                             </p>
                           )}
@@ -218,15 +232,16 @@ export default async function PublicSupportEnquiryPage({
             )}
           </section>
 
-          <section className="rounded-2xl border   border-border bg-card p-6 sm:p-8">
-            <div className="mb-5 border-b   border-border pb-4">
-              <h2 className="font-bold text-slate-950">
+          {/* Reply form */}
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+            <div className="mb-5 border-b border-border pb-4">
+              <h2 className="font-bold text-foreground">
                 Reply to this enquiry
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Send your response directly to the visitor's email address. They
-                can reply using their normal email client.
+                Send your response directly to the visitor&apos;s email address.
+                They can reply using their normal email client.
               </p>
             </div>
 
@@ -234,17 +249,21 @@ export default async function PublicSupportEnquiryPage({
           </section>
         </div>
 
+        {/* Sidebar */}
         <aside className="space-y-6">
-          <section className="rounded-2xl border   border-border bg-card p-6">
-            <h2 className="font-bold text-slate-950">Visitor information</h2>
+          {/* Visitor information */}
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="font-bold text-foreground">Visitor information</h2>
 
             <div className="mt-5 space-y-5">
               <div className="flex items-start gap-3">
-                <UserRound className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
+                <UserRound className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+
                 <div className="min-w-0">
                   <p className="text-xs font-medium text-muted-foreground">
                     Full name
                   </p>
+
                   <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                     {enquiry.full_name}
                   </p>
@@ -252,14 +271,16 @@ export default async function PublicSupportEnquiryPage({
               </div>
 
               <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+
                 <div className="min-w-0">
                   <p className="text-xs font-medium text-muted-foreground">
                     Email address
                   </p>
+
                   <a
                     href={`mailto:${enquiry.email}`}
-                    className="mt-1 block break-all text-sm font-semibold text-emerald-800 hover:underline"
+                    className="mt-1 block break-all text-sm font-semibold text-primary hover:underline"
                   >
                     {enquiry.email}
                   </a>
@@ -267,11 +288,13 @@ export default async function PublicSupportEnquiryPage({
               </div>
 
               <div className="flex items-start gap-3">
-                <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
+                <MessageSquareText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+
                 <div className="min-w-0">
                   <p className="text-xs font-medium text-muted-foreground">
                     Category
                   </p>
+
                   <p className="mt-1 text-sm font-semibold text-foreground">
                     {categoryLabels[enquiry.category] ?? enquiry.category}
                   </p>
@@ -279,11 +302,13 @@ export default async function PublicSupportEnquiryPage({
               </div>
 
               <div className="flex items-start gap-3">
-                <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70" />
-                <div>
+                <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+
+                <div className="min-w-0">
                   <p className="text-xs font-medium text-muted-foreground">
                     Last updated
                   </p>
+
                   <p className="mt-1 text-sm font-semibold text-foreground">
                     {formatDate(enquiry.updated_at)}
                   </p>
@@ -292,12 +317,14 @@ export default async function PublicSupportEnquiryPage({
             </div>
           </section>
 
-          <section className="rounded-2xl border   border-border bg-card p-6">
-            <h2 className="font-bold text-slate-950">Enquiry details</h2>
+          {/* Enquiry details */}
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="font-bold text-foreground">Enquiry details</h2>
 
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between gap-3">
                 <span className="text-muted-foreground">Reference</span>
+
                 <span className="max-w-40 break-all text-right font-medium text-foreground">
                   {enquiry.id}
                 </span>
@@ -305,7 +332,8 @@ export default async function PublicSupportEnquiryPage({
 
               <div className="flex justify-between gap-3">
                 <span className="text-muted-foreground">Status</span>
-                <span className="font-semibold text-foreground">
+
+                <span className="text-right font-semibold text-foreground">
                   {statusLabels[enquiry.status] ?? enquiry.status}
                 </span>
               </div>

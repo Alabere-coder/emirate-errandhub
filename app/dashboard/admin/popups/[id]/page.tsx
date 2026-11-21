@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode, ElementType } from "react";
+
 import {
   ArrowLeft,
   CalendarDays,
@@ -46,8 +48,7 @@ const statusStyles: Record<PopupStatus, string> = {
     "border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-400",
   expired:
     "border-orange-500/20 bg-orange-500/10 text-orange-700 dark:text-orange-400",
-  inactive:
-    "border-zinc-500/20 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400",
+  inactive: "border-border bg-muted text-muted-foreground",
 };
 
 function formatDate(value: string | null) {
@@ -71,11 +72,14 @@ function formatLabel(value: string | null | undefined) {
 
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="space-y-1">
+    <div className="min-w-0 space-y-1">
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className="wrap-break-word text-sm font-medium">{value}</p>
+
+      <p className="wrap-break-word text-sm font-medium text-foreground">
+        {value}
+      </p>
     </div>
   );
 }
@@ -88,18 +92,21 @@ function SectionCard({
 }: {
   title: string;
   description?: string;
-  icon: React.ElementType;
-  children: React.ReactNode;
+  icon: ElementType;
+  children: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-      <div className="flex items-center gap-3 border-b bg-muted/20 px-5 py-4 sm:px-6">
+    <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-5 py-4 sm:px-6">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
           <Icon className="size-5" />
         </div>
 
         <div>
-          <h2 className="font-semibold tracking-tight">{title}</h2>
+          <h2 className="font-semibold tracking-tight text-foreground">
+            {title}
+          </h2>
+
           {description && (
             <p className="mt-0.5 text-sm text-muted-foreground">
               {description}
@@ -159,14 +166,23 @@ export default async function PopupDetailsPage({
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <div>
+      {/* Header */}
+      <div className="space-y-4">
+        <Link
+          href="/dashboard/admin/popups"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          Back to popups
+        </Link>
+
         <div className="relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 p-6 text-white shadow-lg shadow-emerald-950/10 sm:p-8">
           <div className="pointer-events-none absolute -right-12 -top-20 size-64 rounded-full bg-emerald-400/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 right-1/3 size-64 rounded-full bg-teal-300/10 blur-3xl" />
 
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
                 <Megaphone className="size-3.5" />
                 Popup campaign details
               </div>
@@ -184,7 +200,7 @@ export default async function PopupDetailsPage({
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-white/15 bg-card/10 px-3 py-2 text-sm font-medium text-white">
+            <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-medium text-white">
               <span
                 className={`size-2 rounded-full ${
                   status === "active"
@@ -196,6 +212,7 @@ export default async function PopupDetailsPage({
                         : "bg-zinc-300"
                 }`}
               />
+
               {formatLabel(status)}
             </div>
           </div>
@@ -204,15 +221,16 @@ export default async function PopupDetailsPage({
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <div className="min-w-0 space-y-6">
+          {/* Campaign preview */}
           <SectionCard
             title="Campaign preview"
             description="A preview of the popup content."
             icon={ImageIcon}
           >
-            <div className="mx-auto max-w-lg overflow-hidden rounded-2xl border bg-background shadow-sm">
+            <div className="mx-auto max-w-lg overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
               {popup.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <div className="relative aspect-video overflow-hidden bg-muted">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={popup.image_url}
                     alt={popup.title}
@@ -230,7 +248,7 @@ export default async function PopupDetailsPage({
 
               <div className="space-y-4 p-5 sm:p-6">
                 <div>
-                  <p className="text-lg font-bold tracking-tight">
+                  <p className="text-lg font-bold tracking-tight text-foreground">
                     {popup.title}
                   </p>
 
@@ -251,6 +269,7 @@ export default async function PopupDetailsPage({
             </div>
           </SectionCard>
 
+          {/* Campaign information */}
           <SectionCard
             title="Campaign information"
             description="Content and destination details."
@@ -258,26 +277,31 @@ export default async function PopupDetailsPage({
           >
             <div className="grid gap-5 sm:grid-cols-2">
               <DetailItem label="Campaign title" value={popup.title} />
+
               <DetailItem
                 label="Button text"
                 value={popup.button_text || "No button"}
               />
+
               <div className="sm:col-span-2">
                 <DetailItem
                   label="Description"
                   value={popup.description || "No description provided"}
                 />
               </div>
+
               <div className="sm:col-span-2">
                 <DetailItem
                   label="Button destination"
                   value={popup.button_url || "No destination configured"}
                 />
               </div>
+
               <DetailItem
                 label="Image"
                 value={popup.image_url ? "Image configured" : "No image"}
               />
+
               <DetailItem
                 label="Image storage path"
                 value={popup.image_path || "No storage path recorded"}
@@ -285,12 +309,12 @@ export default async function PopupDetailsPage({
             </div>
 
             {popup.button_url && (
-              <div className="mt-5 border-t pt-4">
+              <div className="mt-5 border-t border-border pt-4">
                 <a
                   href={popup.button_url}
                   target={isExternalUrl ? "_blank" : undefined}
                   rel={isExternalUrl ? "noopener noreferrer" : undefined}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
                 >
                   Open button destination
                   <ExternalLink className="size-4" />
@@ -299,6 +323,7 @@ export default async function PopupDetailsPage({
             )}
           </SectionCard>
 
+          {/* Display configuration */}
           <SectionCard
             title="Display configuration"
             description="Who sees this popup and how often it appears."
@@ -309,6 +334,7 @@ export default async function PopupDetailsPage({
                 label="Target audience"
                 value={formatLabel(popup.audience)}
               />
+
               <DetailItem
                 label="Audience description"
                 value={
@@ -316,10 +342,12 @@ export default async function PopupDetailsPage({
                   "Custom audience configuration"
                 }
               />
+
               <DetailItem
                 label="Display frequency"
                 value={formatLabel(popup.frequency)}
               />
+
               <DetailItem
                 label="Frequency description"
                 value={
@@ -327,7 +355,9 @@ export default async function PopupDetailsPage({
                   "Custom display frequency"
                 }
               />
+
               <DetailItem label="Priority" value={String(popup.priority)} />
+
               <DetailItem
                 label="Activation"
                 value={popup.is_active ? "Enabled" : "Disabled"}
@@ -336,6 +366,7 @@ export default async function PopupDetailsPage({
           </SectionCard>
         </div>
 
+        {/* Sidebar */}
         <aside className="space-y-6">
           <SectionCard
             title="Campaign schedule"
@@ -347,9 +378,10 @@ export default async function PopupDetailsPage({
                 label="Start date"
                 value={formatDate(popup.starts_at)}
               />
+
               <DetailItem label="End date" value={formatDate(popup.ends_at)} />
 
-              <div className="border-t pt-4">
+              <div className="border-t border-border pt-4">
                 <DetailItem
                   label="Created"
                   value={formatDate(popup.created_at)}
@@ -366,7 +398,9 @@ export default async function PopupDetailsPage({
           <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
             <div className="flex items-center gap-2">
               <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400" />
-              <h3 className="font-semibold">Visibility status</h3>
+              <h3 className="font-semibold text-foreground">
+                Visibility status
+              </h3>
             </div>
 
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -378,12 +412,18 @@ export default async function PopupDetailsPage({
                     ? "This campaign is enabled, but its end date has passed."
                     : "This campaign is disabled and will not be displayed."}
             </p>
+
+            <div
+              className={`mt-4 inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-semibold capitalize ${statusStyles[status]}`}
+            >
+              {formatLabel(status)}
+            </div>
           </div>
 
-          <div className="rounded-2xl border bg-card p-5">
+          <div className="rounded-2xl border border-border bg-card p-5">
             <div className="flex items-center gap-2">
               <Clock3 className="size-5 text-muted-foreground" />
-              <h3 className="font-semibold">Campaign record</h3>
+              <h3 className="font-semibold text-foreground">Campaign record</h3>
             </div>
 
             <p className="mt-2 break-all font-mono text-xs text-muted-foreground">

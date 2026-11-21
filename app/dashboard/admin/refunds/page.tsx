@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import {
   ArrowRight,
   Banknote,
@@ -8,18 +9,14 @@ import {
   ShieldCheck,
   Wallet,
 } from "lucide-react";
+
 import type { LucideIcon } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
@@ -93,14 +90,17 @@ function StatCard({
   iconClass: string;
 }) {
   return (
-    <Card className="relative overflow-hidden border-border/60 shadow-sm">
-      <div className="absolute right-0 top-0 h-24 w-24 rounded-full bg-emerald-500/4 blur-2xl" />
+    <Card className="relative overflow-hidden border-border/60 bg-card shadow-sm transition-colors">
+      <div className="pointer-events-none absolute -right-5 -top-5 h-24 w-24 rounded-full bg-emerald-500/5 blur-2xl" />
+
       <CardContent className="relative flex items-center justify-between gap-4 p-5">
         <div className="min-w-0">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight tabular-nums">
+
+          <p className="mt-2 text-3xl font-bold tracking-tight tabular-nums text-foreground">
             {value}
           </p>
+
           <p className="mt-1 text-xs text-muted-foreground">{description}</p>
         </div>
 
@@ -128,8 +128,9 @@ function DetailItem({
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
+
       <p
-        className={`break-all text-sm font-medium ${
+        className={`break-all text-sm font-medium text-foreground ${
           mono ? "font-mono text-xs" : ""
         }`}
       >
@@ -175,14 +176,15 @@ export default async function AdminRefundsPage() {
     <div className="space-y-8">
       {/* Header */}
       <section className="relative overflow-hidden rounded-3xl border border-emerald-900/10 bg-linear-to-br from-emerald-950 via-emerald-900 to-emerald-800 px-6 py-8 text-white shadow-lg sm:px-8">
-        <div className="absolute -right-16 -top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
-        <div className="absolute -bottom-28 right-1/3 h-64 w-64 rounded-full bg-teal-300/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
+
+        <div className="pointer-events-none absolute -bottom-28 right-1/3 h-64 w-64 rounded-full bg-teal-300/10 blur-3xl" />
 
         <div className="relative flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Finance &amp; payment operations
+              Finance & payment operations
             </div>
 
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -195,7 +197,7 @@ export default async function AdminRefundsPage() {
             </p>
           </div>
 
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-card/10 shadow-inner">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 shadow-inner">
             <RefreshCcw className="h-8 w-8 text-emerald-100" />
           </div>
         </div>
@@ -205,7 +207,9 @@ export default async function AdminRefundsPage() {
             <Wallet className="h-4 w-4" />
             {refunds.length} total refund requests
           </span>
+
           <span className="hidden text-white/30 sm:inline">•</span>
+
           <span className="inline-flex items-center gap-2">
             <Clock3 className="h-4 w-4" />
             {pendingCount} awaiting review
@@ -244,27 +248,33 @@ export default async function AdminRefundsPage() {
       <section className="space-y-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-xl font-bold tracking-tight">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
               Refund requests
             </h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               All customer refund requests, ordered by submission date.
             </p>
           </div>
 
-          <Badge variant="outline" className="w-fit rounded-full px-3 py-1">
+          <Badge
+            variant="outline"
+            className="w-fit rounded-full border-border px-3 py-1"
+          >
             {refunds.length} {refunds.length === 1 ? "request" : "requests"}
           </Badge>
         </div>
 
         {refunds.length === 0 ? (
-          <Card className="overflow-hidden border-dashed shadow-sm">
+          <Card className="overflow-hidden border-dashed border-border bg-card shadow-sm">
             <CardContent className="flex flex-col items-center px-6 py-16 text-center">
               <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                 <RefreshCcw className="h-8 w-8" />
               </div>
 
-              <h3 className="text-lg font-semibold">No refund requests yet</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                No refund requests yet
+              </h3>
 
               <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
                 Customer refund requests will appear here when they are
@@ -277,7 +287,7 @@ export default async function AdminRefundsPage() {
             {refunds.map((refund) => (
               <Card
                 key={refund.id}
-                className="overflow-hidden border-border/60 shadow-sm transition-shadow hover:shadow-md"
+                className="overflow-hidden border-border/60 bg-card shadow-sm transition-all hover:border-emerald-500/30 hover:shadow-md"
               >
                 <CardContent className="space-y-5 p-5 sm:p-6">
                   {/* Request heading */}
@@ -288,10 +298,14 @@ export default async function AdminRefundsPage() {
                       </div>
 
                       <div className="min-w-0">
-                        <p className="font-semibold">Refund request</p>
+                        <p className="font-semibold text-foreground">
+                          Refund request
+                        </p>
+
                         <p className="mt-1 break-all font-mono text-xs text-muted-foreground">
                           {refund.id}
                         </p>
+
                         <p className="mt-1 text-xs text-muted-foreground">
                           Submitted {formatDate(refund.requested_at)}
                         </p>
@@ -312,6 +326,7 @@ export default async function AdminRefundsPage() {
                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Refund amount
                       </p>
+
                       <p className="mt-1 text-xl font-bold tracking-tight text-emerald-700 dark:text-emerald-400">
                         {formatAmount(Number(refund.amount), refund.currency)}
                       </p>
@@ -321,7 +336,8 @@ export default async function AdminRefundsPage() {
                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Payment provider
                       </p>
-                      <p className="mt-2 font-semibold capitalize">
+
+                      <p className="mt-2 font-semibold capitalize text-foreground">
                         {refund.provider.replaceAll("_", " ")}
                       </p>
                     </div>
@@ -330,7 +346,8 @@ export default async function AdminRefundsPage() {
                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Requested on
                       </p>
-                      <p className="mt-2 text-sm font-medium">
+
+                      <p className="mt-2 text-sm font-medium text-foreground">
                         {formatDate(refund.requested_at)}
                       </p>
                     </div>
@@ -338,7 +355,10 @@ export default async function AdminRefundsPage() {
 
                   {/* Customer reason */}
                   <div className="space-y-2">
-                    <p className="text-sm font-semibold">Customer reason</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      Customer reason
+                    </p>
+
                     <div className="rounded-xl border border-border/60 bg-background p-4">
                       <p className="whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
                         {refund.reason}
@@ -353,12 +373,15 @@ export default async function AdminRefundsPage() {
                       value={refund.customer_id}
                       mono
                     />
+
                     <DetailItem label="Job ID" value={refund.job_id} mono />
+
                     <DetailItem
                       label="Payment ID"
                       value={refund.payment_id}
                       mono
                     />
+
                     <DetailItem
                       label="Transaction ID"
                       value={refund.transaction_id}
@@ -366,8 +389,9 @@ export default async function AdminRefundsPage() {
                     />
                   </div>
 
+                  {/* Provider reference */}
                   {refund.provider_reference && (
-                    <div className="rounded-xl bg-muted/40 px-4 py-3">
+                    <div className="rounded-xl border border-border/50 bg-muted/30 px-4 py-3">
                       <DetailItem
                         label="Provider reference"
                         value={refund.provider_reference}
@@ -378,10 +402,11 @@ export default async function AdminRefundsPage() {
 
                   {/* Admin note */}
                   {refund.admin_note && (
-                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/4 p-4">
+                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
                       <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
                         Admin note
                       </p>
+
                       <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
                         {refund.admin_note}
                       </p>
@@ -394,6 +419,7 @@ export default async function AdminRefundsPage() {
                       {refund.reviewed_at
                         ? `Reviewed ${formatDate(refund.reviewed_at)}`
                         : "Awaiting administrative review"}
+
                       {refund.processed_at
                         ? ` · Processed ${formatDate(refund.processed_at)}`
                         : ""}
@@ -401,7 +427,7 @@ export default async function AdminRefundsPage() {
 
                     <Link
                       href={`/dashboard/admin/refunds/${refund.id}`}
-                      className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                      className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
                       Review refund
                       <ArrowRight className="h-4 w-4" />

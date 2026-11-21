@@ -4,9 +4,11 @@ import { ArrowRight, Inbox, Mail, MessageSquareText } from "lucide-react";
 import { requireRole } from "@/lib/auth/require-role";
 
 const statusStyles: Record<string, string> = {
-  open: "bg-blue-50 text-blue-700",
-  in_progress: "bg-amber-50 text-amber-700",
-  responded: "bg-emerald-50 text-emerald-700",
+  open: "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300",
+  in_progress:
+    "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
+  responded:
+    "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
   closed: "bg-muted text-muted-foreground",
 };
 
@@ -44,11 +46,11 @@ export default async function PublicSupportPage() {
     console.error("Failed to load public support enquiries:", error);
 
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
-        <h2 className="font-bold text-red-900">
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-900/50 dark:bg-red-950/30">
+        <h2 className="font-bold text-red-900 dark:text-red-300">
           Unable to load public enquiries
         </h2>
-        <p className="mt-2 text-sm text-red-700">
+        <p className="mt-2 text-sm leading-6 text-red-700 dark:text-red-400">
           Something went wrong while loading the support inbox. Please refresh
           the page and try again.
         </p>
@@ -72,6 +74,7 @@ export default async function PublicSupportPage() {
 
   return (
     <div className="space-y-8">
+      {/* Page heading */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -79,7 +82,7 @@ export default async function PublicSupportPage() {
             Admin / Public Support
           </div>
 
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Public Support Inbox
           </h1>
 
@@ -89,48 +92,52 @@ export default async function PublicSupportPage() {
           </p>
         </div>
 
-        <div className="inline-flex w-fit items-center gap-2 rounded-xl border   border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground">
-          <MessageSquareText className="h-4 w-4 text-emerald-700" />
+        <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm">
+          <MessageSquareText className="h-4 w-4 text-primary" />
           {allEnquiries.length}{" "}
           {allEnquiries.length === 1 ? "Enquiry" : "Enquiries"}
         </div>
       </div>
 
+      {/* Statistics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border   border-border bg-card p-5">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-sm font-medium text-muted-foreground">
             Total enquiries
           </p>
-          <p className="mt-2 text-3xl font-bold text-slate-950">
+          <p className="mt-2 text-3xl font-bold tabular-nums text-foreground">
             {allEnquiries.length}
           </p>
         </div>
 
-        <div className="rounded-2xl border   border-border bg-card p-5">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-sm font-medium text-muted-foreground">Open</p>
-          <p className="mt-2 text-3xl font-bold text-blue-700">{openCount}</p>
+          <p className="mt-2 text-3xl font-bold tabular-nums text-blue-700 dark:text-blue-400">
+            {openCount}
+          </p>
         </div>
 
-        <div className="rounded-2xl border   border-border bg-card p-5">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-sm font-medium text-muted-foreground">
             In progress
           </p>
-          <p className="mt-2 text-3xl font-bold text-amber-600">
+          <p className="mt-2 text-3xl font-bold tabular-nums text-amber-600 dark:text-amber-400">
             {inProgressCount}
           </p>
         </div>
 
-        <div className="rounded-2xl border   border-border bg-card p-5">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <p className="text-sm font-medium text-muted-foreground">Responded</p>
-          <p className="mt-2 text-3xl font-bold text-emerald-700">
+          <p className="mt-2 text-3xl font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
             {respondedCount}
           </p>
         </div>
       </div>
 
-      <section className="overflow-hidden rounded-2xl border   border-border bg-card">
-        <div className="border-b   border-border px-5 py-5 sm:px-6">
-          <h2 className="font-bold text-slate-950">All enquiries</h2>
+      {/* Enquiries list */}
+      <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border px-5 py-5 sm:px-6">
+          <h2 className="font-bold text-foreground">All enquiries</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Newest enquiries appear first.
           </p>
@@ -142,7 +149,7 @@ export default async function PublicSupportPage() {
               <Inbox className="h-7 w-7 text-muted-foreground" />
             </div>
 
-            <h3 className="mt-4 font-bold text-slate-950">No enquiries yet</h3>
+            <h3 className="mt-4 font-bold text-foreground">No enquiries yet</h3>
 
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
               Public messages submitted through your Contact page will appear
@@ -150,17 +157,17 @@ export default async function PublicSupportPage() {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-border">
             {allEnquiries.map((enquiry) => (
               <Link
                 key={enquiry.id}
                 href={`/dashboard/admin/public-support/${enquiry.id}`}
-                className="group block px-5 py-5 transition hover:bg-muted sm:px-6"
+                className="group block px-5 py-5 transition-colors hover:bg-muted/60 sm:px-6"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-bold text-slate-950 transition group-hover:text-emerald-800">
+                      <h3 className="font-bold text-foreground transition-colors group-hover:text-primary">
                         {enquiry.subject}
                       </h3>
 
@@ -180,7 +187,7 @@ export default async function PublicSupportPage() {
                       </span>
 
                       <span className="inline-flex items-center gap-1.5">
-                        <Mail className="h-3.5 w-3.5" />
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
                         {enquiry.email}
                       </span>
                     </div>
@@ -193,14 +200,14 @@ export default async function PublicSupportPage() {
                       <span>
                         {categoryLabels[enquiry.category] ?? enquiry.category}
                       </span>
-                      <span>•</span>
+                      <span aria-hidden="true">•</span>
                       <span>{formatDate(enquiry.created_at)}</span>
                     </div>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-2 text-sm font-semibold text-emerald-800">
+                  <div className="flex shrink-0 items-center gap-2 text-sm font-semibold text-primary">
                     View enquiry
-                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 </div>
               </Link>

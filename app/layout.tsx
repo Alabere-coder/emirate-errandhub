@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toast";
 import { PublicBrandingProvider } from "@/components/providers/public-branding-provider";
 import { PopupManager } from "@/components/popups/popup-manager";
 import { PublicPopupManager } from "@/components/popups/public-popup-manager";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 
 export const metadata: Metadata = {
   title: "Emirate ErrandHub",
@@ -86,15 +87,17 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col font-sans antialiased">
-        <PublicBrandingProvider branding={publicBranding}>
-          {children}
+        <ThemeProvider>
+          <PublicBrandingProvider branding={publicBranding}>
+            {children}
 
-          <PopupManager campaigns={eligiblePopups} />
+            <PopupManager campaigns={eligiblePopups} />
 
-          <PublicPopupManager />
+            <PublicPopupManager />
 
-          <Toaster />
-        </PublicBrandingProvider>
+            <Toaster />
+          </PublicBrandingProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

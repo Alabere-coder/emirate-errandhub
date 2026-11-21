@@ -35,16 +35,17 @@ export default async function ServiceCategoryPage({
   const children = await getChildCategories(category.id);
 
   return (
-    <main className="min-h-screen bg-muted">
+    <main className="min-h-screen bg-background text-foreground">
       <PublicNavbar />
+
       {/* Category hero */}
-      <section className="relative isolate overflow-hidden border-b   border-border bg-slate-950">
+      <section className="relative isolate overflow-hidden border-b border-border bg-slate-950">
         <div
           aria-hidden="true"
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.2),transparent_50%)]"
         />
 
-        <div className="mx-auto max-w-7xl py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6 sm:py-14 lg:px-8">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
@@ -57,7 +58,7 @@ export default async function ServiceCategoryPage({
               All services
             </Link>
 
-            <span aria-hidden="true" className="text-muted-foreground">
+            <span aria-hidden="true" className="text-slate-500">
               /
             </span>
 
@@ -88,7 +89,7 @@ export default async function ServiceCategoryPage({
               )}
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-card/5 px-4 py-2 text-sm font-medium text-slate-200">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200">
                   <Layers3 className="h-4 w-4 text-teal-300" />
                   {children.length}{" "}
                   {children.length === 1 ? "subcategory" : "subcategories"}
@@ -96,7 +97,7 @@ export default async function ServiceCategoryPage({
 
                 <Link
                   href="/services/categories"
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-slate-300 transition hover:bg-card/10 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
                 >
                   All categories
                   <ArrowRight className="h-4 w-4" />
@@ -105,7 +106,7 @@ export default async function ServiceCategoryPage({
             </div>
 
             <div className="flex sm:justify-end">
-              <div className="rounded-3xl border border-white/10 bg-card/5 p-3 shadow-xl">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-3 shadow-xl">
                 <ServiceMedia
                   icon={category.icon}
                   imageUrl={category.image_url}
@@ -119,14 +120,14 @@ export default async function ServiceCategoryPage({
       </section>
 
       {/* Subcategories */}
-      <section className="mx-auto max-w-7xl py-10 sm:px-6 sm:py-14 lg:px-8">
+      <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wider text-teal-700">
+            <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
               Find what you need
             </p>
 
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Browse {category.name}
             </h2>
 
@@ -139,7 +140,7 @@ export default async function ServiceCategoryPage({
 
           <Link
             href="/services"
-            className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-teal-800"
+            className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-emerald-700 dark:hover:text-emerald-400"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to services
@@ -147,7 +148,7 @@ export default async function ServiceCategoryPage({
         </div>
 
         {children.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-card px-6 py-16 text-center">
+          <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-16 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
               <Layers3 className="h-7 w-7 text-muted-foreground" />
             </div>
@@ -163,7 +164,7 @@ export default async function ServiceCategoryPage({
 
             <Link
               href="/services/categories"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:bg-emerald-600 dark:hover:bg-emerald-500"
             >
               Browse all categories
               <ArrowRight className="h-4 w-4" />
@@ -175,10 +176,10 @@ export default async function ServiceCategoryPage({
               <Link
                 key={child.id}
                 href={`/services/${category.slug}/${child.slug}`}
-                className="group flex min-h-56 flex-col rounded-2xl border   border-border/80 bg-card p-5 transition duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg hover:shadow-slate-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 sm:p-6"
+                className="group flex min-h-56 flex-col rounded-2xl border border-border/80 bg-card p-5 transition duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-950/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:p-6 dark:hover:border-emerald-800 dark:hover:shadow-emerald-950/20"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div className="rounded-2xl bg-muted p-1 ring-1 ring-slate-100 transition group-hover:bg-teal-50 group-hover:ring-teal-100">
+                  <div className="rounded-2xl bg-muted p-1 ring-1 ring-border transition group-hover:bg-emerald-50 group-hover:ring-emerald-100 dark:group-hover:bg-emerald-950/50 dark:group-hover:ring-emerald-900">
                     <ServiceMedia
                       icon={child.icon}
                       imageUrl={child.image_url}
@@ -187,12 +188,12 @@ export default async function ServiceCategoryPage({
                     />
                   </div>
 
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border   border-border text-muted-foreground/70 transition group-hover:border-teal-200 group-hover:bg-teal-50 group-hover:text-teal-800">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-muted-foreground/70 transition group-hover:border-emerald-200 group-hover:bg-emerald-50 group-hover:text-emerald-800 dark:group-hover:border-emerald-800 dark:group-hover:bg-emerald-950/60 dark:group-hover:text-emerald-300">
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
 
-                <h3 className="mt-5 font-semibold text-foreground transition group-hover:text-teal-800">
+                <h3 className="mt-5 font-semibold text-foreground transition group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
                   {child.name}
                 </h3>
 
@@ -206,7 +207,7 @@ export default async function ServiceCategoryPage({
                   </p>
                 )}
 
-                <div className="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-foreground transition group-hover:text-teal-800">
+                <div className="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-foreground transition group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
                   <CheckCircle2 className="h-4 w-4" />
                   View services
                   <ArrowRight className="ml-auto h-4 w-4 transition-transform group-hover:translate-x-1" />

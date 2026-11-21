@@ -1,6 +1,6 @@
 import Link from "next/link";
+
 import {
-  ArrowLeft,
   Banknote,
   CheckCircle2,
   Clock3,
@@ -71,8 +71,7 @@ const STATUS_STYLES: Record<WithdrawalStatus, string> = {
   paid: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300",
   failed:
     "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300",
-  cancelled:
-    "  border-border bg-muted text-muted-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  cancelled: "border-border bg-muted text-muted-foreground",
 };
 
 function formatMoney(amount: number | string, currency: string) {
@@ -174,9 +173,11 @@ function StatCard({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums">
+
+            <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums text-foreground">
               {value}
             </p>
+
             <p className="mt-1 text-xs text-muted-foreground">{description}</p>
           </div>
 
@@ -203,7 +204,10 @@ function DetailItem({
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <div className="wrap-break-word text-sm font-medium">{children}</div>
+
+      <div className="wrap-break-word text-sm font-medium text-foreground">
+        {children}
+      </div>
     </div>
   );
 }
@@ -294,7 +298,7 @@ export default async function AdminWithdrawalsPage({
         <div className="relative">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
                 <Wallet className="h-3.5 w-3.5" />
                 Financial operations
               </div>
@@ -309,10 +313,11 @@ export default async function AdminWithdrawalsPage({
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-3 rounded-xl border border-white/15 bg-card/10 px-4 py-3 backdrop-blur-sm">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-card/10">
+            <div className="flex shrink-0 items-center gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10">
                 <ShieldCheck className="h-5 w-5 text-emerald-100" />
               </div>
+
               <div>
                 <p className="text-sm font-semibold">Manual processing</p>
                 <p className="mt-0.5 text-xs text-emerald-100/75">
@@ -339,6 +344,7 @@ export default async function AdminWithdrawalsPage({
           ) : (
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
           )}
+
           {resultMessage.message}
         </div>
       )}
@@ -383,7 +389,10 @@ export default async function AdminWithdrawalsPage({
       {/* Filters */}
       <section className="space-y-3">
         <div>
-          <h2 className="text-base font-semibold">Withdrawal requests</h2>
+          <h2 className="text-base font-semibold text-foreground">
+            Withdrawal requests
+          </h2>
+
           <p className="mt-1 text-sm text-muted-foreground">
             Filter requests by their current processing status.
           </p>
@@ -404,8 +413,8 @@ export default async function AdminWithdrawalsPage({
                 aria-current={isActive ? "page" : undefined}
                 className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                   isActive
-                    ? "border-emerald-700 bg-emerald-700 text-white shadow-sm hover:bg-emerald-800"
-                    : "border-border bg-card text-muted-foreground hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300"
+                    ? "border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-muted hover:text-foreground"
                 }`}
               >
                 {filter.label}
@@ -423,7 +432,9 @@ export default async function AdminWithdrawalsPage({
               <Banknote className="h-7 w-7" />
             </div>
 
-            <h2 className="mt-5 font-semibold">No withdrawal requests found</h2>
+            <h2 className="mt-5 font-semibold text-foreground">
+              No withdrawal requests found
+            </h2>
 
             <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
               Requests matching this filter will appear here when workers submit
@@ -453,12 +464,12 @@ export default async function AdminWithdrawalsPage({
                 <CardContent className="space-y-5 p-5 sm:p-6">
                   {/* Amount and status */}
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Withdrawal amount
                       </p>
 
-                      <p className="mt-1 text-2xl font-bold tracking-tight tabular-nums sm:text-3xl">
+                      <p className="mt-1 text-2xl font-bold tracking-tight tabular-nums text-foreground sm:text-3xl">
                         {formatMoney(withdrawal.amount, withdrawal.currency)}
                       </p>
 
@@ -468,7 +479,7 @@ export default async function AdminWithdrawalsPage({
                     </div>
 
                     <span
-                      className={`w-fit rounded-full border px-3 py-1.5 text-xs font-semibold capitalize ${
+                      className={`w-fit shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold capitalize ${
                         STATUS_STYLES[withdrawal.status] ??
                         STATUS_STYLES.pending
                       }`}
@@ -478,7 +489,7 @@ export default async function AdminWithdrawalsPage({
                   </div>
 
                   {/* Worker and bank details */}
-                  <div className="grid gap-5 rounded-xl border bg-muted/20 p-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid gap-5 rounded-xl border border-border bg-muted/30 p-4 sm:grid-cols-2 xl:grid-cols-3">
                     <DetailItem label="Worker">
                       {workerName}
                       <span className="mt-1 block text-xs font-normal text-muted-foreground">
@@ -527,6 +538,7 @@ export default async function AdminWithdrawalsPage({
                       <p className="text-xs font-medium text-emerald-800 dark:text-emerald-300">
                         Payment reference
                       </p>
+
                       <p className="mt-1 break-all font-mono text-sm text-emerald-900 dark:text-emerald-200">
                         {withdrawal.provider_reference}
                       </p>
@@ -546,17 +558,21 @@ export default async function AdminWithdrawalsPage({
                   {withdrawal.status === "pending" && (
                     <form
                       action={updateWithdrawalStatus}
-                      className="space-y-3 border-t pt-5"
+                      className="space-y-3 border-t border-border pt-5"
                     >
                       <input
                         type="hidden"
                         name="withdrawal_id"
                         value={withdrawal.id}
                       />
+
                       <input type="hidden" name="status" value="processing" />
 
                       <div>
-                        <p className="font-semibold">Begin payout processing</p>
+                        <p className="font-semibold text-foreground">
+                          Begin payout processing
+                        </p>
+
                         <p className="mt-1 text-sm leading-6 text-muted-foreground">
                           Review the worker and bank account details before
                           beginning the transfer.
@@ -566,7 +582,7 @@ export default async function AdminWithdrawalsPage({
                       <Button
                         type="submit"
                         size="sm"
-                        className="bg-emerald-700 text-white hover:bg-emerald-800"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
                       >
                         <RefreshCw className="mr-2 h-4 w-4" />
                         Start processing
@@ -576,9 +592,12 @@ export default async function AdminWithdrawalsPage({
 
                   {/* Processing actions */}
                   {withdrawal.status === "processing" && (
-                    <div className="space-y-5 border-t pt-5">
+                    <div className="space-y-5 border-t border-border pt-5">
                       <div>
-                        <p className="font-semibold">Complete this payout</p>
+                        <p className="font-semibold text-foreground">
+                          Complete this payout
+                        </p>
+
                         <p className="mt-1 text-sm leading-6 text-muted-foreground">
                           Confirm the bank transfer only after verifying that
                           the payment was successfully completed.
@@ -594,12 +613,13 @@ export default async function AdminWithdrawalsPage({
                           name="withdrawal_id"
                           value={withdrawal.id}
                         />
+
                         <input type="hidden" name="status" value="paid" />
 
                         <div>
                           <label
                             htmlFor={`reference-${withdrawal.id}`}
-                            className="mb-2 block text-sm font-medium"
+                            className="mb-2 block text-sm font-medium text-foreground"
                           >
                             Bank transfer reference
                           </label>
@@ -610,14 +630,14 @@ export default async function AdminWithdrawalsPage({
                             required
                             maxLength={200}
                             placeholder="Enter confirmed transfer reference"
-                            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-emerald-600"
+                            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
                           />
                         </div>
 
                         <Button
                           type="submit"
                           size="sm"
-                          className="bg-emerald-700 text-white hover:bg-emerald-800"
+                          className="bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                           <CheckCircle2 className="mr-2 h-4 w-4" />
                           Confirm payment completed
@@ -633,12 +653,14 @@ export default async function AdminWithdrawalsPage({
                           name="withdrawal_id"
                           value={withdrawal.id}
                         />
+
                         <input type="hidden" name="status" value="failed" />
 
                         <div>
                           <p className="font-semibold text-red-700 dark:text-red-400">
                             Mark transfer as failed
                           </p>
+
                           <p className="mt-1 text-xs leading-5 text-muted-foreground">
                             Provide a clear reason for the unsuccessful
                             transfer.
@@ -648,7 +670,7 @@ export default async function AdminWithdrawalsPage({
                         <div>
                           <label
                             htmlFor={`failure-${withdrawal.id}`}
-                            className="mb-2 block text-sm font-medium"
+                            className="mb-2 block text-sm font-medium text-foreground"
                           >
                             Reason for failure
                           </label>
@@ -660,7 +682,7 @@ export default async function AdminWithdrawalsPage({
                             maxLength={1000}
                             rows={3}
                             placeholder="Explain why the transfer failed"
-                            className="w-full resize-y rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-red-500"
+                            className="w-full resize-y rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-red-500"
                           />
                         </div>
 

@@ -48,16 +48,17 @@ export default async function ServiceSubcategoryPage({
   const services = await getServicesByCategoryId(subcategory.id);
 
   return (
-    <main className="min-h-screen bg-muted">
+    <main className="min-h-screen bg-background text-foreground">
       <PublicNavbar />
+
       {/* Hero */}
-      <section className="relative isolate overflow-hidden border-b   border-border bg-slate-950">
+      <section className="relative isolate overflow-hidden border-b border-border bg-slate-950">
         <div
           aria-hidden="true"
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.2),transparent_50%)]"
         />
 
-        <div className="mx-auto max-w-7xl py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6 sm:py-14 lg:px-8">
           {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
@@ -70,7 +71,7 @@ export default async function ServiceSubcategoryPage({
               All services
             </Link>
 
-            <span aria-hidden="true" className="text-muted-foreground">
+            <span aria-hidden="true" className="text-slate-500">
               /
             </span>
 
@@ -81,7 +82,7 @@ export default async function ServiceSubcategoryPage({
               {parentCategory.name}
             </Link>
 
-            <span aria-hidden="true" className="text-muted-foreground">
+            <span aria-hidden="true" className="text-slate-500">
               /
             </span>
 
@@ -112,7 +113,7 @@ export default async function ServiceSubcategoryPage({
               )}
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-card/5 px-4 py-2 text-sm font-medium text-slate-200">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200">
                   <Layers3 className="h-4 w-4 text-teal-300" />
                   {services.length}{" "}
                   {services.length === 1 ? "service" : "services"}
@@ -120,7 +121,7 @@ export default async function ServiceSubcategoryPage({
 
                 <Link
                   href={`/services/${parentCategory.slug}`}
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-slate-300 transition hover:bg-card/10 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   {parentCategory.name}
@@ -129,7 +130,7 @@ export default async function ServiceSubcategoryPage({
             </div>
 
             <div className="flex sm:justify-end">
-              <div className="rounded-3xl border border-white/10 bg-card/5 p-3 shadow-xl">
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-3 shadow-xl">
                 <ServiceMedia
                   icon={subcategory.icon}
                   imageUrl={subcategory.image_url}
@@ -143,13 +144,13 @@ export default async function ServiceSubcategoryPage({
       </section>
 
       {/* Services */}
-      <section className="mx-auto max-w-7xl py-10 sm:px-6 sm:py-14 lg:px-8">
+      <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-wider text-teal-700">
+          <p className="text-sm font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
             Choose your service
           </p>
 
-          <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Available services
           </h2>
 
@@ -159,7 +160,7 @@ export default async function ServiceSubcategoryPage({
         </div>
 
         {services.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-card px-6 py-16 text-center">
+          <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-16 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
               <Layers3 className="h-7 w-7 text-muted-foreground" />
             </div>
@@ -175,7 +176,7 @@ export default async function ServiceSubcategoryPage({
 
             <Link
               href={`/services/${parentCategory.slug}`}
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-emerald-600 dark:hover:bg-emerald-500"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to {parentCategory.name}
@@ -187,7 +188,7 @@ export default async function ServiceSubcategoryPage({
               <Link
                 key={service.id}
                 href={`/services/${parentCategory.slug}/${subcategory.slug}/${service.slug}`}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border   border-border/80 bg-card transition duration-200 hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg hover:shadow-slate-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2"
+                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/80 bg-card transition duration-200 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-950/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:hover:border-emerald-800 dark:hover:shadow-emerald-950/20"
               >
                 <div className="relative aspect-16/10 overflow-hidden bg-muted">
                   {service.image_url ? (
@@ -214,11 +215,11 @@ export default async function ServiceSubcategoryPage({
 
                 <div className="flex flex-1 flex-col p-5 sm:p-6">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-semibold text-foreground transition group-hover:text-teal-800">
+                    <h3 className="font-semibold text-foreground transition group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
                       {service.name}
                     </h3>
 
-                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70 transition group-hover:translate-x-1 group-hover:text-teal-800" />
+                    <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/70 transition group-hover:translate-x-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400" />
                   </div>
 
                   {service.description ? (
@@ -231,10 +232,10 @@ export default async function ServiceSubcategoryPage({
                     </p>
                   )}
 
-                  <div className="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-foreground transition group-hover:text-teal-800">
+                  <div className="mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-foreground transition group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
                     <CheckCircle2 className="h-4 w-4" />
                     View service details
-                    <ArrowRight className="ml-auto h-4 w-4" />
+                    <ArrowRight className="ml-auto h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 </div>
               </Link>

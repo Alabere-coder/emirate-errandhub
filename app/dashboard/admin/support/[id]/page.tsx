@@ -1,6 +1,8 @@
 import type { ElementType } from "react";
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
 import {
   ArrowLeft,
   CalendarDays,
@@ -48,15 +50,20 @@ function formatStatus(status: string) {
 function getStatusStyle(status: string) {
   switch (status) {
     case "open":
-      return "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300";
+      return "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/40 dark:text-blue-300";
+
     case "in_progress":
-      return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300";
+      return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300";
+
     case "waiting_for_user":
-      return "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900 dark:bg-purple-950/40 dark:text-purple-300";
+      return "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900/70 dark:bg-purple-950/40 dark:text-purple-300";
+
     case "resolved":
-      return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300";
+      return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300";
+
     case "closed":
-      return "  border-border bg-muted text-muted-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
+      return "border-border bg-muted text-muted-foreground";
+
     default:
       return "border-border bg-muted text-muted-foreground";
   }
@@ -69,7 +76,6 @@ function getRoleLabel(role?: string) {
 
 function getFullName(profile?: Profile) {
   if (!profile) return "Unknown user";
-
   return `${profile.first_name} ${profile.last_name}`.trim();
 }
 
@@ -87,10 +93,12 @@ function DetailItem({
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <div className="flex items-start gap-2 text-sm font-medium">
+
+      <div className="flex items-start gap-2 text-sm font-medium text-foreground">
         {Icon && (
           <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
         )}
+
         <span className="wrap-break-word">{value}</span>
       </div>
     </div>
@@ -152,6 +160,7 @@ export default async function AdminSupportTicketPage({
 
   const requester = profileMap.get(ticket.user_id);
   const requesterName = getFullName(requester);
+
   const assignedAdmin = ticket.assigned_to
     ? profileMap.get(ticket.assigned_to)
     : undefined;
@@ -163,11 +172,20 @@ export default async function AdminSupportTicketPage({
       {/* Ticket header */}
       <section className="relative overflow-hidden rounded-2xl border border-emerald-900/20 bg-linear-to-br from-emerald-950 via-emerald-900 to-emerald-800 p-6 text-white shadow-lg sm:p-8">
         <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
+
         <div className="pointer-events-none absolute -bottom-28 right-1/3 h-64 w-64 rounded-full bg-teal-300/10 blur-3xl" />
 
         <div className="relative space-y-5">
+          <Link
+            href="/dashboard/admin/support"
+            className="inline-flex items-center gap-2 text-sm font-medium text-emerald-100/80 transition-colors hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to support center
+          </Link>
+
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
               <Headset className="h-3.5 w-3.5" />
               Support ticket
             </span>
@@ -213,7 +231,7 @@ export default async function AdminSupportTicketPage({
         <div className="min-w-0 space-y-6">
           {/* Original request */}
           <Card className="overflow-hidden border-border/70 shadow-sm">
-            <CardHeader className="border-b bg-muted/20 px-5 py-4 sm:px-6">
+            <CardHeader className="border-b border-border bg-muted/20 px-5 py-4 sm:px-6">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Ticket className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
                 Original request
@@ -221,11 +239,11 @@ export default async function AdminSupportTicketPage({
             </CardHeader>
 
             <CardContent className="space-y-5 p-5 sm:p-6">
-              <p className="whitespace-pre-wrap wrap-break-word text-sm leading-7">
+              <p className="whitespace-pre-wrap wrap-break-word text-sm leading-7 text-foreground">
                 {ticket.description}
               </p>
 
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-4 text-xs text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4 text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1.5">
                   <Clock className="h-3.5 w-3.5" />
                   Submitted {formatDate(ticket.created_at)}
@@ -241,13 +259,14 @@ export default async function AdminSupportTicketPage({
 
           {/* Conversation */}
           <Card className="overflow-hidden border-border/70 shadow-sm">
-            <CardHeader className="border-b bg-muted/20 px-5 py-4 sm:px-6">
+            <CardHeader className="border-b border-border bg-muted/20 px-5 py-4 sm:px-6">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <CardTitle className="flex items-center gap-2 text-base">
                     <MessageSquareText className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
                     Conversation
                   </CardTitle>
+
                   <p className="mt-1 text-xs text-muted-foreground">
                     Messages between the requester and support team.
                   </p>
@@ -262,12 +281,14 @@ export default async function AdminSupportTicketPage({
 
             <CardContent className="p-4 sm:p-6">
               {!messages || messages.length === 0 ? (
-                <div className="rounded-xl border border-dashed bg-muted/20 px-5 py-12 text-center">
+                <div className="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
                     <MessageSquareText className="h-6 w-6" />
                   </div>
 
-                  <h3 className="mt-4 font-semibold">No replies yet</h3>
+                  <h3 className="mt-4 font-semibold text-foreground">
+                    No replies yet
+                  </h3>
 
                   <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
                     This conversation has not received a reply. Use the
@@ -307,7 +328,7 @@ export default async function AdminSupportTicketPage({
                             </div>
 
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold">
+                              <p className="truncate text-sm font-semibold text-foreground">
                                 {senderName}
                               </p>
 
@@ -324,7 +345,7 @@ export default async function AdminSupportTicketPage({
                           </span>
                         </div>
 
-                        <p className="whitespace-pre-wrap wrap-break-word text-sm leading-7">
+                        <p className="whitespace-pre-wrap wrap-break-word text-sm leading-7 text-foreground">
                           {message.message}
                         </p>
 
@@ -346,11 +367,12 @@ export default async function AdminSupportTicketPage({
 
           {/* Ticket controls */}
           <Card className="overflow-hidden border-border/70 shadow-sm">
-            <CardHeader className="border-b bg-muted/20 px-5 py-4 sm:px-6">
+            <CardHeader className="border-b border-border bg-muted/20 px-5 py-4 sm:px-6">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Headset className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
                 Manage ticket
               </CardTitle>
+
               <p className="text-sm text-muted-foreground">
                 Respond to the requester and manage this ticket&apos;s status.
               </p>
@@ -360,10 +382,12 @@ export default async function AdminSupportTicketPage({
               {isFinal && (
                 <div className="mb-5 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/20">
                   <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-400" />
+
                   <div>
-                    <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                    <p className="text-sm font-semibold capitalize text-emerald-800 dark:text-emerald-300">
                       Ticket {ticket.status}
                     </p>
+
                     <p className="mt-1 text-sm leading-6 text-emerald-800/80 dark:text-emerald-200/70">
                       Replies are disabled until the ticket is reopened. You can
                       use the controls below to manage its status.
@@ -383,7 +407,7 @@ export default async function AdminSupportTicketPage({
         {/* Sidebar */}
         <aside className="space-y-6 lg:sticky lg:top-6">
           <Card className="overflow-hidden border-border/70 shadow-sm">
-            <CardHeader className="border-b bg-muted/20 px-5 py-4">
+            <CardHeader className="border-b border-border bg-muted/20 px-5 py-4">
               <CardTitle className="flex items-center gap-2 text-base">
                 <UserRound className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
                 Requester
@@ -397,17 +421,21 @@ export default async function AdminSupportTicketPage({
                 </div>
 
                 <div className="min-w-0">
-                  <p className="truncate font-semibold">{requesterName}</p>
+                  <p className="truncate font-semibold text-foreground">
+                    {requesterName}
+                  </p>
+
                   <p className="mt-0.5 text-xs capitalize text-muted-foreground">
                     {getRoleLabel(requester?.role)}
                   </p>
                 </div>
               </div>
 
-              <div className="border-t pt-4">
+              <div className="border-t border-border pt-4">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   User ID
                 </p>
+
                 <p className="mt-2 break-all font-mono text-xs text-muted-foreground">
                   {ticket.user_id}
                 </p>
@@ -416,7 +444,7 @@ export default async function AdminSupportTicketPage({
           </Card>
 
           <Card className="overflow-hidden border-border/70 shadow-sm">
-            <CardHeader className="border-b bg-muted/20 px-5 py-4">
+            <CardHeader className="border-b border-border bg-muted/20 px-5 py-4">
               <CardTitle className="text-base">Ticket details</CardTitle>
             </CardHeader>
 
@@ -430,6 +458,7 @@ export default async function AdminSupportTicketPage({
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   Current status
                 </p>
+
                 <Badge
                   variant="outline"
                   className={`rounded-full border px-3 py-1 capitalize ${getStatusStyle(ticket.status)}`}
@@ -469,6 +498,7 @@ export default async function AdminSupportTicketPage({
               <ShieldCheck className="h-4 w-4" />
               Support responsibility
             </div>
+
             <p className="mt-2 text-xs leading-5 text-emerald-800/75 dark:text-emerald-200/70">
               Keep responses clear and professional. Update the ticket status as
               the conversation progresses so the support team can track

@@ -37,6 +37,7 @@ export function ProcessRefundForm({
         <CardHeader>
           <CardTitle>Paystack processing</CardTitle>
         </CardHeader>
+
         <CardContent>
           <p className="text-sm text-muted-foreground">
             {status === "processing"
@@ -68,15 +69,16 @@ export function ProcessRefundForm({
         <form
           action={formAction}
           onSubmit={confirmProcessing}
-          className="space-y-4"
+          className="space-y-5"
         >
           <input type="hidden" name="refundId" value={refundId} />
 
-          <div>
+          <div className="rounded-xl border border-border bg-muted/40 p-4">
             <p className="text-sm text-muted-foreground">
               Amount to be refunded
             </p>
-            <p className="text-2xl font-bold">
+
+            <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
               {new Intl.NumberFormat("en-NG", {
                 style: "currency",
                 currency,
@@ -85,22 +87,39 @@ export function ProcessRefundForm({
           </div>
 
           {state.error && (
-            <p className="text-sm text-destructive">{state.error}</p>
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+            >
+              {state.error}
+            </div>
           )}
 
           {state.success && (
-            <p className="text-sm text-green-600">{state.success}</p>
+            <div
+              role="status"
+              className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2.5 text-sm text-emerald-700 dark:text-emerald-400"
+            >
+              {state.success}
+            </div>
           )}
 
-          <Button type="submit" variant="default" disabled={isPending}>
+          <Button
+            type="submit"
+            variant="default"
+            disabled={isPending}
+            className="w-full sm:w-auto"
+          >
             {isPending ? "Contacting Paystack..." : "Initiate Paystack refund"}
           </Button>
 
-          <p className="text-xs text-muted-foreground">
-            This action contacts Paystack. Once submitted, an uncertain response
-            must be reconciled before any retry. The refund will remain in
-            processing until completion is verified.
-          </p>
+          <div className="flex gap-3 rounded-lg border border-amber-500/25 bg-amber-500/10 p-3">
+            <p className="text-sm leading-relaxed text-amber-800 dark:text-amber-300">
+              This action contacts Paystack. Once submitted, an uncertain
+              response must be reconciled before any retry. The refund will
+              remain in processing until completion is verified.
+            </p>
+          </div>
         </form>
       </CardContent>
     </Card>

@@ -1,6 +1,5 @@
 import {
   AlertCircle,
-  ArrowUpRight,
   CheckCircle2,
   Clock3,
   FileWarning,
@@ -26,13 +25,12 @@ const statusLabels: Record<string, string> = {
 
 const statusStyles: Record<string, string> = {
   pending:
-    "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400",
+    "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400",
   under_review:
-    "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-400",
+    "border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-400",
   resolved:
-    "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400",
-  dismissed:
-    "  border-border bg-muted text-muted-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  dismissed: "border-border bg-muted text-muted-foreground",
 };
 
 const reasonLabels: Record<string, string> = {
@@ -69,11 +67,11 @@ function SummaryCard({
   iconClass: string;
 }) {
   return (
-    <div className="rounded-2xl border bg-card p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums">
+          <p className="mt-3 text-3xl font-bold tracking-tight tabular-nums text-foreground">
             {value}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">{description}</p>
@@ -104,14 +102,15 @@ export default async function AdminReviewReportsPage() {
 
     return (
       <div className="space-y-5 p-4 md:p-6">
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-900/50 dark:bg-red-950/20">
+        <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6">
           <div className="flex items-start gap-3">
-            <AlertCircle className="mt-0.5 size-5 text-red-600 dark:text-red-400" />
+            <AlertCircle className="mt-0.5 size-5 text-destructive" />
+
             <div>
-              <h1 className="font-semibold text-red-800 dark:text-red-300">
+              <h1 className="font-semibold text-foreground">
                 Unable to load review reports
               </h1>
-              <p className="mt-1 text-sm text-red-700 dark:text-red-400">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Please refresh the page or try again later.
               </p>
             </div>
@@ -121,7 +120,9 @@ export default async function AdminReviewReportsPage() {
     );
   }
 
-  const reviewIds = [...new Set((reports ?? []).map((r) => r.review_id))];
+  const reviewIds = [
+    ...new Set((reports ?? []).map((report) => report.review_id)),
+  ];
 
   const { data: reviews } = reviewIds.length
     ? await supabase
@@ -134,7 +135,9 @@ export default async function AdminReviewReportsPage() {
     (reviews ?? []).map((review) => [review.id, review]),
   );
 
-  const reporterIds = [...new Set((reports ?? []).map((r) => r.reporter_id))];
+  const reporterIds = [
+    ...new Set((reports ?? []).map((report) => report.reporter_id)),
+  ];
 
   const { data: reporters } = reporterIds.length
     ? await supabase
@@ -173,7 +176,7 @@ export default async function AdminReviewReportsPage() {
 
         <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-center">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-100">
               <ShieldCheck className="size-3.5" />
               Trust & Safety
             </div>
@@ -188,10 +191,11 @@ export default async function AdminReviewReportsPage() {
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/15 bg-card/10 p-4 backdrop-blur-sm">
-            <div className="rounded-xl bg-card/10 p-3">
+          <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+            <div className="rounded-xl bg-white/10 p-3">
               <FileWarning className="size-6 text-emerald-200" />
             </div>
+
             <div>
               <p className="text-2xl font-bold tabular-nums">{pendingCount}</p>
               <p className="text-xs text-emerald-100/80">Awaiting attention</p>
@@ -207,7 +211,7 @@ export default async function AdminReviewReportsPage() {
           value={totalCount}
           description="All submitted reports"
           icon={FileWarning}
-          iconClass="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
+          iconClass="bg-primary/10 text-primary"
         />
 
         <SummaryCard
@@ -215,7 +219,7 @@ export default async function AdminReviewReportsPage() {
           value={pendingCount}
           description="Waiting for investigation"
           icon={Clock3}
-          iconClass="bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
+          iconClass="bg-amber-500/10 text-amber-700 dark:text-amber-400"
         />
 
         <SummaryCard
@@ -223,7 +227,7 @@ export default async function AdminReviewReportsPage() {
           value={underReviewCount}
           description="Currently being investigated"
           icon={AlertCircle}
-          iconClass="bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
+          iconClass="bg-blue-500/10 text-blue-700 dark:text-blue-400"
         />
 
         <SummaryCard
@@ -231,7 +235,7 @@ export default async function AdminReviewReportsPage() {
           value={completedCount}
           description="Resolved or dismissed"
           icon={CheckCircle2}
-          iconClass="bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400"
+          iconClass="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
         />
       </section>
 
@@ -239,7 +243,7 @@ export default async function AdminReviewReportsPage() {
       <section className="space-y-4">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-lg font-semibold tracking-tight">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Submitted reports
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -253,12 +257,15 @@ export default async function AdminReviewReportsPage() {
         </div>
 
         {!reports?.length ? (
-          <div className="rounded-2xl border border-dashed bg-card px-6 py-14 text-center">
-            <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+          <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-14 text-center">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
               <ShieldCheck className="size-7" />
             </div>
 
-            <h3 className="mt-4 font-semibold">No reports yet</h3>
+            <h3 className="mt-4 font-semibold text-foreground">
+              No reports yet
+            </h3>
+
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
               Reports submitted by users will appear here. There is nothing
               requiring your attention right now.
@@ -281,17 +288,17 @@ export default async function AdminReviewReportsPage() {
               return (
                 <article
                   key={report.id}
-                  className="overflow-hidden rounded-2xl border bg-card shadow-sm transition-shadow duration-200 hover:shadow-md"
+                  className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
                   {/* Report header */}
-                  <div className="flex flex-col justify-between gap-4 border-b bg-muted/20 p-4 sm:flex-row sm:items-start md:p-5">
+                  <div className="flex flex-col justify-between gap-4 border-b border-border bg-muted/30 p-4 sm:flex-row sm:items-start md:p-5">
                     <div className="flex items-start gap-3">
-                      <div className="mt-0.5 rounded-xl bg-amber-50 p-2.5 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+                      <div className="mt-0.5 rounded-xl bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-400">
                         <FileWarning className="size-5" />
                       </div>
 
                       <div className="min-w-0">
-                        <h3 className="font-semibold leading-6">
+                        <h3 className="font-semibold leading-6 text-foreground">
                           {reasonLabels[report.reason] ?? report.reason}
                         </h3>
 
@@ -300,7 +307,9 @@ export default async function AdminReviewReportsPage() {
                             <Users className="size-3.5" />
                             Reported by {reporter}
                           </span>
+
                           <span className="hidden sm:inline">·</span>
+
                           <span>{formatDate(report.created_at)}</span>
                         </div>
                       </div>
@@ -317,23 +326,23 @@ export default async function AdminReviewReportsPage() {
                   <div className="space-y-5 p-4 md:p-5">
                     {/* Report details */}
                     {report.details && (
-                      <div className="rounded-xl border border-amber-200/70 bg-amber-50/50 p-4 dark:border-amber-900/40 dark:bg-amber-950/10">
-                        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-400">
+                      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+                        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
                           <MessageSquareText className="size-4" />
                           Report details
                         </div>
 
-                        <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground/90">
+                        <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
                           {report.details}
                         </p>
                       </div>
                     )}
 
                     {/* Reported review */}
-                    <div className="rounded-xl border p-4">
+                    <div className="rounded-xl border border-border bg-background p-4">
                       <div className="flex items-center justify-between gap-3">
-                        <h4 className="flex items-center gap-2 text-sm font-semibold">
-                          <MessageSquareText className="size-4 text-emerald-700 dark:text-emerald-400" />
+                        <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                          <MessageSquareText className="size-4 text-primary" />
                           Reported review
                         </h4>
 
@@ -341,8 +350,8 @@ export default async function AdminReviewReportsPage() {
                           <span
                             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
                               review.is_visible
-                                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
-                                : "bg-muted text-muted-foreground dark:bg-slate-800 dark:text-slate-300"
+                                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                                : "bg-muted text-muted-foreground"
                             }`}
                           >
                             {review.is_visible ? "Public" : "Hidden"}
@@ -364,7 +373,7 @@ export default async function AdminReviewReportsPage() {
                               />
                             ))}
 
-                            <span className="ml-2 text-sm font-semibold tabular-nums">
+                            <span className="ml-2 text-sm font-semibold tabular-nums text-foreground">
                               {review.rating}/5
                             </span>
                           </div>
@@ -382,11 +391,12 @@ export default async function AdminReviewReportsPage() {
 
                     {/* Previous admin notes */}
                     {report.admin_notes && (
-                      <div className="rounded-xl border border-blue-200/70 bg-blue-50/40 p-4 dark:border-blue-900/40 dark:bg-blue-950/10">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-blue-800 dark:text-blue-400">
+                      <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400">
                           Previous admin notes
                         </p>
-                        <p className="mt-2 whitespace-pre-wrap text-sm leading-6">
+
+                        <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">
                           {report.admin_notes}
                         </p>
                       </div>
@@ -396,7 +406,7 @@ export default async function AdminReviewReportsPage() {
                     {!isClosed && (
                       <form
                         action={manageReviewReport}
-                        className="space-y-4 border-t pt-5"
+                        className="space-y-4 border-t border-border pt-5"
                       >
                         <input
                           type="hidden"
@@ -407,7 +417,7 @@ export default async function AdminReviewReportsPage() {
                         <div className="space-y-2">
                           <label
                             htmlFor={`notes-${report.id}`}
-                            className="text-sm font-semibold"
+                            className="text-sm font-semibold text-foreground"
                           >
                             Admin notes
                           </label>
@@ -418,7 +428,7 @@ export default async function AdminReviewReportsPage() {
                             maxLength={1000}
                             defaultValue={report.admin_notes ?? ""}
                             rows={3}
-                            className="w-full resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-600/20"
+                            className="w-full resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
                             placeholder="Record your findings, investigation or decision..."
                           />
 
@@ -433,7 +443,7 @@ export default async function AdminReviewReportsPage() {
                             name="status"
                             value="under_review"
                             type="submit"
-                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-400 dark:hover:bg-blue-950/60"
+                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-2.5 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:text-blue-400"
                           >
                             <Clock3 className="size-4" />
                             Mark under review
@@ -443,7 +453,7 @@ export default async function AdminReviewReportsPage() {
                             name="status"
                             value="resolved"
                             type="submit"
-                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                           >
                             <CheckCircle2 className="size-4" />
                             Resolve report
@@ -453,7 +463,7 @@ export default async function AdminReviewReportsPage() {
                             name="status"
                             value="dismissed"
                             type="submit"
-                            className="inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                           >
                             <ShieldX className="size-4" />
                             Dismiss report
@@ -463,8 +473,8 @@ export default async function AdminReviewReportsPage() {
                     )}
 
                     {isClosed && (
-                      <div className="flex items-center gap-2 border-t pt-4 text-sm text-muted-foreground">
-                        <CheckCircle2 className="size-4 text-emerald-600" />
+                      <div className="flex items-center gap-2 border-t border-border pt-4 text-sm text-muted-foreground">
+                        <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
                         This report has been{" "}
                         {report.status === "resolved"
                           ? "resolved"

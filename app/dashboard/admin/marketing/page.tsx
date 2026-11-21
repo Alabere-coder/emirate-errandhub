@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import {
   Megaphone,
   Plus,
@@ -10,6 +11,7 @@ import {
   ArrowUpRight,
   Sparkles,
 } from "lucide-react";
+
 import type { LucideIcon } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/require-role";
@@ -18,6 +20,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { CampaignActions } from "./campaign-actions";
 
 export const dynamic = "force-dynamic";
@@ -76,15 +79,17 @@ function StatCard({
   iconClass: string;
 }) {
   return (
-    <Card className="relative overflow-hidden border-border/60 shadow-sm">
-      <div className="absolute -right-5 -top-5 h-24 w-24 rounded-full bg-emerald-500/4 blur-2xl" />
+    <Card className="relative overflow-hidden border-border/60 shadow-sm transition-shadow hover:shadow-md">
+      <div className="pointer-events-none absolute -right-5 -top-5 h-24 w-24 rounded-full bg-emerald-500/5 blur-2xl" />
 
       <CardContent className="relative flex items-center justify-between gap-4 p-5">
         <div className="min-w-0">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight tabular-nums">
+
+          <p className="mt-2 text-3xl font-bold tracking-tight tabular-nums text-foreground">
             {value}
           </p>
+
           <p className="mt-1 text-xs text-muted-foreground">{description}</p>
         </div>
 
@@ -164,18 +169,18 @@ export default async function AdminMarketingPage() {
     <div className="space-y-8">
       {/* Header */}
       <section className="relative overflow-hidden rounded-3xl border border-emerald-900/10 bg-linear-to-br from-emerald-950 via-emerald-900 to-emerald-800 px-6 py-8 text-white shadow-lg sm:px-8">
-        <div className="absolute -right-16 -top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
-        <div className="absolute -bottom-28 right-1/3 h-64 w-64 rounded-full bg-teal-300/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 right-1/3 h-64 w-64 rounded-full bg-teal-300/10 blur-3xl" />
 
         <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-emerald-50">
               <Sparkles className="h-3.5 w-3.5" />
-              Marketing &amp; promotions
+              Marketing & promotions
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-card/10">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10">
                 <Megaphone className="h-6 w-6 text-emerald-100" />
               </div>
 
@@ -194,7 +199,9 @@ export default async function AdminMarketingPage() {
                 <Layers3 className="h-4 w-4" />
                 {campaignList.length} total campaigns
               </span>
+
               <span className="hidden text-white/30 sm:inline">•</span>
+
               <span className="inline-flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4" />
                 {activeCount} currently active
@@ -202,8 +209,11 @@ export default async function AdminMarketingPage() {
             </div>
           </div>
 
-          <Button className="relative h-11 shrink-0 rounded-xl bg-card px-5 font-semibold text-emerald-950 shadow-sm hover:bg-emerald-50">
-            <Link href="/dashboard/admin/marketing/new" className="inline-flex">
+          <Button className="relative h-11 shrink-0 rounded-xl bg-white px-5 font-semibold text-emerald-950 shadow-sm hover:bg-emerald-50">
+            <Link
+              href="/dashboard/admin/marketing/new"
+              className="inline-flex items-center"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Create Campaign
             </Link>
@@ -218,7 +228,7 @@ export default async function AdminMarketingPage() {
           value={campaignList.length}
           description="All campaigns created"
           icon={Layers3}
-          iconClass="bg-muted0/10 text-muted-foreground dark:text-slate-300"
+          iconClass="bg-muted text-muted-foreground"
         />
 
         <StatCard
@@ -250,7 +260,10 @@ export default async function AdminMarketingPage() {
       <section className="space-y-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-xl font-bold tracking-tight">All campaigns</h2>
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
+              All campaigns
+            </h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               Manage campaign content, visibility and scheduling.
             </p>
@@ -269,7 +282,9 @@ export default async function AdminMarketingPage() {
                 <Megaphone className="h-8 w-8" />
               </div>
 
-              <h3 className="text-lg font-semibold">No campaigns yet</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                No campaigns yet
+              </h3>
 
               <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 Create your first marketing campaign to promote Emirate
@@ -312,9 +327,10 @@ export default async function AdminMarketingPage() {
 
                         <div className="min-w-0 flex-1 space-y-2">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-semibold tracking-tight">
+                            <h3 className="font-semibold tracking-tight text-foreground">
                               {campaign.title}
                             </h3>
+
                             {getStatusBadge(status)}
                           </div>
 
@@ -346,6 +362,7 @@ export default async function AdminMarketingPage() {
                       <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between lg:border-0 lg:pt-0">
                         <div className="text-xs text-muted-foreground lg:text-right">
                           <p>Display order</p>
+
                           <p className="mt-1 font-semibold text-foreground">
                             #{campaign.sort_order}
                           </p>
@@ -356,13 +373,20 @@ export default async function AdminMarketingPage() {
                             campaignId={campaign.id}
                             isActive={campaign.is_active}
                           />
-                          <Link
-                            href={`/dashboard/admin/marketing/${campaign.id}`}
-                            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border px-3 text-sm font-medium transition-colors hover:bg-muted"
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-9 rounded-lg"
                           >
-                            Details
-                            <ArrowUpRight className="h-3.5 w-3.5" />
-                          </Link>
+                            <Link
+                              href={`/dashboard/admin/marketing/${campaign.id}`}
+                              className="inline-flex items-center"
+                            >
+                              Details
+                              <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+                            </Link>
+                          </Button>
                         </div>
                       </div>
                     </div>

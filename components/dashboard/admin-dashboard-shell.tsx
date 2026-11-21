@@ -468,10 +468,6 @@ export function AdminDashboardShell({
             })}
           </div>
         </nav>
-
-        <div className="border-t border-border p-4">
-          <SupportButton />
-        </div>
       </aside>
 
       <div className="lg:pl-70">

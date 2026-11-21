@@ -1,16 +1,16 @@
 "use client";
 
 import { useActionState, useState } from "react";
+
 import {
-  Bell,
+  BellRing,
   BriefcaseBusiness,
   CreditCard,
   Mail,
-  MessageCircle,
-  Smartphone,
-  BellRing,
   Megaphone,
+  MessageCircle,
   Save,
+  Smartphone,
 } from "lucide-react";
 
 import {
@@ -96,6 +96,7 @@ function urlBase64ToUint8Array(base64String: string) {
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
   const rawData = window.atob(base64);
+
   return Uint8Array.from(rawData, (char) => char.charCodeAt(0));
 }
 
@@ -105,12 +106,7 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
     initialState,
   );
 
-  // const [pushEnabled, setPushEnabled] = useState(
-  //   initialSettings.push_notifications,
-  // );
-
   const [preferences, setPreferences] = useState(initialSettings);
-
   const [pushBusy, setPushBusy] = useState(false);
   const [pushError, setPushError] = useState("");
 
@@ -228,16 +224,17 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
       {sections.map((section) => (
         <section
           key={section.title}
-          className="overflow-hidden rounded-2xl border   border-border bg-card shadow-sm"
+          className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
         >
-          <div className="border-b   border-border px-5 py-4 sm:px-6">
+          <div className="border-b border-border bg-muted/30 px-5 py-4 sm:px-6">
             <h2 className="font-semibold text-foreground">{section.title}</h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               {section.description}
             </p>
           </div>
 
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-border">
             {section.items.map((item) => {
               const Icon = item.icon;
               const isPush = item.name === "push_notifications";
@@ -246,17 +243,18 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
               return (
                 <label
                   key={item.name}
-                  className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 transition hover:bg-muted sm:px-6"
+                  className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/50 sm:px-6"
                 >
                   <span className="flex min-w-0 items-start gap-3">
-                    <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                      <Icon className="h-5 w-5" />
+                    <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                      <Icon className="size-5" />
                     </span>
 
                     <span className="min-w-0">
                       <span className="block text-sm font-medium text-foreground">
                         {item.label}
                       </span>
+
                       <span className="mt-1 block text-xs leading-5 text-muted-foreground">
                         {item.description}
                       </span>
@@ -265,21 +263,6 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
 
                   <span className="relative inline-flex shrink-0 items-center">
                     <input type="hidden" name={item.name} value="false" />
-                    {/* <input
-                      type="checkbox"
-                      name={item.name}
-                      value="true"
-                      checked={checked}
-                      disabled={isPush && pushBusy}
-                      onChange={
-                        isPush
-                          ? (event) =>
-                              void handlePushChange(event.target.checked)
-                          : undefined
-                      }
-                      defaultChecked={isPush ? undefined : checked}
-                      className="peer sr-only"
-                    /> */}
 
                     <input
                       type="checkbox"
@@ -302,8 +285,10 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
                       }}
                       className="peer sr-only"
                     />
-                    <span className="h-6 w-11 rounded-full bg-slate-300 transition peer-checked:bg-emerald-600 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-emerald-600 peer-disabled:opacity-50" />
-                    <span className="pointer-events-none absolute left-0.5 h-5 w-5 rounded-full bg-card shadow-sm transition-transform peer-checked:translate-x-5" />
+
+                    <span className="h-6 w-11 rounded-full bg-muted-foreground/30 transition-colors peer-checked:bg-emerald-600 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-emerald-600 peer-disabled:cursor-not-allowed peer-disabled:opacity-50" />
+
+                    <span className="pointer-events-none absolute left-0.5 size-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5" />
                   </span>
                 </label>
               );
@@ -313,7 +298,11 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
       ))}
 
       {pushBusy && (
-        <p className="text-sm text-muted-foreground" role="status">
+        <p
+          className="flex items-center gap-2 text-sm text-muted-foreground"
+          role="status"
+        >
+          <span className="size-2 animate-pulse rounded-full bg-emerald-500" />
           Updating browser push settings...
         </p>
       )}
@@ -321,7 +310,7 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
       {pushError && (
         <p
           role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
         >
           {pushError}
         </p>
@@ -330,7 +319,7 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
       {state.error && (
         <p
           role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
         >
           {state.error}
         </p>
@@ -339,7 +328,7 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
       {state.success && (
         <p
           role="status"
-          className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+          className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
         >
           {state.success}
         </p>
@@ -351,7 +340,7 @@ export function NotificationPreferencesForm({ initialSettings }: Props) {
           disabled={isPending || pushBusy}
           className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <Save className="h-4 w-4" />
+          <Save className="size-4" />
           {isPending ? "Saving..." : "Save preferences"}
         </button>
       </div>

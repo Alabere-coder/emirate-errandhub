@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 import {
-  Check,
   ChevronRight,
   LogOut,
   Monitor,
@@ -14,6 +14,7 @@ import {
   Sun,
   UserRound,
 } from "lucide-react";
+
 import {
   Popover,
   PopoverContent,
@@ -32,10 +33,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
 import { Button } from "../ui/button";
+import { useTheme } from "@/components/theme/theme-provider";
+import { ThemeSelector } from "@/components/theme/theme-selector";
 
 type UserRole = "customer" | "worker" | "admin" | "super_admin";
-type Theme = "light" | "dark" | "system";
 
 type AccountDropdownProps = {
   role: UserRole;
@@ -65,13 +68,14 @@ export function AccountDropdown({
 }: AccountDropdownProps) {
   const router = useRouter();
 
-  const [themeOpen, setThemeOpen] = useState(false);
+  const { theme } = useTheme();
+
   const [loggingOut, setLoggingOut] = useState(false);
-  const [theme, setTheme] = useState<Theme>("system");
-  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   const initials =
     `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || "U";
+
+  const fullName = [firstName, lastName].filter(Boolean).join(" ") || "User";
 
   const profileHref =
     role === "customer"
@@ -89,44 +93,9 @@ export function AccountDropdown({
           ? "/dashboard/customer/settings"
           : profileHref;
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("errandhub-theme");
-
-    if (
-      savedTheme === "light" ||
-      savedTheme === "dark" ||
-      savedTheme === "system"
-    ) {
-      setTheme(savedTheme);
-    }
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const applyTheme = () => {
-      const dark = theme === "dark" || (theme === "system" && media.matches);
-
-      root.classList.toggle("dark", dark);
-    };
-
-    applyTheme();
-
-    if (theme !== "system") return;
-
-    media.addEventListener("change", applyTheme);
-    return () => media.removeEventListener("change", applyTheme);
-  }, [theme]);
-
-  function changeTheme(nextTheme: Theme) {
-    setTheme(nextTheme);
-    localStorage.setItem("errandhub-theme", nextTheme);
-  }
-
-  function closeMenu() {
-    setThemeOpen(false);
-  }
+  // function closeMenu() {
+  //   setThemeOpen(false);
+  // }
 
   async function handleLogout() {
     if (loggingOut) return;
@@ -143,8 +112,6 @@ export function AccountDropdown({
         return;
       }
 
-      closeMenu();
-      setLogoutDialogOpen(false);
       router.replace("/login");
       router.refresh();
     } catch (error) {
@@ -154,18 +121,20 @@ export function AccountDropdown({
     }
   }
 
+  const ThemeIcon = theme === "dark" ? Moon : theme === "light" ? Sun : Monitor;
+
   return (
     <div className="relative">
       <Popover>
         <PopoverTrigger
-          className="flex h-10 items-center gap-2 rounded-xl px-2 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-100"
+          className="flex h-10 items-center gap-2 rounded-xl px-2 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           aria-label="Open account menu"
         >
-          <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-emerald-800 text-xs font-bold text-white">
+          <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-emerald-800 text-xs font-bold text-white">
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
-                alt={`${firstName} ${lastName}`}
+                alt={fullName}
                 fill
                 sizes="32px"
                 unoptimized
@@ -181,15 +150,15 @@ export function AccountDropdown({
           align="end"
           side="bottom"
           sideOffset={8}
-          className="w-72 rounded-2xl border   border-border bg-card p-2 shadow-xl"
+          className="w-72 rounded-2xl border border-border bg-popover p-2 text-popover-foreground shadow-xl"
         >
           <PopoverHeader className="rounded-xl bg-muted p-3">
             <PopoverTitle className="flex items-center gap-3 text-sm">
-              <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-800 text-sm font-bold text-white">
+              <span className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-800 text-sm font-bold text-white">
                 {avatarUrl ? (
                   <Image
                     src={avatarUrl}
-                    alt={`${firstName} ${lastName}`}
+                    alt={fullName}
                     fill
                     sizes="44px"
                     unoptimized
@@ -201,125 +170,102 @@ export function AccountDropdown({
               </span>
 
               <span className="min-w-0">
-                <span className="block truncate">
-                  {[firstName, lastName].filter(Boolean).join(" ") || "User"}
+                <span className="block truncate text-foreground">
+                  {fullName}
                 </span>
+
                 <span className="mt-1 block text-xs font-normal text-muted-foreground">
                   {getRoleLabel(role)}
                 </span>
               </span>
             </PopoverTitle>
+
             <PopoverDescription className="sr-only">
               Account options and appearance settings
             </PopoverDescription>
           </PopoverHeader>
 
-          <div className="my-2 h-px bg-muted" />
+          <div className="my-2 h-px bg-border" />
 
           <Link
             href={profileHref}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition hover:bg-muted"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
           >
-            <UserRound className="h-4 w-4 text-muted-foreground" />
+            <UserRound className="size-4 text-muted-foreground" />
             <span className="flex-1">My profile</span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground/70" />
+            <ChevronRight className="size-4 text-muted-foreground/70" />
           </Link>
 
           <Link
             href={settingsHref}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition hover:bg-muted"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
           >
-            <Settings className="h-4 w-4 text-muted-foreground" />
+            <Settings className="size-4 text-muted-foreground" />
             <span className="flex-1">Settings</span>
-            <ChevronRight className="h-4 w-4 text-muted-foreground/70" />
+            <ChevronRight className="size-4 text-muted-foreground/70" />
           </Link>
 
-          <div>
+          {/* <div>
             <button
               type="button"
               aria-expanded={themeOpen}
               onClick={() => setThemeOpen((current) => !current)}
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition hover:bg-muted"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
             >
-              {theme === "dark" ? (
-                <Moon className="h-4 w-4 text-muted-foreground" />
-              ) : theme === "light" ? (
-                <Sun className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <Monitor className="h-4 w-4 text-muted-foreground" />
-              )}
+              <ThemeIcon className="size-4 text-muted-foreground" />
 
               <span className="flex-1 text-left">Appearance</span>
-              <span className="text-xs capitalize text-muted-foreground/70">
+
+              <span className="text-xs capitalize text-muted-foreground">
                 {theme}
               </span>
+
               <ChevronRight
-                className={`h-4 w-4 text-muted-foreground/70 transition-transform ${
+                className={`size-4 text-muted-foreground/70 transition-transform ${
                   themeOpen ? "rotate-90" : ""
                 }`}
               />
             </button>
 
             {themeOpen && (
-              <div className="mx-2 mb-2 rounded-xl border   border-border p-1">
-                {(
-                  [
-                    { value: "light", label: "Light", icon: Sun },
-                    { value: "dark", label: "Dark", icon: Moon },
-                    { value: "system", label: "System default", icon: Monitor },
-                  ] as const
-                ).map((option) => {
-                  const Icon = option.icon;
-                  const selected = theme === option.value;
-
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => changeTheme(option.value)}
-                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
-                        selected
-                          ? "bg-emerald-50 font-medium text-emerald-800"
-                          : "text-muted-foreground hover:bg-muted"
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span className="flex-1 text-left">{option.label}</span>
-                      {selected && <Check className="h-4 w-4" />}
-                    </button>
-                  );
-                })}
+              <div className="mx-2 mb-2 rounded-xl border border-border bg-card p-1">
+                <ThemeSelector showLabel />
               </div>
             )}
+          </div> */}
+
+          <div className="px-2 py-2">
+            <ThemeSelector showLabel />
           </div>
 
-          <div className="my-2 h-px bg-slate-200" />
+          <div className="my-2 h-px bg-border" />
 
           <Dialog>
             <DialogTrigger
-              className=""
               render={
                 <Button
                   type="button"
-                  className="flex w-full items-center gap-3 bg-transparent rounded-xl py-5 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
+                  variant="ghost"
+                  className="flex w-full items-center gap-3 rounded-xl py-5 text-sm font-medium text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-500/10 dark:hover:text-rose-300"
                 >
-                  <LogOut className="h-4 w-4" />
-                  <span className="flex-1 text-start">Log out</span>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground/70" />
+                  <LogOut className="size-4" />
+                  <span className="flex-1 text-left">Log out</span>
+                  <ChevronRight className="size-4 text-muted-foreground/70" />
                 </Button>
               }
-            ></DialogTrigger>
-            <DialogContent className="sm:max-w-sm bg-card">
+            />
+
+            <DialogContent className="border-border bg-card text-card-foreground sm:max-w-sm">
               <DialogHeader className="items-center text-center">
-                <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-rose-50">
-                  <LogOut className="h-6 w-6 text-rose-600" />
+                <div className="mb-2 flex size-12 items-center justify-center rounded-full bg-rose-500/10">
+                  <LogOut className="size-6 text-rose-600 dark:text-rose-400" />
                 </div>
 
-                <DialogTitle className="text-lg font-semibold text-muted-foreground">
+                <DialogTitle className="text-lg font-semibold">
                   Confirm logout
                 </DialogTitle>
 
-                <DialogDescription>
+                <DialogDescription className="text-muted-foreground">
                   Are you sure you want to log out of your account? You will
                   need to sign in again to access your dashboard.
                 </DialogDescription>
@@ -330,7 +276,8 @@ export function AccountDropdown({
                   render={
                     <button
                       type="button"
-                      className="flex-1 rounded-xl border   border-border px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-muted disabled:opacity-60"
+                      disabled={loggingOut}
+                      className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       Cancel
                     </button>
@@ -341,7 +288,7 @@ export function AccountDropdown({
                   type="button"
                   disabled={loggingOut}
                   onClick={() => void handleLogout()}
-                  className="flex-1 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex-1 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loggingOut ? "Logging out..." : "Yes, log out"}
                 </button>

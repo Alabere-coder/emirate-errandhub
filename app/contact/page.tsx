@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BriefcaseBusiness,
-  Clock3,
   Mail,
   MessageCircle,
   ShieldCheck,
@@ -44,47 +43,54 @@ const enquiryTypes = [
   },
 ];
 
+const contactCardClass =
+  "rounded-3xl border border-border bg-card p-7 shadow-sm transition-colors sm:p-9";
+
+const iconContainerClass =
+  "flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-300";
+
+const contactButtonClass =
+  "mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500";
+
+const brandLinkClass =
+  "transition-colors hover:text-emerald-800 dark:hover:text-emerald-400";
+
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-card">
+    <main className="min-h-screen bg-background text-foreground">
       <PublicNavbar />
 
-      <section className="bg-muted">
+      {/* Page introduction */}
+      <section className="border-b border-border bg-muted/50">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition hover:text-emerald-800"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to home
-          </Link>
-
           <div className="mx-auto mt-10 max-w-3xl text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">
               Contact Emirate ErrandHub
             </p>
 
-            <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl">
-              We'd love to hear from you.
+            <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+              We&apos;d love to hear from you.
             </h1>
 
             <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
-              Whether you're looking for assistance, have a question about our
-              services, or want to explore a partnership, our contact channels
-              are open to you.
+              Whether you&apos;re looking for assistance, have a question about
+              our services, or want to explore a partnership, our contact
+              channels are open to you.
             </p>
           </div>
         </div>
       </section>
 
+      {/* Contact channels */}
       <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border   border-border p-7 shadow-sm sm:p-9">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+          {/* Email */}
+          <div className={contactCardClass}>
+            <div className={iconContainerClass}>
               <Mail className="h-6 w-6" />
             </div>
 
-            <h2 className="mt-6 text-2xl font-bold text-slate-950">
+            <h2 className="mt-6 text-2xl font-bold text-foreground">
               Send us an email
             </h2>
 
@@ -95,27 +101,30 @@ export default function ContactPage() {
 
             <a
               href={`mailto:${supportEmail}`}
-              className="mt-6 inline-flex max-w-full items-center gap-2 break-all font-semibold text-emerald-800 transition hover:text-emerald-950"
+              className="mt-6 inline-flex max-w-full items-center gap-2 break-all font-semibold text-emerald-800 transition-colors hover:text-emerald-950 dark:text-emerald-400 dark:hover:text-emerald-300"
             >
               {supportEmail}
               <ArrowRight className="h-4 w-4 shrink-0" />
             </a>
 
             <a
-              href={`mailto:${supportEmail}?subject=${encodeURIComponent("Enquiry - Emirate ErrandHub")}`}
-              className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-800 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-emerald-900"
+              href={`mailto:${supportEmail}?subject=${encodeURIComponent(
+                "Enquiry - Emirate ErrandHub",
+              )}`}
+              className={contactButtonClass}
             >
               <Mail className="h-4 w-4" />
               Email Our Team
             </a>
           </div>
 
-          <div className="rounded-3xl border   border-border p-7 shadow-sm sm:p-9">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+          {/* WhatsApp */}
+          <div className={contactCardClass}>
+            <div className={iconContainerClass}>
               <MessageCircle className="h-6 w-6" />
             </div>
 
-            <h2 className="mt-6 text-2xl font-bold text-slate-950">
+            <h2 className="mt-6 text-2xl font-bold text-foreground">
               Chat with us on WhatsApp
             </h2>
 
@@ -129,10 +138,12 @@ export default function ContactPage() {
             </p>
 
             <a
-              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello Emirate ErrandHub, I would like to make an enquiry.")}`}
+              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                "Hello Emirate ErrandHub, I would like to make an enquiry.",
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-800 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-emerald-900"
+              className={contactButtonClass}
             >
               <MessageCircle className="h-4 w-4" />
               Start a WhatsApp Chat
@@ -141,27 +152,37 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Keep your existing Email and WhatsApp cards here. */}
+      {/* Public enquiry form */}
+      <section className="border-y border-border bg-muted/30">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">
+              Send an enquiry
+            </p>
+
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground">
+              Tell us how we can help.
+            </h2>
+
+            <p className="mt-4 leading-7 text-muted-foreground">
+              Complete the form below and our team will get back to you.
+            </p>
+          </div>
+
+          <PublicSupportForm />
         </div>
       </section>
 
-      <PublicSupportForm />
-
-      <section className="border-y   border-border bg-muted">
-        {/* Keep your existing How can we help section here. */}
-      </section>
-
-      <section className="border-y   border-border bg-muted">
+      {/* Enquiry categories */}
+      <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">
               How can we help?
             </p>
 
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-950">
-              We're ready to listen.
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground">
+              We&apos;re ready to listen.
             </h2>
 
             <p className="mt-4 leading-7 text-muted-foreground">
@@ -177,13 +198,13 @@ export default function ContactPage() {
               return (
                 <div
                   key={item.title}
-                  className="rounded-2xl border   border-border bg-card p-6"
+                  className="rounded-2xl border border-border bg-card p-6 transition-colors hover:border-emerald-200 hover:bg-emerald-50/30 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/20"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-400/10 dark:text-emerald-300">
                     <Icon className="h-5 w-5" />
                   </div>
 
-                  <h3 className="mt-5 text-lg font-bold text-slate-950">
+                  <h3 className="mt-5 text-lg font-bold text-foreground">
                     {item.title}
                   </h3>
 
@@ -197,9 +218,10 @@ export default function ContactPage() {
         </div>
       </section>
 
+      {/* Authenticated support centre CTA */}
       <section className="mx-auto max-w-5xl px-5 py-16 sm:px-8 lg:py-20">
-        <div className="rounded-3xl bg-emerald-950 px-6 py-10 text-center text-white sm:px-10">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-card/10 text-emerald-200">
+        <div className="rounded-3xl bg-emerald-950 px-6 py-10 text-center text-white shadow-xl shadow-emerald-950/10 sm:px-10 dark:bg-emerald-950">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-emerald-200">
             <ShieldCheck className="h-6 w-6" />
           </div>
 
@@ -214,7 +236,7 @@ export default function ContactPage() {
 
           <Link
             href="/login?next=%2Fdashboard%2Fsupport"
-            className="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-card px-6 py-3.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-50"
+            className="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-emerald-950 transition-colors hover:bg-emerald-50"
           >
             Visit Support Center
             <ArrowRight className="h-4 w-4" />
@@ -222,26 +244,27 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <footer className="border-t   border-border">
+      {/* Footer */}
+      <footer className="border-t border-border bg-muted/30">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-muted-foreground sm:px-8 md:flex-row md:items-center md:justify-between">
           <p>
             © {new Date().getFullYear()} Emirate ErrandHub. All rights reserved.
           </p>
 
           <nav className="flex flex-wrap gap-x-6 gap-y-3">
-            <Link href="/" className="transition hover:text-emerald-800">
+            <Link href="/" className={brandLinkClass}>
               Home
             </Link>
-            <Link
-              href="/services"
-              className="transition hover:text-emerald-800"
-            >
+
+            <Link href="/services" className={brandLinkClass}>
               Services
             </Link>
-            <Link href="/faq" className="transition hover:text-emerald-800">
+
+            <Link href="/faq" className={brandLinkClass}>
               FAQs
             </Link>
-            <Link href="/login" className="transition hover:text-emerald-800">
+
+            <Link href="/login" className={brandLinkClass}>
               Log in
             </Link>
           </nav>

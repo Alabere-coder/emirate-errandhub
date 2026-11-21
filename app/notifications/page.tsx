@@ -29,18 +29,30 @@ export default async function NotificationsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 sm:p-6 lg:p-8">
-      <div>
-        <div className="flex items-center gap-2">
-          <Bell className="h-6 w-6 text-emerald-600" />
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Notifications
-          </h1>
-        </div>
+    <div className="mx-auto w-full max-w-5xl space-y-6 p-4 sm:p-6 lg:p-8">
+      {/* Page heading */}
+      <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+              <Bell className="h-5 w-5" />
+            </div>
 
-        <p className="mt-1 text-sm text-muted-foreground">
-          Stay updated on your jobs, payments, messages, and account.
-        </p>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                Notifications
+              </h1>
+
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                Your latest updates
+              </p>
+            </div>
+          </div>
+
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+            Stay updated on your jobs, payments, messages, and account.
+          </p>
+        </div>
       </div>
 
       <NotificationsList initialNotifications={notifications ?? []} />

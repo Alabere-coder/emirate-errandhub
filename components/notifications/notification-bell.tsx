@@ -2,15 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+
 import {
   Bell,
   CheckCheck,
   Loader2,
   Trash2,
-  X,
   ExternalLink,
   Clock,
 } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -45,7 +46,8 @@ function formatNotificationDate(date: string) {
 
 function getMessagePreview(message: string, maxLength = 55) {
   if (message.length <= maxLength) return message;
-  return `${message.slice(0, maxLength).trimEnd()}........`;
+
+  return `${message.slice(0, maxLength).trimEnd()}...`;
 }
 
 export function NotificationBell() {
@@ -213,9 +215,9 @@ export function NotificationBell() {
         onClick={() => setIsOpen((previous) => !previous)}
         aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
         aria-expanded={isOpen}
-        className="relative flex h-10 w-10 items-center justify-center rounded-xl border   border-border/80 bg-card text-muted-foreground transition hover:border-slate-300 hover:bg-muted hover:text-foreground"
+        className="relative flex size-10 items-center justify-center rounded-xl border border-border/80 bg-card text-muted-foreground transition-colors hover:border-emerald-500/40 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
       >
-        <Bell className="h-4.5 w-4.5" />
+        <Bell className="size-4.5" />
 
         {unreadCount > 0 && (
           <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
@@ -233,12 +235,13 @@ export function NotificationBell() {
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="absolute right-0 z-50 mt-3 w-[min(360px,calc(100vw-4.5rem))] overflow-hidden rounded-2xl border   border-border bg-card shadow-xl">
-            <div className="flex items-center justify-between border-b   border-border px-4 py-3">
+          <div className="absolute right-0 z-50 mt-3 w-[min(360px,calc(100vw-4.5rem))] overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-xl">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground">
                   Notifications
                 </h3>
+
                 <p className="text-xs text-muted-foreground">
                   {unreadCount} unread
                 </p>
@@ -249,12 +252,12 @@ export function NotificationBell() {
                   type="button"
                   onClick={markAllAsRead}
                   disabled={updatingId !== null || deletingId !== null}
-                  className="flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 disabled:opacity-50"
+                  className="flex items-center gap-1 text-xs font-semibold text-emerald-700 transition-colors hover:text-emerald-800 disabled:opacity-50 dark:text-emerald-400 dark:hover:text-emerald-300"
                 >
                   {updatingId === "all" ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="size-4 animate-spin" />
                   ) : (
-                    <CheckCheck className="h-4 w-4" />
+                    <CheckCheck className="size-4" />
                   )}
                   Mark all read
                 </button>
@@ -264,15 +267,17 @@ export function NotificationBell() {
             <div className="max-h-95 overflow-y-auto">
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2 p-8 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="size-4 animate-spin" />
                   Loading notifications...
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="p-8 text-center">
-                  <Bell className="mx-auto h-8 w-8 text-slate-300" />
+                  <Bell className="mx-auto size-8 text-muted-foreground/40" />
+
                   <p className="mt-3 text-sm font-semibold text-foreground">
                     No notifications yet
                   </p>
+
                   <p className="mt-1 text-xs text-muted-foreground">
                     We'll let you know when something happens.
                   </p>
@@ -281,28 +286,24 @@ export function NotificationBell() {
                 notifications.slice(0, 10).map((notification) => (
                   <div
                     key={notification.id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => void openNotification(notification)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        void openNotification(notification);
-                      }
-                    }}
-                    className={`w-full cursor-pointer border-b   border-border px-4 py-3 text-left transition hover:bg-muted ${
-                      !notification.is_read ? "bg-emerald-50/40" : ""
+                    className={`border-b border-border px-4 py-3 transition-colors hover:bg-muted ${
+                      !notification.is_read ? "bg-emerald-500/5" : "bg-card"
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="min-w-0 flex-1">
+                      <button
+                        type="button"
+                        onClick={() => void openNotification(notification)}
+                        disabled={updatingId === notification.id}
+                        className="min-w-0 flex-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                      >
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-sm font-semibold text-foreground">
                             {notification.title}
                           </p>
 
                           {!notification.is_read && (
-                            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="mt-1 size-2 shrink-0 rounded-full bg-emerald-500" />
                           )}
                         </div>
 
@@ -313,23 +314,20 @@ export function NotificationBell() {
                         <p className="mt-2 text-[10px] text-muted-foreground/70">
                           {formatNotificationDate(notification.created_at)}
                         </p>
-                      </div>
+                      </button>
 
                       <button
                         type="button"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          void deleteNotification(notification);
-                        }}
+                        onClick={() => void deleteNotification(notification)}
                         disabled={updatingId !== null || deletingId !== null}
                         aria-label={`Delete ${notification.title}`}
                         title="Delete notification"
-                        className="shrink-0 rounded-lg p-1.5 text-muted-foreground/70 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="shrink-0 rounded-lg p-1.5 text-muted-foreground/70 transition-colors hover:bg-rose-500/10 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:text-rose-400"
                       >
                         {deletingId === notification.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="size-4 animate-spin" />
                         ) : (
-                          <Trash2 className="h-4 w-4 text-red-500" />
+                          <Trash2 className="size-4" />
                         )}
                       </button>
                     </div>
@@ -338,11 +336,11 @@ export function NotificationBell() {
               )}
             </div>
 
-            <div className="border-t   border-border p-3">
+            <div className="border-t border-border p-3">
               <Link
                 href="/notifications"
                 onClick={() => setIsOpen(false)}
-                className="block rounded-lg bg-muted px-3 py-2 text-center text-xs font-semibold text-foreground transition hover:bg-muted"
+                className="block rounded-lg bg-muted px-3 py-2 text-center text-xs font-semibold text-foreground transition-colors hover:bg-muted/70"
               >
                 View all notifications
               </Link>
@@ -357,7 +355,7 @@ export function NotificationBell() {
           if (!open) setSelectedNotification(null);
         }}
       >
-        <DialogContent className="max-w-md rounded-2xl">
+        <DialogContent className="max-w-md rounded-2xl border-border bg-card text-card-foreground">
           {selectedNotification && (
             <>
               <DialogHeader>
@@ -366,13 +364,13 @@ export function NotificationBell() {
                 </DialogTitle>
 
                 <DialogDescription className="flex items-center gap-1 text-xs">
-                  <Clock className="h-3.5 w-3.5" />
+                  <Clock className="size-3.5" />
                   {formatNotificationDate(selectedNotification.created_at)}
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="rounded-xl bg-muted p-8">
-                <p className="whitespace-pre-wrap wrap-break-word text-lg leading-7 text-foreground">
+              <div className="rounded-xl border border-border bg-muted p-5 sm:p-8">
+                <p className="wrap-break-word whitespace-pre-wrap text-base leading-7 text-foreground">
                   {selectedNotification.message}
                 </p>
               </div>
@@ -384,10 +382,10 @@ export function NotificationBell() {
                     setSelectedNotification(null);
                     setIsOpen(false);
                   }}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                 >
                   View details
-                  <ExternalLink className="h-4 w-4" />
+                  <ExternalLink className="size-4" />
                 </Link>
               )}
             </>

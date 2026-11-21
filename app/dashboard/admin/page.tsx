@@ -343,18 +343,20 @@ export default async function AdminDashboardPage() {
     <main className="min-h-full bg-muted/30">
       <div className="mx-auto max-w-7xl space-y-8 sm:p-4 lg:p-8">
         {/* Welcome header */}
-        <section className="relative overflow-hidden rounded-3xl bg-slate-950 p-6 text-white sm:p-8 lg:p-10">
-          <div className="pointer-events-none absolute -right-12 -top-20 size-64 rounded-full bg-emerald-400/10 blur-3xl" />
+
+        <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 px-6 py-7 text-white shadow-lg sm:px-8 sm:py-9">
+          <div className="pointer-events-none absolute -right-12 -top-20 size-64 rounded-full bg-emerald-400/15 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 right-1/3 size-56 rounded-full bg-blue-400/10 blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-transparent via-white/2 to-transparent" />
 
           <div className="relative flex flex-col justify-between gap-7 sm:flex-row sm:items-center">
             <div className="max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/5 px-3 py-1.5 text-xs font-medium text-slate-200">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-xs font-medium text-emerald-300">
                 <LayoutDashboard className="size-3.5" />
                 Admin control centre
               </div>
 
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Welcome back, {displayName}
               </h1>
 
@@ -367,7 +369,7 @@ export default async function AdminDashboardPage() {
 
             <Link
               href="/dashboard/admin/requests"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-950/20 transition hover:bg-emerald-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
             >
               View requests
               <ArrowRight className="size-4" />
