@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
+
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -14,11 +16,7 @@ import {
 
 import { requireRole } from "@/lib/auth/require-role";
 import { getUserLocalizationPreferences } from "@/lib/localization/get-preferences";
-import {
-  formatDate,
-  formatDateTime,
-  formatCurrency,
-} from "@/lib/localization/format";
+import { formatDate, formatDateTime } from "@/lib/localization/format";
 import { CampaignBanners } from "@/components/marketing/campaign-banners";
 
 const requestStatusLabels: Record<string, string> = {
@@ -40,14 +38,21 @@ const jobStatusLabels: Record<string, string> = {
 };
 
 const statusStyles: Record<string, string> = {
-  pending: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  quoted: "bg-blue-50 text-blue-700 ring-blue-600/20",
-  accepted: "bg-indigo-50 text-indigo-700 ring-indigo-600/20",
-  assigned: "bg-violet-50 text-violet-700 ring-violet-600/20",
-  in_progress: "bg-sky-50 text-sky-700 ring-sky-600/20",
-  completed: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+  pending:
+    "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-500/20",
+  quoted:
+    "bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-500/20",
+  accepted:
+    "bg-indigo-50 text-indigo-700 ring-indigo-600/20 dark:bg-indigo-950/40 dark:text-indigo-300 dark:ring-indigo-500/20",
+  assigned:
+    "bg-violet-50 text-violet-700 ring-violet-600/20 dark:bg-violet-950/40 dark:text-violet-300 dark:ring-violet-500/20",
+  in_progress:
+    "bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-950/40 dark:text-sky-300 dark:ring-sky-500/20",
+  completed:
+    "bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-500/20",
   cancelled: "bg-muted text-muted-foreground ring-slate-500/20",
-  rejected: "bg-rose-50 text-rose-700 ring-rose-600/20",
+  rejected:
+    "bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-950/40 dark:text-rose-300 dark:ring-rose-500/20",
 };
 
 function getStatusStyle(status: string) {
@@ -58,7 +63,6 @@ function getStatusStyle(status: string) {
 
 export default async function CustomerDashboardPage() {
   const { profile, supabase } = await requireRole(["customer"]);
-
   const preferences = await getUserLocalizationPreferences();
 
   const firstName = profile.first_name || "there";
@@ -99,7 +103,7 @@ export default async function CustomerDashboardPage() {
     console.error("Customer dashboard jobs error:", jobsError);
   }
 
-  // Count quotations awaiting the customer's review
+  // Count quotations awaiting the customer's review.
   const { count: pendingQuotesCount, error: quotesCountError } = await supabase
     .from("quotes")
     .select("id, service_requests!inner(customer_id)", {
@@ -113,7 +117,7 @@ export default async function CustomerDashboardPage() {
     console.error("Customer dashboard quotes count error:", quotesCountError);
   }
 
-  // Count all completed jobs belonging to this customer
+  // Count all completed jobs belonging to this customer.
   const { count: completedJobsCount, error: completedJobsError } =
     await supabase
       .from("jobs")
@@ -130,7 +134,6 @@ export default async function CustomerDashboardPage() {
 
   const recentRequests = requests ?? [];
   const activeJobs = jobs ?? [];
-
   const pendingQuotes = pendingQuotesCount ?? 0;
 
   const activeRequests = recentRequests.filter((request) =>
@@ -142,14 +145,15 @@ export default async function CustomerDashboardPage() {
   const completedRequests = completedJobsCount ?? 0;
 
   return (
-    <main className="min-h-screen bg-muted/80">
-      <div className="mx-auto max-w-7xl py-6 sm:px-6 sm:py-9 lg:px-8">
+    <main className="min-h-screen bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-9 lg:px-8">
         {/* Welcome banner */}
-        <section className="relative isolate overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-9 sm:py-10">
+        <section className="relative isolate overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-9 sm:py-10 dark:bg-slate-900">
           <div
             aria-hidden="true"
             className="absolute -right-16 -top-28 -z-10 h-72 w-72 rounded-full bg-teal-400/20 blur-3xl"
           />
+
           <div
             aria-hidden="true"
             className="absolute -bottom-36 right-1/3 -z-10 h-64 w-64 rounded-full bg-blue-500/15 blur-3xl"
@@ -157,7 +161,7 @@ export default async function CustomerDashboardPage() {
 
           <div className="relative flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/5 px-3 py-1.5 text-xs font-medium text-slate-200">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200">
                 <span className="h-2 w-2 rounded-full bg-teal-400" />
                 Your personal service hub
               </div>
@@ -174,7 +178,7 @@ export default async function CustomerDashboardPage() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href="/dashboard/customer/requests/new"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-teal-400 px-5 text-sm font-semibold text-slate-950 transition hover:bg-teal-300"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-teal-400 px-5 text-sm font-semibold text-slate-950 transition hover:bg-teal-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-400/30"
                 >
                   <Plus className="h-4 w-4" />
                   Request a service
@@ -182,7 +186,7 @@ export default async function CustomerDashboardPage() {
 
                 <Link
                   href="/services"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/20 px-5 text-sm font-medium text-white transition hover:bg-card/10"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/20 px-5 text-sm font-medium text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/20"
                 >
                   Explore services
                   <ArrowRight className="h-4 w-4" />
@@ -190,7 +194,7 @@ export default async function CustomerDashboardPage() {
               </div>
             </div>
 
-            <div className="hidden shrink-0 sm:flex sm:h-24 sm:w-24 sm:items-center sm:justify-center sm:rounded-3xl sm:border sm:border-white/10 sm:bg-card/5">
+            <div className="hidden shrink-0 sm:flex sm:h-24 sm:w-24 sm:items-center sm:justify-center sm:rounded-3xl sm:border sm:border-white/10 sm:bg-white/5">
               <BriefcaseBusiness className="h-11 w-11 text-teal-300" />
             </div>
           </div>
@@ -207,6 +211,7 @@ export default async function CustomerDashboardPage() {
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Quick access
             </h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               Everything you need, just a click away.
             </p>
@@ -218,7 +223,7 @@ export default async function CustomerDashboardPage() {
               icon={<Search className="h-5 w-5" />}
               title="Find a service"
               description="Discover services and professionals."
-              accent="bg-teal-50 text-teal-700"
+              accent="bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300"
             />
 
             <DashboardCard
@@ -226,7 +231,7 @@ export default async function CustomerDashboardPage() {
               icon={<ClipboardList className="h-5 w-5" />}
               title="My requests"
               description="Track requests and review quotations."
-              accent="bg-blue-50 text-blue-700"
+              accent="bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
             />
 
             <DashboardCard
@@ -234,7 +239,7 @@ export default async function CustomerDashboardPage() {
               icon={<Heart className="h-5 w-5" />}
               title="Favorites"
               description="Return to your saved providers."
-              accent="bg-rose-50 text-rose-700"
+              accent="bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
             />
 
             <DashboardCard
@@ -242,7 +247,7 @@ export default async function CustomerDashboardPage() {
               icon={<UserRound className="h-5 w-5" />}
               title="My profile"
               description="Manage your account details."
-              accent="bg-violet-50 text-violet-700"
+              accent="bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300"
             />
           </div>
         </section>
@@ -253,6 +258,7 @@ export default async function CustomerDashboardPage() {
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Your overview
             </h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               A snapshot of your latest activity.
             </p>
@@ -264,7 +270,7 @@ export default async function CustomerDashboardPage() {
               label="Recent active requests"
               value={activeRequests}
               description="From your latest five requests"
-              accent="bg-blue-50 text-blue-700"
+              accent="bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
             />
 
             <OverviewCard
@@ -272,7 +278,7 @@ export default async function CustomerDashboardPage() {
               label="Quotes to review"
               value={pendingQuotes}
               description="Requests with quotations received"
-              accent="bg-amber-50 text-amber-700"
+              accent="bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
             />
 
             <OverviewCard
@@ -280,7 +286,7 @@ export default async function CustomerDashboardPage() {
               label="Recently completed"
               value={completedRequests}
               description="Completed among your latest five requests"
-              accent="bg-emerald-50 text-emerald-700"
+              accent="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
             />
           </div>
         </section>
@@ -292,6 +298,7 @@ export default async function CustomerDashboardPage() {
               <h2 className="text-xl font-semibold tracking-tight text-foreground">
                 Active jobs
               </h2>
+
               <p className="mt-1 text-sm text-muted-foreground">
                 Keep up with the services currently underway.
               </p>
@@ -299,7 +306,7 @@ export default async function CustomerDashboardPage() {
 
             <Link
               href="/dashboard/customer/requests"
-              className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-foreground transition hover:text-teal-700"
+              className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-foreground transition hover:text-emerald-700 dark:hover:text-emerald-400"
             >
               View all requests
               <ArrowRight className="h-4 w-4" />
@@ -307,20 +314,23 @@ export default async function CustomerDashboardPage() {
           </div>
 
           {activeJobs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-card px-6 py-9 text-center">
+            <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-9 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                 <BriefcaseBusiness className="h-6 w-6" />
               </div>
+
               <h3 className="mt-4 font-semibold text-foreground">
                 No active jobs right now
               </h3>
+
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 When a quotation is accepted and a job is assigned, you will see
                 its progress here.
               </p>
+
               <Link
                 href="/services"
-                className="mt-5 inline-flex h-10 items-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800"
+                className="mt-5 inline-flex h-10 items-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-500/20 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
               >
                 Explore services
                 <ArrowRight className="h-4 w-4" />
@@ -337,18 +347,19 @@ export default async function CustomerDashboardPage() {
                   <Link
                     key={job.id}
                     href={`/dashboard/customer/requests/${job.request_id}`}
-                    className="group rounded-2xl border   border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md sm:p-6"
+                    className="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md dark:hover:border-emerald-800 sm:p-6"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300">
                         <BriefcaseBusiness className="h-5 w-5" />
                       </div>
 
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-semibold text-foreground transition group-hover:text-teal-800">
+                          <h3 className="font-semibold text-foreground transition group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
                             {request?.title || "Service job"}
                           </h3>
+
                           <StatusBadge status={job.status} />
                         </div>
 
@@ -364,7 +375,7 @@ export default async function CustomerDashboardPage() {
                           </p>
                         )}
 
-                        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-700">
+                        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                           View job details
                           <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                         </span>
@@ -384,6 +395,7 @@ export default async function CustomerDashboardPage() {
               <h2 className="text-xl font-semibold tracking-tight text-foreground">
                 Recent requests
               </h2>
+
               <p className="mt-1 text-sm text-muted-foreground">
                 Follow your latest service requests and quotations.
               </p>
@@ -391,7 +403,7 @@ export default async function CustomerDashboardPage() {
 
             <Link
               href="/dashboard/customer/requests"
-              className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-foreground transition hover:text-teal-700"
+              className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-foreground transition hover:text-emerald-700 dark:hover:text-emerald-400"
             >
               View all requests
               <ArrowRight className="h-4 w-4" />
@@ -399,8 +411,8 @@ export default async function CustomerDashboardPage() {
           </div>
 
           {recentRequests.length === 0 ? (
-            <div className="rounded-2xl border   border-border bg-card px-6 py-10 text-center shadow-sm">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-700">
+            <div className="rounded-2xl border border-border bg-card px-6 py-10 text-center shadow-sm">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300">
                 <ClipboardList className="h-7 w-7" />
               </div>
 
@@ -415,23 +427,23 @@ export default async function CustomerDashboardPage() {
 
               <Link
                 href="/dashboard/customer/requests/new"
-                className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-500/20 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white"
               >
                 <Plus className="h-4 w-4" />
                 Create your first request
               </Link>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border   border-border bg-card shadow-sm">
-              <div className="divide-y divide-slate-100">
+            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              <div className="divide-y divide-border">
                 {recentRequests.map((request) => (
                   <Link
                     key={request.id}
                     href={`/dashboard/customer/requests/${request.id}`}
-                    className="group flex flex-col gap-3 p-4 transition hover:bg-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5"
+                    className="group flex flex-col gap-3 p-4 transition hover:bg-muted/60 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5"
                   >
                     <div className="flex min-w-0 items-start gap-3">
-                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground transition group-hover:bg-teal-50 group-hover:text-teal-700">
+                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground transition group-hover:bg-teal-50 group-hover:text-teal-700 dark:group-hover:bg-teal-950/50 dark:group-hover:text-teal-300">
                         <ClipboardList className="h-5 w-5" />
                       </div>
 
@@ -439,6 +451,7 @@ export default async function CustomerDashboardPage() {
                         <h3 className="truncate font-semibold text-foreground">
                           {request.title}
                         </h3>
+
                         <p className="mt-1 text-xs text-muted-foreground">
                           Created {formatDate(request.created_at, preferences)}
                         </p>
@@ -447,7 +460,8 @@ export default async function CustomerDashboardPage() {
 
                     <div className="flex items-center justify-between gap-4 pl-13 sm:pl-0">
                       <StatusBadge status={request.status} />
-                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/70 transition group-hover:translate-x-1 group-hover:text-teal-700" />
+
+                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/70 transition group-hover:translate-x-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400" />
                     </div>
                   </Link>
                 ))}
@@ -457,15 +471,17 @@ export default async function CustomerDashboardPage() {
         </section>
 
         {/* Bottom call to action */}
-        <section className="mt-10 overflow-hidden rounded-2xl border border-teal-100 bg-teal-50/70 p-6 sm:p-8">
+        <section className="mt-10 overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6 dark:border-emerald-900/60 dark:bg-emerald-950/30 sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold text-teal-800">
+              <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
                 Need a helping hand?
               </p>
+
               <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                 Get your next task taken care of.
               </h2>
+
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 Describe what you need, choose your preferred schedule and
                 location, and receive quotations from professionals.
@@ -474,7 +490,7 @@ export default async function CustomerDashboardPage() {
 
             <Link
               href="/dashboard/customer/requests/new"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-5 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-600/20"
             >
               Request a service
               <ArrowRight className="h-4 w-4" />
@@ -494,7 +510,7 @@ function DashboardCard({
   accent,
 }: {
   href: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
   accent: string;
@@ -502,7 +518,7 @@ function DashboardCard({
   return (
     <Link
       href={href}
-      className="group rounded-2xl border   border-border/80 bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:p-6"
+      className="group rounded-2xl border border-border/80 bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md dark:hover:border-emerald-800 sm:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <div
@@ -510,10 +526,12 @@ function DashboardCard({
         >
           {icon}
         </div>
-        <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-muted-foreground" />
+
+        <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition group-hover:translate-x-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400" />
       </div>
 
       <h3 className="mt-5 font-semibold text-foreground">{title}</h3>
+
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {description}
       </p>
@@ -528,16 +546,17 @@ function OverviewCard({
   description,
   accent,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: number;
   description: string;
   accent: string;
 }) {
   return (
-    <div className="rounded-2xl border   border-border/80 bg-card p-5 shadow-sm sm:p-6">
+    <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
+
         <div
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${accent}`}
         >
@@ -548,6 +567,7 @@ function OverviewCard({
       <p className="mt-4 text-3xl font-bold tracking-tight text-foreground">
         {value}
       </p>
+
       <p className="mt-1 text-xs leading-5 text-muted-foreground">
         {description}
       </p>

@@ -172,7 +172,8 @@ export default async function WorkerDashboardPage() {
       description: "Requests awaiting a worker",
       href: "/dashboard/worker/jobs",
       icon: Search,
-      iconClass: "bg-emerald-50 text-emerald-700",
+      iconClass:
+        "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
     },
     {
       title: "My quotations",
@@ -180,7 +181,8 @@ export default async function WorkerDashboardPage() {
       description: "Quotations you have submitted",
       href: "/dashboard/worker/jobs",
       icon: FileText,
-      iconClass: "bg-blue-50 text-blue-700",
+      iconClass:
+        "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300",
     },
     {
       title: "Active jobs",
@@ -188,7 +190,8 @@ export default async function WorkerDashboardPage() {
       description: "Assigned or in progress",
       href: "/dashboard/worker/jobs/my",
       icon: BriefcaseBusiness,
-      iconClass: "bg-amber-50 text-amber-700",
+      iconClass:
+        "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
     },
     {
       title: "Completed jobs",
@@ -196,17 +199,18 @@ export default async function WorkerDashboardPage() {
       description: "Jobs marked completed",
       href: "/dashboard/worker/jobs/my",
       icon: CheckCircle2,
-      iconClass: "bg-violet-50 text-violet-700",
+      iconClass:
+        "bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300",
     },
   ];
 
   return (
-    <main className="min-h-screen bg-muted">
+    <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-7xl space-y-8 py-8 sm:px-6 lg:px-8">
         {/* Welcome header */}
         <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-medium text-emerald-700">
+            <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
               Worker workspace
             </p>
 
@@ -222,7 +226,7 @@ export default async function WorkerDashboardPage() {
 
           <Link
             href="/dashboard/worker/profile"
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border   border-border bg-card px-4 text-sm font-medium text-foreground transition hover:bg-muted"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-medium text-foreground shadow-sm transition hover:border-emerald-200 hover:bg-muted dark:hover:border-emerald-800"
           >
             <UserRound className="h-4 w-4" />
             My profile
@@ -230,10 +234,13 @@ export default async function WorkerDashboardPage() {
         </section>
 
         {/* Primary action banner */}
-        <section className="overflow-hidden rounded-2xl bg-emerald-950 p-6 shadow-sm sm:p-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <section className="relative overflow-hidden rounded-2xl border border-emerald-900/20 bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 p-6 shadow-sm sm:p-8">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-emerald-400/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-teal-300/15 blur-3xl" />
+
+          <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
-              <p className="text-sm font-medium text-emerald-300">
+              <p className="text-sm font-semibold text-emerald-100">
                 Your next opportunity starts here
               </p>
 
@@ -249,7 +256,7 @@ export default async function WorkerDashboardPage() {
 
             <Link
               href="/dashboard/worker/jobs"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-card px-5 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-50"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-semibold text-emerald-950 shadow-sm transition hover:bg-emerald-50"
             >
               Browse available jobs
               <ArrowRight className="h-4 w-4" />
@@ -279,7 +286,7 @@ export default async function WorkerDashboardPage() {
                 <Link
                   key={stat.title}
                   href={stat.href}
-                  className="group rounded-2xl border   border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md"
+                  className="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md dark:hover:border-emerald-800"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div
@@ -288,7 +295,7 @@ export default async function WorkerDashboardPage() {
                       <Icon className="h-5 w-5" />
                     </div>
 
-                    <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-emerald-700" />
+                    <ArrowRight className="h-4 w-4 text-muted-foreground/50 transition group-hover:translate-x-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400" />
                   </div>
 
                   <p className="mt-5 text-3xl font-bold tracking-tight text-foreground">
@@ -322,7 +329,7 @@ export default async function WorkerDashboardPage() {
 
             <Link
               href="/dashboard/worker/jobs/my"
-              className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-emerald-700 hover:text-emerald-800"
+              className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-emerald-700 transition hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
             >
               View all
               <ArrowRight className="h-4 w-4" />
@@ -342,7 +349,7 @@ export default async function WorkerDashboardPage() {
                   <Link
                     key={job.id}
                     href={`/dashboard/worker/jobs/my/${job.id}`}
-                    className="group rounded-2xl border   border-border bg-card p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md sm:p-6"
+                    className="group rounded-2xl border border-border bg-card p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md dark:hover:border-emerald-800 sm:p-6"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
@@ -362,13 +369,15 @@ export default async function WorkerDashboardPage() {
                       <span
                         className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
                           inProgress
-                            ? "bg-blue-50 text-blue-700"
-                            : "bg-amber-50 text-amber-700"
+                            ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"
+                            : "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300"
                         }`}
                       >
                         <span
                           className={`h-1.5 w-1.5 rounded-full ${
-                            inProgress ? "bg-blue-600" : "bg-amber-500"
+                            inProgress
+                              ? "bg-blue-600 dark:bg-blue-400"
+                              : "bg-amber-500 dark:bg-amber-400"
                           }`}
                         />
                         {jobStatusLabels[job.status] ??
@@ -377,18 +386,18 @@ export default async function WorkerDashboardPage() {
                     </div>
 
                     {job.scheduled_at ? (
-                      <div className="mt-5 flex items-center gap-2 border-t   border-border pt-4 text-sm text-muted-foreground">
+                      <div className="mt-5 flex items-center gap-2 border-t border-border pt-4 text-sm text-muted-foreground">
                         <CalendarClock className="h-4 w-4 shrink-0" />
                         <span>Scheduled: {formatDate(job.scheduled_at)}</span>
                       </div>
                     ) : (
-                      <div className="mt-5 flex items-center gap-2 border-t   border-border pt-4 text-sm text-muted-foreground">
+                      <div className="mt-5 flex items-center gap-2 border-t border-border pt-4 text-sm text-muted-foreground">
                         <Clock3 className="h-4 w-4 shrink-0" />
                         <span>Schedule not set</span>
                       </div>
                     )}
 
-                    <div className="mt-4 flex items-center justify-end gap-1 text-sm font-semibold text-emerald-700">
+                    <div className="mt-4 flex items-center justify-end gap-1 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                       View job details
                       <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                     </div>
@@ -397,8 +406,8 @@ export default async function WorkerDashboardPage() {
               })}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-card px-6 py-10 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+            <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-10 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
                 <ClipboardList className="h-6 w-6" />
               </div>
 
@@ -413,7 +422,7 @@ export default async function WorkerDashboardPage() {
 
               <Link
                 href="/dashboard/worker/jobs"
-                className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-800"
+                className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500"
               >
                 Explore available jobs
                 <ArrowRight className="h-4 w-4" />
@@ -426,9 +435,9 @@ export default async function WorkerDashboardPage() {
         <section className="grid gap-4 sm:grid-cols-2">
           <Link
             href="/dashboard/worker/jobs"
-            className="flex items-center gap-4 rounded-2xl border   border-border bg-card p-5 transition hover:border-emerald-200 hover:shadow-sm"
+            className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 transition hover:border-emerald-200 hover:shadow-sm dark:hover:border-emerald-800"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
               <Search className="h-5 w-5" />
             </div>
 
@@ -441,14 +450,14 @@ export default async function WorkerDashboardPage() {
               </p>
             </div>
 
-            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/70" />
+            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/70 transition group-hover:text-emerald-700" />
           </Link>
 
           <Link
             href="/dashboard/worker/profile"
-            className="flex items-center gap-4 rounded-2xl border   border-border bg-card p-5 transition hover:border-emerald-200 hover:shadow-sm"
+            className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 transition hover:border-emerald-200 hover:shadow-sm dark:hover:border-emerald-800"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
               <UserRound className="h-5 w-5" />
             </div>
 

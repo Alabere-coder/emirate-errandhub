@@ -4,9 +4,8 @@ import {
   BriefcaseBusiness,
   ArrowRight,
   CheckCircle2,
-  ShieldCheck,
-  Zap,
 } from "lucide-react";
+
 import { PublicNavbar } from "@/components/navigation/public-navbar";
 
 const accountTypes = [
@@ -44,41 +43,28 @@ const accountTypes = [
 
 export default function SignupPage() {
   return (
-    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-muted px-4 py-2 sm:px-6 sm:py-12">
-      {/* Decorative background */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-110 bg-linear-to-b from-emerald-50 via-slate-50 to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-24 top-16 -z-10 h-72 w-72 rounded-full bg-emerald-200/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-24 top-64 -z-10 h-72 w-72 rounded-full bg-blue-200/20 blur-3xl"
-      />
-
-      {/* Brand */}
-
+    <main className="relative isolate flex min-h-screen flex-col overflow-hidden bg-background px-4 py-2 sm:px-6 sm:py-10">
       {/* Navigation */}
-
       <PublicNavbar />
 
       {/* Main content */}
-      <div className="mx-auto my-auto w-full max-w-5xl py-2 sm:py-16">
+      <div className="mx-auto my-auto w-full max-w-5xl py-8 sm:py-16">
+        {/* Page heading */}
         <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
-          <h1 className=" text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             How would you like to
-            <span className="mt-1 block text-emerald-700">use ErrandHub?</span>
+            <span className="mt-1 block text-emerald-600 dark:text-emerald-400">
+              use ErrandHub?
+            </span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base max-md:hidden">
+          <p className="mx-auto mt-5 hidden max-w-xl text-sm leading-7 text-muted-foreground sm:block sm:text-base">
             Whether you need a helping hand or want to offer your expertise,
             there&apos;s a place for you here.
           </p>
         </div>
 
+        {/* Account type cards */}
         <div className="grid gap-6 md:grid-cols-2 md:gap-7">
           {accountTypes.map((account) => {
             const Icon = account.icon;
@@ -89,25 +75,27 @@ export default function SignupPage() {
                 key={account.theme}
                 className={`group relative flex flex-col overflow-hidden rounded-3xl border bg-card p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8 ${
                   isWorker
-                    ? "border-emerald-200/80 hover:border-emerald-300"
-                    : "  border-border hover:border-slate-300"
+                    ? "border-emerald-200/80 hover:border-emerald-400 dark:border-emerald-900/70 dark:hover:border-emerald-700"
+                    : "border-border hover:border-slate-300 dark:hover:border-slate-600"
                 }`}
               >
+                {/* Card accent */}
                 <div
                   aria-hidden="true"
                   className={`absolute inset-x-0 top-0 h-1 ${
                     isWorker
                       ? "bg-linear-to-r from-emerald-500 to-teal-300"
-                      : "bg-linear-to-r from-slate-700 to-slate-400"
+                      : "bg-linear-to-r from-slate-500 to-slate-300 dark:from-slate-600 dark:to-slate-400"
                   }`}
                 />
 
+                {/* Icon and category */}
                 <div className="flex items-start justify-between gap-4">
                   <div
-                    className={`flex h-14 w-14 items-center justify-center rounded-2xl transition duration-300 group-hover:scale-105 ${
+                    className={`flex h-14 w-14 items-center justify-center rounded-2xl ring-1 transition duration-300 group-hover:scale-105 ${
                       isWorker
-                        ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                        : "bg-muted text-foreground ring-1 ring-slate-200"
+                        ? "bg-emerald-50 text-emerald-700 ring-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-400 dark:ring-emerald-900/70"
+                        : "bg-muted text-foreground ring-border"
                     }`}
                   >
                     <Icon className="h-7 w-7" strokeWidth={1.8} />
@@ -116,7 +104,7 @@ export default function SignupPage() {
                   <span
                     className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
                       isWorker
-                        ? "bg-emerald-50 text-emerald-800"
+                        ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
@@ -124,7 +112,8 @@ export default function SignupPage() {
                   </span>
                 </div>
 
-                <h2 className="mt-6 text-2xl font-bold tracking-tight text-slate-950">
+                {/* Card content */}
+                <h2 className="mt-6 text-2xl font-bold tracking-tight text-card-foreground">
                   {account.title}
                 </h2>
 
@@ -132,7 +121,8 @@ export default function SignupPage() {
                   {account.description}
                 </p>
 
-                <ul className="mt-6 space-y-3 border-t   border-border pt-6">
+                {/* Features */}
+                <ul className="mt-6 space-y-3 border-t border-border pt-6">
                   {account.features.map((feature) => (
                     <li
                       key={feature}
@@ -141,24 +131,27 @@ export default function SignupPage() {
                       <CheckCircle2
                         className={`mt-0.5 h-4 w-4 shrink-0 ${
                           isWorker
-                            ? "text-emerald-600"
+                            ? "text-emerald-600 dark:text-emerald-400"
                             : "text-muted-foreground"
                         }`}
                       />
+
                       <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
 
+                {/* Action */}
                 <Link
                   href={account.href}
-                  className={`mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                  className={`mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-card ${
                     isWorker
                       ? "bg-emerald-700 shadow-emerald-900/10 hover:bg-emerald-800 focus-visible:ring-emerald-600"
-                      : "bg-slate-900 shadow-slate-900/10 hover:bg-slate-800 focus-visible:ring-slate-700"
+                      : "bg-slate-900 shadow-slate-900/10 hover:bg-slate-800 focus-visible:ring-slate-700 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white dark:focus-visible:ring-slate-400"
                   }`}
                 >
                   {account.buttonText}
+
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </section>
@@ -166,11 +159,12 @@ export default function SignupPage() {
           })}
         </div>
 
+        {/* Login link */}
         <p className="mt-9 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link
             href="/login"
-            className="font-semibold text-emerald-800 underline-offset-4 transition hover:underline"
+            className="font-semibold text-emerald-700 underline-offset-4 transition hover:text-emerald-800 hover:underline dark:text-emerald-400 dark:hover:text-emerald-300"
           >
             Sign in
           </Link>

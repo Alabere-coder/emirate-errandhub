@@ -58,8 +58,8 @@ export default async function NewRequestPage({
   if (categoriesError || servicesError) {
     return (
       <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
-        <div className="rounded-2xl border border-red-200 bg-card p-6 shadow-sm sm:p-8">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-600">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-400">
             <AlertCircle className="h-6 w-6" />
           </div>
 
@@ -74,7 +74,7 @@ export default async function NewRequestPage({
 
           <Link
             href="/services"
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-700 hover:text-teal-800"
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-800 dark:text-emerald-300 dark:hover:text-emerald-200"
           >
             <ArrowLeft className="h-4 w-4" />
             Browse services
@@ -202,26 +202,26 @@ export default async function NewRequestPage({
   return (
     <div className="mx-auto w-full max-w-5xl space-y-8 py-6 sm:px-6 lg:px-8">
       {/* Header */}
-      <section className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-8 sm:py-10">
-        <div className="pointer-events-none absolute -right-12 -top-20 h-60 w-60 rounded-full bg-teal-500/15 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-blue-500/10 blur-3xl" />
+      <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 px-6 py-8 text-white shadow-lg shadow-emerald-950/10 sm:px-8 sm:py-10">
+        <div className="pointer-events-none absolute -right-12 -top-20 h-60 w-60 rounded-full bg-emerald-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-teal-300/10 blur-3xl" />
 
         <div className="relative">
           <Link
             href="/dashboard/customer/requests"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 transition-colors hover:text-white"
+            className="inline-flex items-center gap-2 text-sm font-medium text-emerald-100/80 transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to my requests
           </Link>
 
           <div className="mt-6 flex items-start gap-4">
-            <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-card/5 text-teal-300 sm:flex">
+            <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-emerald-200 sm:flex">
               <ClipboardList className="h-7 w-7" />
             </div>
 
             <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200">
                 EMIRATE ERRANDHUB
               </p>
 
@@ -229,7 +229,7 @@ export default async function NewRequestPage({
                 Request a service
               </h1>
 
-              <p className="mt-3 text-sm leading-6 text-slate-300 sm:text-base">
+              <p className="mt-3 text-sm leading-6 text-emerald-100/80 sm:text-base">
                 Tell us what you need, where you need it, and when you need it.
                 Provide enough detail to help workers understand your request
                 and send suitable quotations.
@@ -241,22 +241,22 @@ export default async function NewRequestPage({
 
       {/* Direct worker notice */}
       {workerId && !selectedWorker && (
-        <div className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+        <div className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/30 dark:bg-amber-500/10 sm:p-5">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-300" />
 
           <div>
-            <p className="font-semibold text-amber-900">
+            <p className="font-semibold text-amber-950 dark:text-amber-200">
               This worker is no longer available
             </p>
 
-            <p className="mt-1 text-sm leading-6 text-amber-800">
+            <p className="mt-1 text-sm leading-6 text-amber-800 dark:text-amber-200/80">
               You can still submit a normal service request and receive
               quotations from available workers.
             </p>
 
             <Link
               href="/services"
-              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-900 underline underline-offset-4"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-900 underline underline-offset-4 transition-colors hover:text-amber-700 dark:text-amber-200 dark:hover:text-amber-100"
             >
               Explore services
               <ArrowRight className="h-3.5 w-3.5" />
@@ -265,20 +265,21 @@ export default async function NewRequestPage({
         </div>
       )}
 
+      {/* Selected worker */}
       {selectedWorker && (
-        <div className="overflow-hidden rounded-2xl border border-teal-200 bg-card shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-emerald-200 bg-card shadow-sm dark:border-emerald-800">
           <div className="flex items-start gap-4 p-5 sm:p-6">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-800">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
               <UserRound className="h-6 w-6" />
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-teal-700">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-300">
                   Direct worker request
                 </p>
 
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
                   <ShieldCheck className="h-3.5 w-3.5" />
                   Verified worker
                 </span>
@@ -297,16 +298,17 @@ export default async function NewRequestPage({
         </div>
       )}
 
+      {/* Worker has no categories */}
       {selectedWorker && availableCategories.length === 0 && (
-        <div className="flex gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 sm:p-5">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+        <div className="flex gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-500/30 dark:bg-red-500/10 sm:p-5">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
 
           <div>
-            <p className="font-semibold text-red-900">
+            <p className="font-semibold text-red-950 dark:text-red-200">
               No service categories assigned
             </p>
 
-            <p className="mt-1 text-sm leading-6 text-red-800">
+            <p className="mt-1 text-sm leading-6 text-red-800 dark:text-red-200/80">
               This worker has no service categories available for direct
               requests. Please choose another worker or create a normal service
               request.
@@ -314,7 +316,7 @@ export default async function NewRequestPage({
 
             <Link
               href="/services"
-              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-red-900 underline underline-offset-4"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-red-900 underline underline-offset-4 dark:text-red-200"
             >
               Browse services
               <ArrowRight className="h-3.5 w-3.5" />
@@ -324,10 +326,10 @@ export default async function NewRequestPage({
       )}
 
       {/* Form section */}
-      <section className="overflow-hidden rounded-3xl border   border-border bg-card shadow-sm">
-        <div className="border-b   border-border bg-muted/80 px-5 py-5 sm:px-8">
+      <section className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border bg-muted/50 px-5 py-5 sm:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-800">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
               <Wrench className="h-5 w-5" />
             </div>
 
@@ -355,8 +357,8 @@ export default async function NewRequestPage({
       </section>
 
       {/* Helpful note */}
-      <div className="flex items-start gap-3 rounded-2xl border   border-border bg-muted p-4">
-        <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-teal-700" />
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-muted/50 p-4">
+        <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-300" />
 
         <p className="text-sm leading-6 text-muted-foreground">
           <span className="font-semibold text-foreground">Helpful tip:</span>{" "}

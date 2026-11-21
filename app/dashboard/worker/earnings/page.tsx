@@ -80,14 +80,14 @@ function getStatusClass(status: string) {
   switch (status.toLowerCase()) {
     case "available":
     case "paid":
-      return "border-emerald-200 bg-emerald-50 text-emerald-800";
+      return "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300";
     case "processing":
-      return "border-amber-200 bg-amber-50 text-amber-800";
+      return "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-300";
     case "failed":
     case "cancelled":
-      return "border-red-200 bg-red-50 text-red-800";
+      return "border-red-200 bg-red-50 text-red-800 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300";
     default:
-      return "border-muted bg-muted/50 text-muted-foreground";
+      return "border-border bg-muted/50 text-muted-foreground";
   }
 }
 
@@ -114,19 +114,23 @@ export default async function WorkerEarningsPage({
       <div className="mx-auto max-w-5xl space-y-6">
         <Link
           href="/dashboard/worker"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
           Back to dashboard
         </Link>
 
-        <Card className="rounded-3xl">
+        <Card className="rounded-3xl border-border bg-card">
           <CardContent className="flex flex-col items-center px-6 py-12 text-center">
-            <CircleAlert className="size-10 text-muted-foreground" />
-            <h1 className="mt-4 text-xl font-semibold">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-muted">
+              <CircleAlert className="size-7 text-muted-foreground" />
+            </div>
+
+            <h1 className="mt-4 text-xl font-semibold text-foreground">
               Worker profile not found
             </h1>
-            <p className="mt-2 max-w-md text-sm text-muted-foreground">
+
+            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
               Your worker profile is not available yet. Please contact an
               administrator for assistance.
             </p>
@@ -154,11 +158,9 @@ export default async function WorkerEarningsPage({
   // Fetch withdrawal history.
   const { data: withdrawalRows, error: withdrawalsError } = await supabase
     .from("withdrawals")
-
     .select(
       "id, amount, currency, status, bank_name, account_number, provider_reference, created_at, processed_at, failure_reason",
     )
-
     .eq("worker_id", workerProfile.id)
     .order("created_at", { ascending: false });
 
@@ -225,19 +227,26 @@ export default async function WorkerEarningsPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-7">
-      <section className="relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-8">
-        <div className="absolute -right-12 -top-12 size-48 rounded-full bg-primary/5 blur-3xl" />
+      {/* Page header */}
+      <section className="relative isolate overflow-hidden rounded-3xl bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 p-6 text-white shadow-sm sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-emerald-400/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 left-1/3 size-64 rounded-full bg-teal-300/10 blur-3xl" />
 
         <div className="relative flex items-start gap-4">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border bg-background text-primary">
+          <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-emerald-100 shadow-inner">
             <Wallet className="size-7" />
           </div>
 
           <div>
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
+              Worker finances
+            </p>
+
+            <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
               My Earnings
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-emerald-100/80">
               Review your earnings, platform commission, withdrawal requests,
               and payouts released following customer confirmation and
               administrator approval.
@@ -249,7 +258,7 @@ export default async function WorkerEarningsPage({
       {error && (
         <div
           role="alert"
-          className="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
+          className="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-foreground"
         >
           <CircleAlert className="mt-0.5 size-5 shrink-0 text-destructive" />
           <p>
@@ -259,65 +268,82 @@ export default async function WorkerEarningsPage({
         </div>
       )}
 
+      {/* Earnings overview */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl border-border bg-card shadow-sm">
           <CardContent className="p-5">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm text-muted-foreground">
                 Available earnings
               </p>
-              <Wallet className="size-5 text-emerald-600" />
+              <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/50">
+                <Wallet className="size-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
             </div>
-            <p className="mt-3 text-2xl font-bold tracking-tight">
+
+            <p className="mt-3 text-2xl font-bold tracking-tight text-foreground">
               {formatMoney(availableEarnings, currency)}
             </p>
+
             <p className="mt-2 text-xs text-muted-foreground">
               Released earnings, after commission
             </p>
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl border-border bg-card shadow-sm">
           <CardContent className="p-5">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm text-muted-foreground">Pending earnings</p>
-              <Clock3 className="size-5 text-amber-600" />
+              <div className="flex size-10 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-950/50">
+                <Clock3 className="size-5 text-amber-600 dark:text-amber-400" />
+              </div>
             </div>
-            <p className="mt-3 text-2xl font-bold tracking-tight">
+
+            <p className="mt-3 text-2xl font-bold tracking-tight text-foreground">
               {formatMoney(pendingEarnings, currency)}
             </p>
+
             <p className="mt-2 text-xs text-muted-foreground">
               Not yet released
             </p>
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl border-border bg-card shadow-sm">
           <CardContent className="p-5">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm text-muted-foreground">Gross earnings</p>
-              <Banknote className="size-5 text-primary" />
+              <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+                <Banknote className="size-5 text-primary" />
+              </div>
             </div>
-            <p className="mt-3 text-2xl font-bold tracking-tight">
+
+            <p className="mt-3 text-2xl font-bold tracking-tight text-foreground">
               {formatMoney(totalGross, currency)}
             </p>
+
             <p className="mt-2 text-xs text-muted-foreground">
               Before platform commission
             </p>
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl border-border bg-card shadow-sm">
           <CardContent className="p-5">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm text-muted-foreground">
                 Platform commission
               </p>
-              <BriefcaseBusiness className="size-5 text-muted-foreground" />
+              <div className="flex size-10 items-center justify-center rounded-xl bg-muted">
+                <BriefcaseBusiness className="size-5 text-muted-foreground" />
+              </div>
             </div>
-            <p className="mt-3 text-2xl font-bold tracking-tight">
+
+            <p className="mt-3 text-2xl font-bold tracking-tight text-foreground">
               {formatMoney(totalCommission, currency)}
             </p>
+
             <p className="mt-2 text-xs text-muted-foreground">
               Deducted from recorded earnings
             </p>
@@ -325,65 +351,87 @@ export default async function WorkerEarningsPage({
         </Card>
       </section>
 
+      {/* Withdrawals */}
       <section className="grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl border-border bg-card shadow-sm">
           <CardContent className="space-y-5 p-5 sm:p-6">
             <div>
-              <h2 className="text-lg font-bold">Withdraw earnings</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/50">
+                  <Wallet className="size-4 text-emerald-700 dark:text-emerald-400" />
+                </div>
+
+                <h2 className="text-lg font-bold text-foreground">
+                  Withdraw earnings
+                </h2>
+              </div>
+
+              <p className="mt-2 text-sm text-muted-foreground">
                 Request a payout to your default saved bank account.
               </p>
             </div>
 
-            <div className="rounded-xl border bg-muted/30 p-4">
+            <div className="rounded-xl border border-border bg-muted/40 p-4">
               <p className="text-sm text-muted-foreground">
                 Available to withdraw
               </p>
-              <p className="mt-1 text-2xl font-bold">
+
+              <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
                 {formatMoney(withdrawableBalance, "NGN")}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 After pending, processing, and paid withdrawals are accounted
                 for.
               </p>
             </div>
 
             {withdrawal === "submitted" && (
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm leading-5 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
                 Your withdrawal request was submitted successfully. Payment has
                 not necessarily been sent yet.
               </div>
             )}
 
             {withdrawal === "invalid-amount" && (
-              <p role="alert" className="text-sm text-destructive">
+              <p
+                role="alert"
+                className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+              >
                 Enter a valid withdrawal amount.
               </p>
             )}
 
             {withdrawal === "insufficient-balance" && (
-              <p role="alert" className="text-sm text-red-600">
+              <p
+                role="alert"
+                className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
+              >
                 Your available balance is too low for this withdrawal. Refresh
                 your earnings and try again.
               </p>
             )}
 
             {withdrawal === "profile-error" && (
-              <p role="alert" className="text-sm text-destructive">
+              <p
+                role="alert"
+                className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+              >
                 Your worker profile could not be verified. Please try again
                 later.
               </p>
             )}
 
             {withdrawal === "no-default-account" && (
-              <div className="space-y-3 rounded-xl border p-4">
-                <p className="text-sm">
+              <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900 dark:bg-amber-950/30">
+                <p className="text-sm text-foreground">
                   You need a default payout account before requesting a
                   withdrawal.
                 </p>
+
                 <Link
                   href="/dashboard/worker/payout-account"
-                  className="inline-flex text-sm font-semibold text-primary underline underline-offset-4"
+                  className="inline-flex text-sm font-semibold text-primary underline underline-offset-4 transition-colors hover:text-primary/80"
                 >
                   Set up your payout account
                 </Link>
@@ -391,7 +439,10 @@ export default async function WorkerEarningsPage({
             )}
 
             {withdrawal === "request-failed" && (
-              <p role="alert" className="text-sm text-destructive">
+              <p
+                role="alert"
+                className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+              >
                 We couldn&apos;t submit your withdrawal. Your balance may be
                 insufficient, or the request may have failed validation. Please
                 check your balance and try again.
@@ -399,7 +450,10 @@ export default async function WorkerEarningsPage({
             )}
 
             {payoutAccountError && (
-              <p role="alert" className="text-sm text-destructive">
+              <p
+                role="alert"
+                className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+              >
                 We couldn&apos;t verify your default payout account. Please
                 refresh the page or manage your payout accounts.
               </p>
@@ -407,20 +461,23 @@ export default async function WorkerEarningsPage({
 
             {defaultPayoutAccount ? (
               <>
-                <div className="rounded-xl border p-4">
-                  <p className="text-xs text-muted-foreground">
+                <div className="rounded-xl border border-border bg-background p-4">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     Default destination
                   </p>
-                  <p className="mt-1 font-semibold">
+
+                  <p className="mt-2 font-semibold text-foreground">
                     {defaultPayoutAccount.bank_name}
                   </p>
+
                   <p className="text-sm text-muted-foreground">
                     Account ending in{" "}
                     {defaultPayoutAccount.account_number.slice(-4)}
                   </p>
+
                   <Link
                     href="/dashboard/worker/payout-account"
-                    className="mt-2 inline-flex text-sm text-primary underline underline-offset-4"
+                    className="mt-3 inline-flex text-sm font-medium text-primary underline underline-offset-4 transition-colors hover:text-primary/80"
                   >
                     Manage payout accounts
                   </Link>
@@ -430,10 +487,11 @@ export default async function WorkerEarningsPage({
                   <div className="space-y-2">
                     <label
                       htmlFor="withdrawal-amount"
-                      className="text-sm font-medium"
+                      className="text-sm font-medium text-foreground"
                     >
                       Amount (₦)
                     </label>
+
                     <input
                       id="withdrawal-amount"
                       name="amount"
@@ -446,7 +504,7 @@ export default async function WorkerEarningsPage({
                         withdrawableBalance <= 0 || Boolean(payoutAccountError)
                       }
                       placeholder="Enter amount"
-                      className="h-11 w-full rounded-xl border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                      className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                     />
                   </div>
 
@@ -455,7 +513,7 @@ export default async function WorkerEarningsPage({
                     disabled={
                       withdrawableBalance <= 0 || Boolean(payoutAccountError)
                     }
-                    className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Request withdrawal
                   </button>
@@ -471,7 +529,7 @@ export default async function WorkerEarningsPage({
               !payoutAccountError && (
                 <Link
                   href="/dashboard/worker/payout-account"
-                  className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                  className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
                 >
                   Add a payout account
                 </Link>
@@ -480,35 +538,60 @@ export default async function WorkerEarningsPage({
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl">
+        {/* Withdrawal history */}
+        <Card className="rounded-2xl border-border bg-card shadow-sm">
           <CardContent className="space-y-4 p-5 sm:p-6">
             <div>
-              <h2 className="text-lg font-bold">Withdrawal history</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-muted">
+                  <Clock3 className="size-4 text-muted-foreground" />
+                </div>
+
+                <h2 className="text-lg font-bold text-foreground">
+                  Withdrawal history
+                </h2>
+              </div>
+
+              <p className="mt-2 text-sm text-muted-foreground">
                 Track your previous payout requests.
               </p>
             </div>
 
             {withdrawalsError ? (
-              <p className="text-sm text-destructive">
+              <p className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
                 Withdrawal history could not be loaded. Please refresh the page.
               </p>
             ) : withdrawals.length === 0 ? (
-              <p className="rounded-xl border border-dashed p-5 text-center text-sm text-muted-foreground">
-                You haven&apos;t requested a withdrawal yet.
-              </p>
+              <div className="rounded-xl border border-dashed border-border bg-muted/20 p-8 text-center">
+                <div className="mx-auto flex size-11 items-center justify-center rounded-xl bg-muted">
+                  <Wallet className="size-5 text-muted-foreground" />
+                </div>
+
+                <p className="mt-3 text-sm font-medium text-foreground">
+                  No withdrawals yet
+                </p>
+
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Your payout requests will appear here.
+                </p>
+              </div>
             ) : (
-              <div className="space-y-3">
+              <div className="max-h-150 space-y-3 overflow-y-auto pr-1">
                 {withdrawals.map((item) => (
-                  <div key={item.id} className="rounded-xl border p-4">
+                  <div
+                    key={item.id}
+                    className="rounded-xl border border-border bg-background p-4 transition-colors hover:border-primary/30"
+                  >
                     <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-semibold">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground">
                           {formatMoney(Number(item.amount), item.currency)}
                         </p>
+
                         <p className="mt-1 text-xs text-muted-foreground">
                           {formatDate(item.created_at)}
                         </p>
+
                         {item.bank_name && (
                           <p className="mt-2 text-sm text-muted-foreground">
                             {item.bank_name}
@@ -520,7 +603,7 @@ export default async function WorkerEarningsPage({
                       </div>
 
                       <span
-                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClass(item.status)}`}
+                        className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClass(item.status)}`}
                       >
                         {getStatusLabel(item.status)}
                       </span>
@@ -534,7 +617,7 @@ export default async function WorkerEarningsPage({
                       )}
 
                     {item.status.toLowerCase() === "paid" && (
-                      <div className="mt-3 space-y-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+                      <div className="mt-3 space-y-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">
                         <p className="font-semibold">Payment completed</p>
 
                         {item.provider_reference && (
@@ -556,7 +639,7 @@ export default async function WorkerEarningsPage({
                     )}
 
                     {item.status.toLowerCase() === "failed" && (
-                      <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+                      <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
                         <p className="font-semibold">Withdrawal failed</p>
 
                         {item.failure_reason && (
@@ -587,9 +670,13 @@ export default async function WorkerEarningsPage({
         </Card>
       </section>
 
+      {/* Earnings history */}
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight">Earnings history</h2>
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
+            Earnings history
+          </h2>
+
           <p className="mt-1 text-sm text-muted-foreground">
             {earnings.length} {earnings.length === 1 ? "record" : "records"}{" "}
             found.
@@ -597,20 +684,25 @@ export default async function WorkerEarningsPage({
         </div>
 
         {earnings.length === 0 ? (
-          <Card className="rounded-3xl">
+          <Card className="rounded-3xl border-border bg-card shadow-sm">
             <CardContent className="flex flex-col items-center px-6 py-12 text-center">
               <div className="flex size-14 items-center justify-center rounded-2xl bg-muted">
                 <Banknote className="size-7 text-muted-foreground" />
               </div>
-              <h3 className="mt-4 text-lg font-semibold">No earnings yet</h3>
+
+              <h3 className="mt-4 text-lg font-semibold text-foreground">
+                No earnings yet
+              </h3>
+
               <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 Your earnings records will appear here after an administrator
                 approves the release for a completed, customer-confirmed job
                 with verified full payment.
               </p>
+
               <Link
                 href="/dashboard/worker/jobs/my"
-                className="mt-5 inline-flex h-10 items-center justify-center rounded-xl border px-4 text-sm font-medium transition-colors hover:bg-muted"
+                className="mt-5 inline-flex h-10 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
                 View my jobs
               </Link>
@@ -619,16 +711,21 @@ export default async function WorkerEarningsPage({
         ) : (
           <div className="space-y-4">
             {earnings.map((earning) => (
-              <Card key={earning.id} className="rounded-2xl">
+              <Card
+                key={earning.id}
+                className="rounded-2xl border-border bg-card shadow-sm"
+              >
                 <CardContent className="space-y-5 p-5 sm:p-6">
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                         Job reference
                       </p>
-                      <p className="mt-1 break-all font-mono text-sm font-semibold">
+
+                      <p className="mt-1 break-all font-mono text-sm font-semibold text-foreground">
                         {earning.job_id}
                       </p>
+
                       <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                         <CalendarDays className="size-3.5" />
                         Recorded {formatDate(earning.created_at)}
@@ -642,12 +739,13 @@ export default async function WorkerEarningsPage({
                     </span>
                   </div>
 
-                  <div className="grid gap-4 border-t pt-4 sm:grid-cols-3">
+                  <div className="grid gap-4 border-t border-border pt-4 sm:grid-cols-3">
                     <div>
                       <p className="text-xs text-muted-foreground">
                         Gross amount
                       </p>
-                      <p className="mt-1 font-semibold">
+
+                      <p className="mt-1 font-semibold text-foreground">
                         {formatMoney(
                           Number(earning.gross_amount),
                           earning.currency,
@@ -659,7 +757,8 @@ export default async function WorkerEarningsPage({
                       <p className="text-xs text-muted-foreground">
                         Platform commission
                       </p>
-                      <p className="mt-1 font-semibold">
+
+                      <p className="mt-1 font-semibold text-foreground">
                         {formatMoney(
                           Number(earning.commission_amount),
                           earning.currency,
@@ -671,7 +770,8 @@ export default async function WorkerEarningsPage({
                       <p className="text-xs text-muted-foreground">
                         Your net earnings
                       </p>
-                      <p className="mt-1 text-lg font-bold">
+
+                      <p className="mt-1 text-lg font-bold text-emerald-700 dark:text-emerald-400">
                         {formatMoney(
                           Number(earning.net_amount),
                           earning.currency,
@@ -680,7 +780,7 @@ export default async function WorkerEarningsPage({
                     </div>
                   </div>
 
-                  <div className="border-t pt-4 text-sm">
+                  <div className="border-t border-border pt-4 text-sm">
                     <p className="text-muted-foreground">
                       Available since:{" "}
                       <span className="font-medium text-foreground">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import {
   AlertCircle,
   ArrowRight,
@@ -35,35 +36,42 @@ const statusConfig: Record<
 > = {
   pending: {
     label: "Pending",
-    className: "border border-amber-200 bg-amber-50 text-amber-800",
+    className:
+      "border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300",
   },
   quoted: {
     label: "Quotation received",
-    className: "border border-blue-200 bg-blue-50 text-blue-800",
+    className:
+      "border border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300",
   },
   accepted: {
     label: "Quote accepted",
-    className: "border border-indigo-200 bg-indigo-50 text-indigo-800",
+    className:
+      "border border-indigo-200 bg-indigo-50 text-indigo-800 dark:border-indigo-900/60 dark:bg-indigo-950/40 dark:text-indigo-300",
   },
   assigned: {
     label: "Worker assigned",
-    className: "border border-violet-200 bg-violet-50 text-violet-800",
+    className:
+      "border border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-900/60 dark:bg-violet-950/40 dark:text-violet-300",
   },
   in_progress: {
     label: "In progress",
-    className: "border border-orange-200 bg-orange-50 text-orange-800",
+    className:
+      "border border-orange-200 bg-orange-50 text-orange-800 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-300",
   },
   completed: {
     label: "Completed",
-    className: "border border-emerald-200 bg-emerald-50 text-emerald-800",
+    className:
+      "border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300",
   },
   cancelled: {
     label: "Cancelled",
-    className: "border   border-border bg-muted text-foreground",
+    className: "border border-border bg-muted text-muted-foreground",
   },
   rejected: {
     label: "Rejected",
-    className: "border border-red-200 bg-red-50 text-red-800",
+    className:
+      "border border-red-200 bg-red-50 text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300",
   },
 };
 
@@ -122,7 +130,7 @@ function getStatusConfig(status: string) {
   return (
     statusConfig[status as RequestStatus] ?? {
       label: status ? status.replaceAll("_", " ") : "Unknown",
-      className: "border   border-border bg-muted text-foreground",
+      className: "border border-border bg-muted text-muted-foreground",
     }
   );
 }
@@ -180,21 +188,23 @@ export default async function CustomerRequestsPage() {
     return (
       <div className="mx-auto max-w-7xl space-y-6 py-6 sm:px-6 lg:px-8">
         <div>
-          <p className="text-sm font-semibold text-teal-700">
+          <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
             CUSTOMER DASHBOARD
           </p>
+
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
             My Requests
           </h1>
+
           <p className="mt-2 text-sm text-muted-foreground">
             View and manage the services you have requested.
           </p>
         </div>
 
-        <Card className="rounded-2xl border-red-200 shadow-sm">
+        <Card className="rounded-2xl border-red-200 shadow-sm dark:border-red-900/60">
           <CardContent className="flex flex-col items-center justify-center px-5 py-14 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50">
-              <AlertCircle className="h-7 w-7 text-red-600" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-950/40">
+              <AlertCircle className="h-7 w-7 text-red-600 dark:text-red-400" />
             </div>
 
             <h2 className="mt-5 text-lg font-bold text-foreground">
@@ -206,7 +216,7 @@ export default async function CustomerRequestsPage() {
               refresh the page and try again.
             </p>
 
-            <Button className="mt-6 rounded-xl bg-teal-700 hover:bg-teal-800">
+            <Button className="mt-6 rounded-xl bg-emerald-700 text-white hover:bg-emerald-800">
               <Link href="/dashboard/customer/requests">Try again</Link>
             </Button>
           </CardContent>
@@ -218,12 +228,15 @@ export default async function CustomerRequestsPage() {
   const requestList = requests ?? [];
 
   const totalRequests = requestList.length;
+
   const pendingCount = requestList.filter(
     (request) => request.status === "pending",
   ).length;
+
   const activeCount = requestList.filter((request) =>
     ["accepted", "assigned", "in_progress"].includes(request.status),
   ).length;
+
   const completedCount = requestList.filter(
     (request) => request.status === "completed",
   ).length;
@@ -241,34 +254,37 @@ export default async function CustomerRequestsPage() {
       value: pendingCount,
       description: "Waiting for quotations",
       icon: Clock3,
-      iconClass: "bg-amber-50 text-amber-700",
+      iconClass:
+        "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
     },
     {
       label: "Active jobs",
       value: activeCount,
       description: "Accepted or in progress",
       icon: Timer,
-      iconClass: "bg-blue-50 text-blue-700",
+      iconClass:
+        "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300",
     },
     {
       label: "Completed",
       value: completedCount,
       description: "Successfully completed",
       icon: CheckCircle2,
-      iconClass: "bg-emerald-50 text-emerald-700",
+      iconClass:
+        "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
     },
   ];
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 py-6 sm:px-6 lg:px-8">
       {/* Page header */}
-      <section className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-8 sm:py-10">
-        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-teal-500/15 blur-3xl" />
+      <section className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-8 text-white shadow-sm sm:px-8 sm:py-10 dark:bg-slate-900">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-emerald-500/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-blue-500/10 blur-3xl" />
 
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-card/5 px-3 py-1.5 text-xs font-semibold text-teal-300">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-emerald-300">
               <ClipboardList className="h-3.5 w-3.5" />
               CUSTOMER DASHBOARD
             </div>
@@ -283,7 +299,7 @@ export default async function CustomerRequestsPage() {
             </p>
           </div>
 
-          <Button className="relative min-h-11 rounded-xl bg-teal-500 px-5 font-semibold text-slate-950 shadow-sm transition hover:bg-teal-400">
+          <Button className="relative min-h-11 rounded-xl bg-emerald-500 px-5 font-semibold text-slate-950 shadow-sm transition hover:bg-emerald-400">
             <Link
               href="/dashboard/customer/requests/new"
               className="flex items-center gap-1"
@@ -301,6 +317,7 @@ export default async function CustomerRequestsPage() {
           <h2 className="text-lg font-bold text-foreground">
             Request overview
           </h2>
+
           <p className="mt-1 text-sm text-muted-foreground">
             A quick summary of your service activity.
           </p>
@@ -313,7 +330,7 @@ export default async function CustomerRequestsPage() {
             return (
               <Card
                 key={item.label}
-                className="rounded-2xl   border-border shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                className="rounded-2xl border-border shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-3">
@@ -321,6 +338,7 @@ export default async function CustomerRequestsPage() {
                       <p className="text-sm font-medium text-muted-foreground">
                         {item.label}
                       </p>
+
                       <p className="mt-3 text-3xl font-bold tracking-tight text-foreground">
                         {item.value}
                       </p>
@@ -350,6 +368,7 @@ export default async function CustomerRequestsPage() {
             <h2 className="text-xl font-bold tracking-tight text-foreground">
               Your service requests
             </h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               {totalRequests === 1
                 ? "You have submitted 1 request."
@@ -359,9 +378,9 @@ export default async function CustomerRequestsPage() {
         </div>
 
         {requestList.length === 0 ? (
-          <Card className="overflow-hidden rounded-3xl border-dashed border-slate-300 shadow-sm">
+          <Card className="overflow-hidden rounded-3xl border-dashed border-border shadow-sm">
             <CardContent className="flex flex-col items-center px-5 py-16 text-center sm:py-20">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-teal-700 ring-1 ring-teal-100">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900/60">
                 <Wrench className="h-8 w-8" />
               </div>
 
@@ -375,7 +394,7 @@ export default async function CustomerRequestsPage() {
                 quotations from workers.
               </p>
 
-              <Button className="mt-6 min-h-11 rounded-xl bg-teal-700 px-5 font-semibold text-white hover:bg-teal-800">
+              <Button className="mt-6 min-h-11 rounded-xl bg-emerald-700 px-5 font-semibold text-white hover:bg-emerald-800">
                 <Link href="/dashboard/customer/requests/new">
                   <Plus className="mr-2 h-4 w-4" />
                   Create your first request
@@ -384,7 +403,7 @@ export default async function CustomerRequestsPage() {
 
               <Link
                 href="/services"
-                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-teal-700"
+                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
               >
                 Explore services
                 <ArrowRight className="h-4 w-4" />
@@ -411,13 +430,13 @@ export default async function CustomerRequestsPage() {
               return (
                 <Card
                   key={request.id}
-                  className="group overflow-hidden rounded-2xl   border-border shadow-sm transition duration-200 hover:border-teal-200 hover:shadow-md"
+                  className="group overflow-hidden rounded-2xl border-border shadow-sm transition duration-200 hover:border-emerald-200 hover:shadow-md dark:hover:border-emerald-900/70"
                 >
                   <CardContent className="p-5 sm:p-6">
                     {/* Title and status */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="flex min-w-0 gap-4">
-                        <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground sm:flex">
+                        <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground sm:flex">
                           <Wrench className="h-5 w-5" />
                         </div>
 
@@ -440,9 +459,13 @@ export default async function CustomerRequestsPage() {
 
                           <p className="mt-1.5 text-sm text-muted-foreground">
                             {category?.name ?? "Service category"}
+
                             {service?.name && (
                               <>
-                                <span className="mx-2 text-slate-300">/</span>
+                                <span className="mx-2 text-muted-foreground/50">
+                                  /
+                                </span>
+
                                 <span className="font-medium text-foreground">
                                   {service.name}
                                 </span>
@@ -465,15 +488,17 @@ export default async function CustomerRequestsPage() {
                     </p>
 
                     {/* Request details */}
-                    <div className="mt-5 grid gap-4 border-t   border-border pt-5 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="mt-5 grid gap-4 border-t border-border pt-5 sm:grid-cols-2 xl:grid-cols-4">
                       <div className="flex min-w-0 items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
                           <CalendarDays className="h-4 w-4" />
                         </div>
+
                         <div className="min-w-0">
                           <p className="text-xs font-medium text-muted-foreground">
                             Preferred date
                           </p>
+
                           <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                             {formatDate(request.preferred_date)}
                           </p>
@@ -481,13 +506,15 @@ export default async function CustomerRequestsPage() {
                       </div>
 
                       <div className="flex min-w-0 items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
                           <Clock3 className="h-4 w-4" />
                         </div>
+
                         <div className="min-w-0">
                           <p className="text-xs font-medium text-muted-foreground">
                             Preferred time
                           </p>
+
                           <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                             {formatTime(request.preferred_time)}
                           </p>
@@ -495,13 +522,15 @@ export default async function CustomerRequestsPage() {
                       </div>
 
                       <div className="flex min-w-0 items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
                           <ClipboardList className="h-4 w-4" />
                         </div>
+
                         <div className="min-w-0">
                           <p className="text-xs font-medium text-muted-foreground">
                             Budget
                           </p>
+
                           <p className="mt-1 wrap-break-word text-sm font-semibold text-foreground">
                             {formatBudget(request.budget, request.currency)}
                           </p>
@@ -509,13 +538,15 @@ export default async function CustomerRequestsPage() {
                       </div>
 
                       <div className="flex min-w-0 items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
                           <MapPin className="h-4 w-4" />
                         </div>
+
                         <div className="min-w-0">
                           <p className="text-xs font-medium text-muted-foreground">
                             Location
                           </p>
+
                           <p
                             className="mt-1 wrap-break-word text-sm font-semibold text-foreground"
                             title={
@@ -529,27 +560,31 @@ export default async function CustomerRequestsPage() {
                     </div>
 
                     {/* Footer */}
-                    <div className="mt-5 flex flex-col gap-3 border-t   border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-xs text-muted-foreground">
                         Submitted {formatCreatedDate(request.created_at)}
                       </p>
 
-                      <Button
-                        variant="outline"
-                        className="w-full rounded-xl sm:w-auto"
-                      >
-                        <Link href="/dashboard/customer/jobs">
-                          View jobs to open a dispute
-                        </Link>
-                      </Button>
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                        <Button
+                          variant="outline"
+                          className="w-full rounded-xl sm:w-auto"
+                        >
+                          <Link href="/dashboard/customer/jobs">
+                            View jobs to open a dispute
+                          </Link>
+                        </Button>
 
-                      <Link
-                        href={`/dashboard/customer/requests/${request.id}`}
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
-                      >
-                        View request
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
+                        <Button className="w-full rounded-xl bg-emerald-700 text-white hover:bg-emerald-800 sm:w-auto">
+                          <Link
+                            href={`/dashboard/customer/requests/${request.id}`}
+                            className="flex items-center gap-1"
+                          >
+                            View request
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

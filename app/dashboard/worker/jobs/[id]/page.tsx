@@ -346,16 +346,6 @@ export default async function WorkerRequestDetailPage({
     <div className="mx-auto max-w-7xl space-y-6 py-6 sm:px-6 lg:px-8 lg:py-8">
       {/* Page header */}
       <div className="space-y-5">
-        <Button
-          variant="ghost"
-          className="-ml-3 w-fit gap-2 text-muted-foreground hover:text-foreground"
-        >
-          <Link href="/dashboard/worker/jobs">
-            <ArrowLeft className="size-4" />
-            Back to available jobs
-          </Link>
-        </Button>
-
         <div className="flex flex-col gap-5 rounded-2xl border bg-card p-5 shadow-sm sm:p-7 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 space-y-4">
             <div className="flex flex-wrap items-center gap-2">

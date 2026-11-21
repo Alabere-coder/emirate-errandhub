@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -55,10 +55,13 @@ export async function CampaignBanners({
           }
         }
 
+        const buttonClassName =
+          "inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-emerald-950 shadow-sm transition hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/30";
+
         return (
           <article
             key={campaign.id}
-            className="relative isolate flex min-h-56 flex-col justify-center overflow-hidden rounded-3xl border border-emerald-100 bg-linear-to-br from-emerald-900 via-emerald-800 to-slate-900 px-6 py-8 text-white shadow-sm sm:px-9 sm:py-9"
+            className="relative isolate flex min-h-56 flex-col justify-center overflow-hidden rounded-3xl border border-emerald-800/50 bg-linear-to-br from-emerald-950 via-emerald-900 to-slate-950 px-6 py-8 text-white shadow-sm sm:px-9 sm:py-9 dark:border-emerald-800/60"
           >
             {campaign.image_url ? (
               <>
@@ -67,18 +70,21 @@ export async function CampaignBanners({
                   alt={campaign.title}
                   className="absolute inset-0 -z-20 h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 -z-10 bg-slate-950/65" />
+                <div className="absolute inset-0 -z-10 bg-linear-to-r from-slate-950/90 via-slate-950/75 to-slate-950/40" />
               </>
             ) : (
-              <div className="absolute -right-16 -top-20 -z-10 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl" />
+              <>
+                <div className="absolute -right-16 -top-20 -z-10 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl" />
+                <div className="absolute -bottom-24 -left-10 -z-10 h-64 w-64 rounded-full bg-teal-400/10 blur-3xl" />
+              </>
             )}
 
             <div className="relative max-w-2xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-card/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-100 backdrop-blur">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-100 backdrop-blur">
                 Emirate ErrandHub
               </div>
 
-              <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+              <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
                 {campaign.title}
               </h2>
 
@@ -95,16 +101,13 @@ export async function CampaignBanners({
                       href={safeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-xl bg-card px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50"
+                      className={buttonClassName}
                     >
                       {campaign.button_text}
                       <ArrowUpRight className="h-4 w-4" />
                     </a>
                   ) : (
-                    <Link
-                      href={safeUrl}
-                      className="inline-flex items-center gap-2 rounded-xl bg-card px-5 py-3 text-sm font-bold text-emerald-900 transition hover:bg-emerald-50"
-                    >
+                    <Link href={safeUrl} className={buttonClassName}>
                       {campaign.button_text}
                       <ArrowUpRight className="h-4 w-4" />
                     </Link>

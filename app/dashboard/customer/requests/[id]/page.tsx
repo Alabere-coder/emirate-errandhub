@@ -8,7 +8,6 @@ import {
   AlertCircle,
   Wrench,
   Wallet,
-  Trash2,
   Pencil,
   CheckCircle2,
 } from "lucide-react";
@@ -16,7 +15,6 @@ import {
 import { requireRole } from "@/lib/auth/require-role";
 import { createClient } from "@/lib/supabase/server";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { QuoteActions } from "@/components/dashboard/customer/quotes/quote-actions";
@@ -130,29 +128,29 @@ function getStatusLabel(status: string) {
 function getStatusClassName(status: string) {
   switch (status) {
     case "pending":
-      return "bg-yellow-100 text-yellow-800";
+      return "border-yellow-200 bg-yellow-100 text-yellow-800 dark:border-yellow-500/30 dark:bg-yellow-500/15 dark:text-yellow-300";
 
     case "quoted":
-      return "bg-blue-100 text-blue-800";
+      return "border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-blue-300";
 
     case "accepted":
-      return "bg-indigo-100 text-indigo-800";
+      return "border-indigo-200 bg-indigo-100 text-indigo-800 dark:border-indigo-500/30 dark:bg-indigo-500/15 dark:text-indigo-300";
 
     case "assigned":
-      return "bg-purple-100 text-purple-800";
+      return "border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-500/30 dark:bg-purple-500/15 dark:text-purple-300";
 
     case "in_progress":
-      return "bg-orange-100 text-orange-800";
+      return "border-orange-200 bg-orange-100 text-orange-800 dark:border-orange-500/30 dark:bg-orange-500/15 dark:text-orange-300";
 
     case "completed":
-      return "bg-green-100 text-green-800";
+      return "border-green-200 bg-green-100 text-green-800 dark:border-green-500/30 dark:bg-green-500/15 dark:text-green-300";
 
     case "cancelled":
     case "rejected":
-      return "bg-red-100 text-red-800";
+      return "border-red-200 bg-red-100 text-red-800 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-300";
 
     default:
-      return "bg-muted text-muted-foreground";
+      return "border-border bg-muted text-muted-foreground";
   }
 }
 
@@ -209,16 +207,17 @@ export default async function CustomerRequestDetailsPage({
 
     return (
       <div className="mx-auto w-full max-w-5xl space-y-6 pb-10">
-        <Button variant="ghost" className="-ml-2 rounded-xl">
-          <Link href="/dashboard/customer/requests">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Requests
-          </Link>
-        </Button>
+        <Link
+          href="/dashboard/customer/requests"
+          className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Requests
+        </Link>
 
-        <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
+        <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
           <CardContent className="px-6 py-14 text-center sm:px-10">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-500/15 dark:text-red-400">
               <AlertCircle className="h-7 w-7" />
             </div>
 
@@ -285,15 +284,15 @@ export default async function CustomerRequestDetailsPage({
     .from("quotes")
     .select(
       `
-    id,
-    amount,
-    currency,
-    message,
-    estimated_duration_minutes,
-    status,
-    created_at,
-    worker_id
-  `,
+        id,
+        amount,
+        currency,
+        message,
+        estimated_duration_minutes,
+        status,
+        created_at,
+        worker_id
+      `,
     )
     .eq("request_id", request.id)
     .order("created_at", { ascending: true });
@@ -306,32 +305,32 @@ export default async function CustomerRequestDetailsPage({
     .from("jobs")
     .select(
       `
-    id,
-    quote_id,
-    worker_id,
-    agreed_amount,
-    currency,
-    status,
-    payment_plan,
-deposit_percentage,
-upfront_amount,
-    scheduled_at,
-    started_at,
-    completed_at,
-    customer_confirmed_at,
-    created_at,
-    updated_at,
-    worker_profiles (
-      id,
-      user_id,
-      bio,
-      years_of_experience,
-      starting_price,
-      currency,
-      verification_status,
-      is_available
-    )
-  `,
+        id,
+        quote_id,
+        worker_id,
+        agreed_amount,
+        currency,
+        status,
+        payment_plan,
+        deposit_percentage,
+        upfront_amount,
+        scheduled_at,
+        started_at,
+        completed_at,
+        customer_confirmed_at,
+        created_at,
+        updated_at,
+        worker_profiles (
+          id,
+          user_id,
+          bio,
+          years_of_experience,
+          starting_price,
+          currency,
+          verification_status,
+          is_available
+        )
+      `,
     )
     .eq("request_id", request.id)
     .maybeSingle();
@@ -356,13 +355,13 @@ upfront_amount,
       .from("job_media")
       .select(
         `
-      id,
-      file_url,
-      file_type,
-      media_type,
-      uploaded_by,
-      created_at
-    `,
+          id,
+          file_url,
+          file_type,
+          media_type,
+          uploaded_by,
+          created_at
+        `,
       )
       .eq("job_id", job.id)
       .order("created_at", { ascending: true });
@@ -410,11 +409,11 @@ upfront_amount,
         .from("profiles")
         .select(
           `
-        id,
-        first_name,
-        last_name,
-        avatar_url
-      `,
+            id,
+            first_name,
+            last_name,
+            avatar_url
+          `,
         )
         .eq("id", workerProfile.user_id)
         .maybeSingle();
@@ -453,11 +452,11 @@ upfront_amount,
         .from("messages")
         .select(
           `
-          id,
-          message,
-          sender_id,
-          created_at
-        `,
+            id,
+            message,
+            sender_id,
+            created_at
+          `,
         )
         .eq("conversation_id", conversation.id)
         .order("created_at", {
@@ -479,12 +478,12 @@ upfront_amount,
       .from("job_status_history")
       .select(
         `
-        id,
-        status,
-        note,
-        changed_by,
-        created_at
-      `,
+          id,
+          status,
+          note,
+          changed_by,
+          created_at
+        `,
       )
       .eq("job_id", job.id)
       .order("created_at", { ascending: true });
@@ -498,26 +497,16 @@ upfront_amount,
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 pb-10">
-      {/* Back navigation */}
-      <Button
-        variant="ghost"
-        className="-ml-2 rounded-xl text-muted-foreground hover:bg-card hover:text-teal-700"
-      >
-        <Link href="/dashboard/customer/requests">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Requests
-        </Link>
-      </Button>
-
       {/* Request header */}
-      <Card className="overflow-hidden rounded-2xl border-0 bg-slate-950 text-white shadow-lg shadow-slate-900/5">
+      <Card className="overflow-hidden rounded-2xl border-0 bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 text-white shadow-lg shadow-emerald-950/10">
         <CardContent className="relative p-6 sm:p-8">
-          <div className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full bg-teal-500/10 blur-3xl" />
+          <div className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-12 h-48 w-48 rounded-full bg-teal-300/10 blur-3xl" />
 
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center rounded-full border border-white/10 bg-card/10 px-3 py-1 text-xs font-semibold text-slate-200">
+                <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-emerald-50">
                   Request details
                 </span>
 
@@ -536,50 +525,46 @@ upfront_amount,
                 {request.title}
               </h1>
 
-              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-slate-300">
+              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-emerald-100/90">
                 <span>{category?.name ?? "Service category"}</span>
 
                 {service?.name && (
                   <>
-                    <span className="text-muted-foreground">/</span>
+                    <span className="text-emerald-100/50">/</span>
                     <span>{service.name}</span>
                   </>
                 )}
               </div>
 
-              <p className="mt-4 text-sm text-muted-foreground/70">
+              <p className="mt-4 text-sm text-emerald-100/70">
                 Request reference:{" "}
-                <span className="font-mono text-slate-300">{request.id}</span>
+                <span className="font-mono text-emerald-50">{request.id}</span>
               </p>
             </div>
 
             <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
               {request.status === "pending" && (
                 <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    className="rounded-xl border-white/20 bg-card/10 text-white hover:bg-card/20 hover:text-white"
+                  <Link
+                    href={`/dashboard/customer/requests/${request.id}/edit`}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                   >
-                    <Link
-                      href={`/dashboard/customer/requests/${request.id}/edit`}
-                      className="flex items-center gap-2"
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit Request
-                    </Link>
-                  </Button>
+                    <Pencil className="h-4 w-4" />
+                    Edit Request
+                  </Link>
 
                   <DeleteServiceRequestButton requestId={request.id} />
                 </div>
               )}
+
               <Badge
-                className={`${getStatusClassName(request.status)} rounded-full border border-white/10 px-3 py-1.5`}
+                className={`${getStatusClassName(request.status)} rounded-full border px-3 py-1.5`}
               >
                 {getStatusLabel(request.status)}
               </Badge>
 
-              <div className="rounded-xl border border-white/10 bg-card/5 px-4 py-3 sm:min-w-48">
-                <p className="text-xs font-medium text-muted-foreground/70">
+              <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm sm:min-w-48">
+                <p className="text-xs font-medium text-emerald-100/80">
                   Your budget
                 </p>
                 <p className="mt-1 text-xl font-bold text-white">
@@ -595,8 +580,8 @@ upfront_amount,
         {/* Main content */}
         <div className="min-w-0 space-y-6 lg:col-span-2">
           {/* Quotations */}
-          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
-            <CardHeader className="border-b   border-border bg-card px-5 py-5 sm:px-6">
+          <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+            <CardHeader className="border-b border-border bg-card px-5 py-5 sm:px-6">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <CardTitle className="text-lg font-bold text-foreground">
@@ -608,7 +593,7 @@ upfront_amount,
                 </div>
 
                 {quotes && quotes.length > 0 && (
-                  <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-teal-50 px-2 text-sm font-bold text-teal-700">
+                  <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-emerald-100 px-2 text-sm font-bold text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
                     {quotes.length}
                   </span>
                 )}
@@ -623,8 +608,8 @@ upfront_amount,
                   </p>
                 </div>
               ) : !quotes || quotes.length === 0 ? (
-                <div className="rounded-xl border border-dashed   border-border bg-muted/70 px-5 py-10 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-card text-muted-foreground/70 shadow-sm ring-1 ring-slate-200">
+                <div className="rounded-xl border border-dashed border-border bg-muted/50 px-5 py-10 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-card text-muted-foreground shadow-sm ring-1 ring-border">
                     <Wallet className="h-5 w-5" />
                   </div>
                   <h3 className="mt-4 font-semibold text-foreground">
@@ -640,7 +625,7 @@ upfront_amount,
                   {quotes.map((quote) => (
                     <div
                       key={quote.id}
-                      className="overflow-hidden rounded-xl border   border-border transition-colors hover:border-teal-200"
+                      className="overflow-hidden rounded-xl border border-border transition-colors hover:border-emerald-300 dark:hover:border-emerald-700"
                     >
                       <div className="p-4 sm:p-5">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -649,27 +634,27 @@ upfront_amount,
                               Service Provider
                             </p>
 
-                            <p className="mt-1 break-all font-mono text-xs text-muted-foreground/70">
+                            <p className="mt-1 break-all font-mono text-xs text-muted-foreground">
                               {quote.worker_id}
                             </p>
                           </div>
 
                           <Badge
-                            className={`w-fit rounded-full px-3 py-1 ${
+                            className={`w-fit rounded-full border px-3 py-1 ${
                               quote.status === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
+                                ? "border-yellow-200 bg-yellow-100 text-yellow-800 dark:border-yellow-500/30 dark:bg-yellow-500/15 dark:text-yellow-300"
                                 : quote.status === "accepted"
-                                  ? "bg-green-100 text-green-800"
+                                  ? "border-green-200 bg-green-100 text-green-800 dark:border-green-500/30 dark:bg-green-500/15 dark:text-green-300"
                                   : quote.status === "rejected"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-muted text-muted-foreground"
+                                    ? "border-red-200 bg-red-100 text-red-800 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-300"
+                                    : "border-border bg-muted text-muted-foreground"
                             }`}
                           >
                             {getStatusLabel(quote.status)}
                           </Badge>
                         </div>
 
-                        <div className="mt-5 grid gap-4 rounded-xl bg-muted p-4 sm:grid-cols-2">
+                        <div className="mt-5 grid gap-4 rounded-xl bg-muted/70 p-4 sm:grid-cols-2">
                           <div>
                             <p className="text-xs font-medium text-muted-foreground">
                               Quotation amount
@@ -726,7 +711,7 @@ upfront_amount,
                           </div>
                         )}
 
-                        <div className="mt-4 border-t   border-border pt-3 text-xs text-muted-foreground/70">
+                        <div className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">
                           Submitted{" "}
                           {new Intl.DateTimeFormat("en-NG", {
                             dateStyle: "medium",
@@ -735,7 +720,7 @@ upfront_amount,
                       </div>
 
                       {quote.status === "pending" && (
-                        <div className="border-t   border-border bg-muted/70 p-4 sm:px-5">
+                        <div className="border-t border-border bg-muted/50 p-4 sm:px-5">
                           <QuoteActions quoteId={quote.id} />
                         </div>
                       )}
@@ -747,8 +732,8 @@ upfront_amount,
           </Card>
 
           {/* Request details */}
-          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
-            <CardHeader className="border-b   border-border px-5 py-5 sm:px-6">
+          <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+            <CardHeader className="border-b border-border px-5 py-5 sm:px-6">
               <CardTitle className="text-lg font-bold text-foreground">
                 Request Details
               </CardTitle>
@@ -762,13 +747,13 @@ upfront_amount,
           </Card>
 
           {/* Request media */}
-          <div className="overflow-hidden rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-6">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
             <RequestMediaGallery media={requestMedia} />
           </div>
 
           {/* Service information */}
-          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
-            <CardHeader className="border-b   border-border px-5 py-5 sm:px-6">
+          <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+            <CardHeader className="border-b border-border px-5 py-5 sm:px-6">
               <CardTitle className="text-lg font-bold text-foreground">
                 Service Information
               </CardTitle>
@@ -776,7 +761,7 @@ upfront_amount,
 
             <CardContent className="space-y-5 p-5 sm:p-6">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
                   <Wrench className="h-5 w-5" />
                 </div>
 
@@ -792,7 +777,7 @@ upfront_amount,
               </div>
 
               {service && (
-                <div className="flex items-start gap-3 border-t   border-border pt-5">
+                <div className="flex items-start gap-3 border-t border-border pt-5">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                     <Wrench className="h-5 w-5" />
                   </div>
@@ -820,8 +805,8 @@ upfront_amount,
           {/* Job tracking */}
           {job && (
             <>
-              <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
-                <CardHeader className="border-b   border-border px-5 py-5 sm:px-6">
+              <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+                <CardHeader className="border-b border-border px-5 py-5 sm:px-6">
                   <CardTitle className="text-lg font-bold text-foreground">
                     Job Tracking
                   </CardTitle>
@@ -839,7 +824,7 @@ upfront_amount,
 
                   {(job.status === "assigned" ||
                     job.status === "completed") && (
-                    <div className="mt-5 border-t   border-border pt-5">
+                    <div className="mt-5 border-t border-border pt-5">
                       <h3 className="font-semibold text-foreground">
                         Job Payment
                       </h3>
@@ -860,15 +845,15 @@ upfront_amount,
                   )}
 
                   {job.status === "completed" && (
-                    <div className="mt-5 border-t   border-border pt-5">
+                    <div className="mt-5 border-t border-border pt-5">
                       {job.customer_confirmed_at ? (
-                        <div className="rounded-xl border border-green-200 bg-green-50 p-4">
-                          <div className="flex items-center gap-2 text-sm font-semibold text-green-800">
+                        <div className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-500/25 dark:bg-green-500/10">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-green-800 dark:text-green-300">
                             <CheckCircle2 className="h-5 w-5" />
                             Completion confirmed
                           </div>
 
-                          <p className="mt-1 text-sm leading-6 text-green-700">
+                          <p className="mt-1 text-sm leading-6 text-green-700 dark:text-green-200/80">
                             You have confirmed this job. Earnings release
                             remains subject to payment verification and
                             administrator approval.
@@ -882,16 +867,16 @@ upfront_amount,
                 </CardContent>
               </Card>
 
-              {job && <JobStatusTimeline history={jobStatusHistory} />}
+              <JobStatusTimeline history={jobStatusHistory} />
 
-              <div className="overflow-hidden rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-6">
+              <div className="overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
                 <AssignedWorkerCard
                   worker={assignedWorker}
                   workerProfile={assignedWorkerProfile}
                 />
               </div>
 
-              <div className="overflow-hidden rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-6">
+              <div className="overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
                 <JobMediaGallery media={jobMedia} />
               </div>
             </>
@@ -899,7 +884,7 @@ upfront_amount,
 
           {/* Conversation */}
           {conversation && (
-            <div className="overflow-hidden rounded-2xl border   border-border bg-card p-4 shadow-sm sm:p-6">
+            <div className="overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
               <ChatBox
                 conversationId={conversation.id}
                 currentUserId={user.id}
@@ -909,8 +894,8 @@ upfront_amount,
           )}
 
           {/* Service location */}
-          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
-            <CardHeader className="border-b   border-border px-5 py-5 sm:px-6">
+          <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+            <CardHeader className="border-b border-border px-5 py-5 sm:px-6">
               <CardTitle className="text-lg font-bold text-foreground">
                 Service Location
               </CardTitle>
@@ -918,7 +903,7 @@ upfront_amount,
 
             <CardContent className="space-y-5 p-5 sm:p-6">
               <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
                   <MapPin className="h-5 w-5" />
                 </div>
 
@@ -934,7 +919,7 @@ upfront_amount,
               </div>
 
               {(request.city || request.state) && (
-                <div className="flex items-start gap-3 border-t   border-border pt-5">
+                <div className="flex items-start gap-3 border-t border-border pt-5">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                     <MapPin className="h-5 w-5" />
                   </div>
@@ -956,8 +941,8 @@ upfront_amount,
 
         {/* Sidebar */}
         <aside className="space-y-5 lg:sticky lg:top-6">
-          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
-            <CardHeader className="border-b   border-border px-5 py-5">
+          <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+            <CardHeader className="border-b border-border px-5 py-5">
               <CardTitle className="text-base font-bold text-foreground">
                 Schedule
               </CardTitle>
@@ -968,7 +953,7 @@ upfront_amount,
 
             <CardContent className="space-y-5 p-5">
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
                   <CalendarDays className="h-4 w-4" />
                 </div>
 
@@ -1001,10 +986,10 @@ upfront_amount,
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
-            <CardHeader className="border-b   border-border bg-slate-950 px-5 py-4 text-white">
+          <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+            <CardHeader className="border-b border-emerald-800 bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 px-5 py-4 text-white">
               <CardTitle className="flex items-center gap-2 text-base font-bold">
-                <Wallet className="h-4 w-4 text-teal-300" />
+                <Wallet className="h-4 w-4 text-emerald-200" />
                 Budget
               </CardTitle>
             </CardHeader>
@@ -1020,8 +1005,8 @@ upfront_amount,
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden rounded-2xl   border-border shadow-sm">
-            <CardHeader className="border-b   border-border px-5 py-5">
+          <Card className="overflow-hidden rounded-2xl border-border shadow-sm">
+            <CardHeader className="border-b border-border px-5 py-5">
               <CardTitle className="text-base font-bold text-foreground">
                 Request Information
               </CardTitle>
@@ -1038,7 +1023,7 @@ upfront_amount,
                 </p>
               </div>
 
-              <div className="border-t   border-border pt-4">
+              <div className="border-t border-border pt-4">
                 <p className="text-xs font-medium text-muted-foreground">
                   Created
                 </p>
@@ -1050,7 +1035,7 @@ upfront_amount,
                 </p>
               </div>
 
-              <div className="border-t   border-border pt-4">
+              <div className="border-t border-border pt-4">
                 <p className="text-xs font-medium text-muted-foreground">
                   Last updated
                 </p>
@@ -1064,8 +1049,8 @@ upfront_amount,
             </CardContent>
           </Card>
 
-          <div className="rounded-2xl border border-teal-100 bg-linear-to-br from-teal-50 to-white p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-card text-teal-700 shadow-sm ring-1 ring-teal-100">
+          <div className="rounded-2xl border border-emerald-200 bg-linear-to-br from-emerald-50 to-background p-5 dark:border-emerald-900/60 dark:from-emerald-950/40 dark:to-card">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-card text-emerald-700 shadow-sm ring-1 ring-emerald-200 dark:text-emerald-300 dark:ring-emerald-800">
               <Wrench className="h-5 w-5" />
             </div>
 
@@ -1080,7 +1065,7 @@ upfront_amount,
 
             <Link
               href="/dashboard/customer/requests"
-              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-700 transition hover:text-teal-900"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-800 dark:text-emerald-300 dark:hover:text-emerald-200"
             >
               <ArrowLeft className="h-4 w-4" />
               All my requests

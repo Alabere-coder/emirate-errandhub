@@ -174,8 +174,11 @@ export default function PayoutAccountForm({
   const isVerified =
     Boolean(accountName) && verifiedFor === `${bankCode}:${accountNumber}`;
 
+  const fieldClassName =
+    "w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-emerald-500/30 focus-visible:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-60";
+
   return (
-    <form action={saveWorkerPayoutAccount} className="space-y-4">
+    <form action={saveWorkerPayoutAccount} className="space-y-5">
       {account && <input type="hidden" name="account_id" value={account.id} />}
 
       <input type="hidden" name="bank_code" value={bankCode} />
@@ -183,10 +186,11 @@ export default function PayoutAccountForm({
       <input type="hidden" name="account_name" value={accountName} />
       <input type="hidden" name="account_number" value={accountNumber} />
 
+      {/* Bank selection */}
       <div className="space-y-2" ref={dropdownRef}>
         <label
           htmlFor={`payout-bank-search-${account?.id ?? "new"}`}
-          className="text-sm font-medium"
+          className="text-sm font-medium text-foreground"
         >
           Bank
         </label>
@@ -241,7 +245,7 @@ export default function PayoutAccountForm({
             placeholder={
               loadingBanks ? "Loading banks..." : "Search Nigerian banks..."
             }
-            className="w-full rounded-md border bg-background py-2 pl-9 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={`${fieldClassName} pl-9`}
             required={!bankCode}
           />
 
@@ -249,7 +253,7 @@ export default function PayoutAccountForm({
             <div
               id={`payout-bank-options-${account?.id ?? "new"}`}
               role="listbox"
-              className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border bg-background shadow-lg"
+              className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-border bg-popover p-1 text-popover-foreground shadow-xl"
             >
               {filteredBanks.length > 0 ? (
                 filteredBanks.map((bank) => (
@@ -259,18 +263,21 @@ export default function PayoutAccountForm({
                     role="option"
                     aria-selected={bankCode === bank.code}
                     onClick={() => selectBank(bank)}
-                    className={`block w-full px-3 py-2.5 text-left text-sm hover:bg-muted ${
-                      bankCode === bank.code ? "bg-muted font-medium" : ""
+                    className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition hover:bg-muted ${
+                      bankCode === bank.code
+                        ? "bg-emerald-50 font-medium text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
+                        : "text-foreground"
                     }`}
                   >
                     {bank.name}
+
                     {bankCode === bank.code && (
-                      <CheckCircle2 className="float-right mt-0.5 size-4 text-emerald-600" />
+                      <CheckCircle2 className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
                     )}
                   </button>
                 ))
               ) : (
-                <p className="px-3 py-4 text-sm text-muted-foreground">
+                <p className="px-3 py-4 text-center text-sm text-muted-foreground">
                   No banks found. Try another search.
                 </p>
               )}
@@ -286,15 +293,19 @@ export default function PayoutAccountForm({
 
         {bankCode && selectedBank && (
           <p className="text-xs text-muted-foreground">
-            Selected bank: {selectedBank.name}
+            Selected bank:{" "}
+            <span className="font-medium text-foreground">
+              {selectedBank.name}
+            </span>
           </p>
         )}
       </div>
 
+      {/* Account number */}
       <div className="space-y-2">
         <label
           htmlFor={`payout-number-${account?.id ?? "new"}`}
-          className="text-sm font-medium"
+          className="text-sm font-medium text-foreground"
         >
           Account number
         </label>
@@ -314,12 +325,17 @@ export default function PayoutAccountForm({
             invalidateVerification();
           }}
           disabled={verifying}
-          className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+          className={fieldClassName}
           placeholder="Enter 10-digit account number"
           required
         />
+
+        <p className="text-xs text-muted-foreground">
+          Enter the 10-digit account number linked to your bank account.
+        </p>
       </div>
 
+      {/* Verification action */}
       <Button
         type="button"
         variant="outline"
@@ -330,6 +346,7 @@ export default function PayoutAccountForm({
           !bankCode ||
           !/^\d{10}$/.test(accountNumber)
         }
+        className="w-full border-border bg-background hover:bg-muted sm:w-auto"
       >
         {verifying ? (
           <>
@@ -337,49 +354,82 @@ export default function PayoutAccountForm({
             Verifying account...
           </>
         ) : (
-          "Verify account"
+          <>
+            <ShieldCheck className="mr-2 size-4" />
+            Verify account
+          </>
         )}
       </Button>
 
+      {/* Verified account details */}
       {accountName && (
-        <div className="rounded-lg border p-4">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <ShieldCheck className="size-5 text-emerald-600" />
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 dark:border-emerald-900/70 dark:bg-emerald-950/25">
+          <div className="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+            <ShieldCheck className="size-5 shrink-0" />
             Verified account name
           </div>
 
-          <p className="mt-2 font-semibold">{accountName}</p>
+          <p className="mt-3 text-base font-semibold text-foreground">
+            {accountName}
+          </p>
 
           <p className="mt-1 text-xs text-muted-foreground">
             Bank: {selectedBank?.name}
           </p>
+
+          <div className="mt-3 flex items-center gap-2 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+            <CheckCircle2 className="size-4" />
+            Account details successfully verified
+          </div>
         </div>
       )}
 
+      {/* Feedback */}
       {success && (
-        <p
+        <div
           role="status"
-          className="flex items-center gap-2 text-sm text-emerald-700"
+          className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300"
         >
-          <CheckCircle2 className="size-4" />
-          {success}
-        </p>
+          <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
+          <span>{success}</span>
+        </div>
       )}
 
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <div
+          role="alert"
+          className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-3 text-sm text-destructive"
+        >
           {error}
-        </p>
+        </div>
       )}
 
-      <Button type="submit" disabled={!isVerified || verifying}>
-        {account ? "Save verified bank details" : "Save payout account"}
-      </Button>
+      {/* Save */}
+      <div className="space-y-3 border-t border-border pt-5">
+        <Button
+          type="submit"
+          disabled={!isVerified || verifying}
+          className="w-full bg-emerald-700 text-white hover:bg-emerald-800 disabled:opacity-50 sm:w-auto"
+        >
+          {verifying ? (
+            <>
+              <LoaderCircle className="mr-2 size-4 animate-spin" />
+              Please wait...
+            </>
+          ) : (
+            <>
+              <CheckCircle2 className="mr-2 size-4" />
+              {account ? "Save verified bank details" : "Save payout account"}
+            </>
+          )}
+        </Button>
 
-      <p className="text-xs text-muted-foreground">
-        Verify the account name carefully before saving. Saving bank details
-        does not initiate a transfer.
-      </p>
+        <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+          <ShieldCheck className="mt-0.5 size-4 shrink-0" />
+          Verify the account name carefully before saving. Saving bank details
+          does not initiate a transfer.
+        </p>
+      </div>
     </form>
   );
 }
