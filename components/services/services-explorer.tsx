@@ -75,52 +75,49 @@ export default function ServicesExplorer({
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* Hero */}
-      <section className="relative isolate overflow-hidden bg-slate-950">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.22),transparent_48%)]"
-        />
 
+      <section className="border-b border-border bg-muted/40 dark:bg-muted/20">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-8 lg:py-24">
+          {/* Hero content */}
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-teal-200">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:border-emerald-800/70 dark:bg-emerald-950/50 dark:text-emerald-300">
               <Sparkles className="h-3.5 w-3.5" />
               Everyday tasks, made easier
             </div>
 
-            <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
               The right help,
-              <span className="block text-teal-300">
+              <span className="block text-emerald-600 dark:text-emerald-400">
                 right when you need it.
               </span>
             </h1>
 
-            <p className="mt-5 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
               Find services for your home, repairs, errands, deliveries and
               everyday needs — all in one place.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3 text-sm text-slate-300">
+            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-2">
-                <Check className="h-4 w-4 text-teal-300" />
+                <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 Browse service categories
               </span>
 
               <span className="inline-flex items-center gap-2">
-                <Check className="h-4 w-4 text-teal-300" />
+                <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 Find help for your needs
               </span>
             </div>
           </div>
 
           {/* Search */}
-          <div className="rounded-3xl border border-white/10 bg-white/[0.07] p-4 shadow-2xl backdrop-blur sm:p-6">
+          <div className="rounded-3xl border border-border bg-card p-4 shadow-xl shadow-black/5 sm:p-6 dark:shadow-black/20">
             <div className="mb-4">
-              <p className="text-lg font-semibold text-white">
+              <p className="text-lg font-semibold text-card-foreground">
                 What do you need help with?
               </p>
 
-              <p className="mt-1 text-sm text-slate-300">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Search for a service or browse the categories below.
               </p>
             </div>
@@ -129,7 +126,7 @@ export default function ServicesExplorer({
               Search service categories
             </label>
 
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-background p-2 pl-4 ring-1 ring-white/10 transition focus-within:ring-2 focus-within:ring-teal-400">
+            <div className="flex items-center gap-3 rounded-2xl border border-input bg-background p-2 pl-4 transition focus-within:ring-2 focus-within:ring-emerald-500/50">
               <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
 
               <input
@@ -153,7 +150,7 @@ export default function ServicesExplorer({
               )}
             </div>
 
-            <p className="mt-3 text-xs leading-5 text-slate-400">
+            <p className="mt-3 text-xs leading-5 text-muted-foreground">
               Search matches category names and descriptions. Select a category
               below to explore its services.
             </p>

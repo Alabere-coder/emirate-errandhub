@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
@@ -40,6 +41,16 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+
+  const pathname = usePathname();
+
+  const isLinkActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   const isAuthPage = variant === "auth";
 
@@ -115,17 +126,35 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
         </Link>
 
         {/* Desktop navigation */}
+        {/* Desktop navigation */}
         {!isAuthPage && (
-          <div className="hidden items-center gap-8 md:flex">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="hidden items-center gap-2 md:flex">
+            {navLinks.map((link) => {
+              const active = isLinkActive(link.href);
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`
+            relative rounded-xl px-4 py-2.5 text-sm font-semibold
+            transition-all duration-200
+            ${
+              active
+                ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-400"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            }
+          `}
+                >
+                  {link.label}
+
+                  {active && (
+                    <span className="absolute inset-x-4 -bottom-3.25 h-0.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                  )}
+                </Link>
+              );
+            })}
           </div>
         )}
 
@@ -185,16 +214,38 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
             {!isAuthPage &&
               navLinks.map((link) => {
                 const Icon = link.icon;
+                const active = isLinkActive(link.href);
 
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={closeMobileMenu}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-400"
+                    aria-current={active ? "page" : undefined}
+                    className={`
+          flex items-center gap-3 rounded-xl px-3 py-3
+          text-sm font-semibold transition-all duration-200
+          ${
+            active
+              ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-400"
+              : "text-foreground hover:bg-muted"
+          }
+        `}
                   >
-                    <Icon size={18} className="text-muted-foreground" />
+                    <Icon
+                      size={18}
+                      className={
+                        active
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-muted-foreground"
+                      }
+                    />
+
                     {link.label}
+
+                    {active && (
+                      <span className="ml-auto size-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                    )}
                   </Link>
                 );
               })}

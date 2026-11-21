@@ -173,6 +173,29 @@ export default async function HomePage() {
 
           <div className="absolute -right-32 top-12 -z-10 size-80 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-500/10" />
 
+          <div className="absolute inset-0 -z-10 bg-background" />
+
+          <div
+            className="absolute inset-0 -z-10 bg-[url('/home2.png')] bg-cover bg-center -opacity-90 dark:-opacity-70"
+            aria-hidden="true"
+          />
+
+          {/* Light and dark theme overlays */}
+          <div
+            className="
+    absolute inset-0 -z-10
+    bg-linear-to-r
+    from-background via-background/95 to-background/75
+    dark:from-background dark:via-background/90 dark:to-background/65
+  "
+            aria-hidden="true"
+          />
+
+          <div
+            className="absolute inset-0 -z-10 bg-linear-to-b from-background/10 via-transparent to-background/50 dark:from-background/20 dark:to-background/70"
+            aria-hidden="true"
+          />
+
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-2 lg:gap-16 lg:py-28">
             <div>
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-200/70 bg-card/80 px-4 py-2 text-sm font-medium text-emerald-800 shadow-sm dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-300">

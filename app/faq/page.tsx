@@ -31,28 +31,28 @@ export default function FAQPage() {
 
       <main>
         {/* Hero */}
-        <section className="relative isolate overflow-hidden bg-linear-to-br from-emerald-950 via-emerald-900 to-slate-950 px-5 py-20 text-white sm:px-8 sm:py-24">
-          <div className="absolute -right-20 -top-24 -z-10 h-80 w-80 rounded-full bg-emerald-400/20 blur-3xl" />
-          <div className="absolute -bottom-32 -left-20 -z-10 h-80 w-80 rounded-full bg-emerald-500/10 blur-3xl" />
 
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-emerald-200">
-              <MessageCircleQuestion className="h-8 w-8" />
+        <section className="border-b border-border bg-muted/40 dark:bg-muted/20">
+          <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
+            <div className="mx-auto mt-10 max-w-3xl text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/70 dark:bg-emerald-950/50 dark:text-emerald-300">
+                <MessageCircleQuestion className="h-8 w-8" />
+              </div>
+
+              <p className="mt-6 text-sm font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">
+                Help and information
+              </p>
+
+              <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                Frequently asked questions
+              </h1>
+
+              <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
+                Everything you need to know about finding services, working with
+                providers, managing jobs, making payments, and using Emirate
+                ErrandHub.
+              </p>
             </div>
-
-            <p className="mt-6 text-sm font-bold uppercase tracking-[0.2em] text-emerald-300">
-              Help and information
-            </p>
-
-            <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-              Frequently asked questions
-            </h1>
-
-            <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-emerald-50/80 sm:text-lg">
-              Everything you need to know about finding services, working with
-              providers, managing jobs, making payments, and using Emirate
-              ErrandHub.
-            </p>
           </div>
         </section>
 
